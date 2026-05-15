@@ -1,0 +1,1309 @@
+<section
+  class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-gray-900 animate-in fade-in duration-700 bg-white min-h-screen">
+
+  <!-- Toast Notification -->
+  <div *ngIf="toastMessage()"
+    class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg border animate-in slide-in-from-bottom-5 fade-in duration-300"
+    [ngClass]="{
+         'bg-gray-900 border-gray-800 text-white': toastMessage()?.type === 'success',
+         'bg-red-50 border-red-200 text-red-800': toastMessage()?.type === 'error'
+       }">
+    <svg *ngIf="toastMessage()?.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400"
+      viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clip-rule="evenodd" />
+    </svg>
+    <svg *ngIf="toastMessage()?.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+      fill="currentColor">
+      <path fill-rule="evenodd"
+        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+        clip-rule="evenodd" />
+    </svg>
+    <span class="text-sm font-semibold tracking-wide">{{ toastMessage()?.text }}</span>
+  </div>
+
+  <!-- Header Section -->
+  <div class="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+    <div class="flex items-center gap-4">
+      <div class="flex flex-col">
+        <div class="flex items-center gap-4 mb-1">
+          <h1
+            class="text-[2.2rem] lg:text-[2.5rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">
+            Visitors Directory</h1>
+          <button (click)="downloadFilteredData()"
+            class="flex items-center justify-center p-1.5 border-[1.5px] border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 rounded-[8px] transition-all group"
+            title="Export CSV">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <line x1="10" y1="9" x2="8" y2="9" />
+            </svg>
+          </button>
+        </div>
+        <p class="text-sm text-gray-500 font-medium mt-1">Manage and review enterprise visitor entries and leads.</p>
+      </div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
+      <div class="relative w-full sm:w-[240px] group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <input type="text" placeholder="Search directory..." (input)="onSearch($event)"
+          class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
+      </div>
+      <button (click)="openAddModal()"
+        class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-full text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+        </svg>
+        Add
+      </button>
+    </div>
+  </div>
+
+  <!-- Analytics Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-8">
+    <!-- Total Visitors -->
+    <div
+      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
+      <div class="flex justify-between items-start w-full">
+        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Total Visitors</span>
+        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+      </div>
+      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ totalVisitors()
+        }}</span>
+    </div>
+
+    <!-- Potential Leads -->
+    <div
+      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
+      <div class="flex justify-between items-start w-full">
+        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Potential Leads</span>
+        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+      </div>
+      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ potentialLeads()
+        }}</span>
+    </div>
+
+    <!-- Non Potential -->
+    <div
+      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
+      <div class="flex justify-between items-start w-full">
+        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Non Potential</span>
+        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+        </div>
+      </div>
+      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ nonPotentialLeads()
+        }}</span>
+    </div>
+
+    <!-- Others -->
+    <div
+      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
+      <div class="flex justify-between items-start w-full">
+        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Others</span>
+        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+        </div>
+      </div>
+      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ otherLeads() }}</span>
+    </div>
+  </div>
+
+  <!-- Main Content Card -->
+  <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
+
+    <!-- Filter Tabs & Toolbar Container -->
+    <div
+      class="px-6 py-5 border-b border-gray-100 flex flex-col xl:flex-row justify-between items-center gap-4 bg-white relative z-20">
+
+      <!-- Segmented Category Filters -->
+      <div class="flex items-center w-full xl:w-auto">
+        <div class="flex flex-wrap gap-2">
+          <button *ngFor="let tab of filterTabs" (click)="onCategoryChange(tab)" [ngClass]="{
+                    'bg-black text-white font-bold border-transparent': activeCategory() === tab,
+                    'bg-white text-gray-700 hover:text-black hover:border-gray-400 font-semibold border-gray-200': activeCategory() !== tab
+                  }" class="px-5 py-2.5 rounded-full text-[13px] tracking-wide transition-all duration-200 border">
+            {{ tab }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
+
+        <!-- Department Dropdown -->
+        <!-- <div class="relative hidden sm:block">
+          <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-gray-200 text-gray-800 py-2.5 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer">
+            <option value="">Department</option>
+            <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+          </div>
+        </div> -->
+
+        <!-- Entries Dropdown -->
+        <div class="relative hidden sm:block">
+          <select (change)="onPageSizeChange($event)"
+            class="appearance-none bg-white border border-gray-200 text-gray-800 py-2.5 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer">
+            <option value="5" [selected]="pageSize() === 5">5 rows</option>
+            <option value="10" [selected]="pageSize() === 10">10 rows</option>
+            <option value="25" [selected]="pageSize() === 25">25 rows</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="flex items-center p-1 bg-white border border-gray-200 rounded-full" *ngIf="visitors().length > 0">
+          <button (click)="viewMode.set('table')" [class.bg-gray-100]="viewMode() === 'table'"
+            [class.text-black]="viewMode() === 'table'" [class.text-gray-400]="viewMode() !== 'table'"
+            [class.hover:bg-gray-50]="viewMode() !== 'table'" [class.hover:text-gray-900]="viewMode() !== 'table'"
+            class="p-2 rounded-full transition-all duration-200 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+          </button>
+          <button (click)="viewMode.set('grid')" [class.bg-gray-100]="viewMode() === 'grid'"
+            [class.text-black]="viewMode() === 'grid'" [class.text-gray-400]="viewMode() !== 'grid'"
+            [class.hover:bg-gray-50]="viewMode() !== 'grid'" [class.hover:text-gray-900]="viewMode() !== 'grid'"
+            class="p-2 rounded-full transition-all duration-200 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()"
+      class="bg-gray-50 text-gray-800 p-4 m-4 rounded-xl border border-gray-200 flex items-center shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span class="text-sm font-medium">{{ error() }}</span>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && !error() && filteredVisitors().length === 0" class="bg-white text-center py-20">
+      <div
+        class="w-14 h-14 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">No visitors found</h3>
+      <p class="text-gray-500 text-xs">There are currently no enquiries matching your criteria.</p>
+    </div>
+
+    <!-- =================== -->
+    <!--      TABLE VIEW     -->
+    <!-- =================== -->
+    <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'table'"
+      class="overflow-x-auto min-h-[350px] print-area">
+
+      <!-- Print Header (Only visible when printing) -->
+      <div class="hidden print-header p-5 bg-white border-b border-gray-200">
+        <h2 class="text-2xl font-black text-black">Visitors Directory - PDF Summary</h2>
+        <p class="text-sm text-gray-500 font-medium mt-1">Generated on {{ activeCategory() }} segment. Total: {{
+          filteredVisitors().length }} records.</p>
+      </div>
+
+      <table class="min-w-full text-left text-sm whitespace-nowrap">
+        <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Visitor Name</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Company</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Venue & City</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Contact</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Lead Category</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Department</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Voice Note
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right no-print">
+              Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 bg-white">
+          <ng-container *ngFor="let visitor of paginatedVisitors(); let i = index">
+            <tr class="transition-colors duration-200 hover:bg-gray-50/50 relative group cursor-pointer"
+              (click)="openReview(visitor)">
+
+              <td class="px-6 py-6">
+                <div class="flex flex-col">
+                  <span class="font-bold text-black text-sm">{{ visitor.title ? visitor.title + ' ' : '' }}{{
+                    visitor.full_name }}</span>
+                  <span class="text-[11px] text-gray-500 font-medium mt-0.5">{{ visitor.job_title || 'No Title'
+                    }}</span>
+                </div>
+              </td>
+
+              <td class="px-6 py-6 text-gray-700 font-medium text-xs">{{ visitor.company_name || '-' }}</td>
+
+              <td class="px-6 py-6">
+                <div class="flex flex-col gap-0.5" *ngIf="visitor.venue_id">
+                  <span class="text-black font-semibold text-xs">{{ getVenueDetails(visitor.venue_id).venue }}</span>
+                  <span class="text-gray-500 text-[11px]">{{ getVenueDetails(visitor.venue_id).city }} • {{
+                    getVenueDetails(visitor.venue_id).year }}</span>
+                </div>
+                <div *ngIf="!visitor.venue_id" class="text-gray-400 text-xs font-medium">-</div>
+              </td>
+
+              <td class="px-6 py-6">
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-black font-semibold text-xs">{{ visitor.email }}</span>
+                  <span class="text-gray-500 text-[11px]">{{ visitor.mobile }}</span>
+                </div>
+              </td>
+
+              <td class="px-6 py-6" (click)="$event.stopPropagation()">
+                <div class="relative inline-block">
+                  <select [value]="visitor.lead_category" (change)="updateLeadCategory(visitor, $event)"
+                    class="appearance-none bg-white text-black border border-gray-300 text-[11px] font-bold py-2 pl-4 pr-8 rounded-[8px] outline-none focus:border-black transition-all cursor-pointer tracking-wider uppercase">
+                    <option *ngFor="let cat of leadCategories" [value]="cat" [selected]="cat === visitor.lead_category"
+                      class="font-medium">{{ cat }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-black">
+                    <svg class="fill-current h-3 w-3 transition-transform" xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                    </svg>
+                  </div>
+                </div>
+              </td>
+
+              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.department || '-' }}</td>
+
+              <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
+                <div *ngIf="visitor.voice_note_url" class="flex items-center justify-center">
+                  <button (click)="toggleAudioPlayback(visitor.id, $event)"
+                    [ngClass]="{'bg-black border-black text-white shadow-md': expandedAudioId() === visitor.id && audioState().isPlaying, 'bg-white border-gray-200 text-black hover:border-black hover:bg-black hover:text-white hover:shadow-md': expandedAudioId() !== visitor.id || !audioState().isPlaying}"
+                    class="w-9 h-9 border-2 rounded-full flex items-center justify-center transition-all duration-300 group/play">
+                    <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying"
+                      class="h-4 w-4 ml-0.5 transition-transform group-hover/play:scale-110" fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <svg *ngIf="expandedAudioId() === visitor.id && audioState().isPlaying"
+                      class="h-4 w-4 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                    </svg>
+                  </button>
+                </div>
+                <span *ngIf="!visitor.voice_note_url" class="text-gray-300">-</span>
+              </td>
+
+              <td class="px-6 py-6 text-right no-print" (click)="$event.stopPropagation()">
+                <div class="flex items-center justify-end gap-3">
+                  <button (click)="openEdit(visitor, $event)"
+                    class="p-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 hover:text-black rounded-full transition-all duration-200 group"
+                    title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:scale-110"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  <button (click)="openDeleteConfirmation(visitor, $event)"
+                    class="p-2.5 bg-white hover:bg-red-50 hover:border-red-200 border border-gray-300 text-gray-700 hover:text-red-600 rounded-full transition-all duration-200 group"
+                    title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:scale-110"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Accordion Audio Player Row -->
+            <tr *ngIf="expandedAudioId() === visitor.id" class="bg-gray-50/80 border-b border-gray-100">
+              <td colspan="7" class="p-0">
+                <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-6 py-4 flex justify-center">
+                  <div class="bg-black rounded-full px-5 py-2.5 flex items-center gap-4 shadow-xl w-full max-w-[400px]">
+                    <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
+                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                      </svg>
+                    </button>
+
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[13px] font-bold text-center">
+                      Voice Note Unavailable
+                    </div>
+
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
+                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{
+                        formatTime(audioState().currentTime) }}</span>
+
+                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress"
+                        (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
+                          [style.width.%]="audioState().progress"></div>
+                        <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
+                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                        </div>
+                      </div>
+
+                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration)
+                        }}</span>
+                    </div>
+
+                    <button (click)="stopAudio($event)"
+                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- =================== -->
+    <!--      GRID VIEW      -->
+    <!-- =================== -->
+    <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'grid'"
+      class="p-5 bg-gray-50/30">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div *ngFor="let visitor of paginatedVisitors()"
+          class="bg-white rounded-[16px] border border-gray-200/80 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 group flex flex-col">
+          <!-- Grid Card Image -->
+          <div
+            class="w-full h-40 bg-gray-50 flex items-center justify-center border-b border-gray-100 relative overflow-hidden">
+            <img *ngIf="visitor.visiting_card_url" [src]="getImageUrl(visitor.visiting_card_url)" alt="Visiting Card"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div *ngIf="!visitor.visiting_card_url" class="text-gray-300 flex flex-col items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-2 opacity-50" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <!-- Quick Actions Overlay -->
+            <div
+              class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button (click)="openEdit(visitor, $event)"
+                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                title="Edit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button (click)="openDeleteConfirmation(visitor, $event)"
+                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+              <button (click)="openReview(visitor)"
+                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                title="View Details">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Grid Card Details -->
+          <div class="p-4 flex-1 flex flex-col">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-base font-bold text-gray-900 truncate tracking-tight pr-2">
+                {{ visitor.title ? visitor.title + ' ' : '' }}{{ visitor.full_name }}
+              </h3>
+            </div>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3 truncate">
+              {{ visitor.job_title || 'No Title' }} <span *ngIf="visitor.company_name"
+                class="lowercase normal-case font-medium text-gray-400">at</span> <span class="text-gray-700">{{
+                visitor.company_name }}</span>
+            </p>
+
+            <div class="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
+              <div class="flex items-center gap-2 text-xs font-medium text-gray-500">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span class="truncate max-w-[100px]">{{ visitor.email }}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <div *ngIf="visitor.voice_note_url" class="relative">
+                  <button (click)="toggleAudioPlayback(visitor.id, $event)"
+                    [ngClass]="{'bg-black text-white shadow-sm': expandedAudioId() === visitor.id, 'hover:bg-gray-100 text-gray-400 hover:text-black': expandedAudioId() !== visitor.id}"
+                    class="p-1.5 rounded-full transition-colors group flex items-center justify-center">
+                    <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying" class="h-4 w-4 ml-0.5"
+                      fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <svg *ngIf="expandedAudioId() === visitor.id && audioState().isPlaying" class="h-4 w-4"
+                      fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                    </svg>
+                  </button>
+
+                  <div *ngIf="expandedAudioId() === visitor.id" (click)="$event.stopPropagation()"
+                    class="absolute bottom-[130%] right-0 bg-black rounded-[16px] px-4 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.2)] z-30 flex items-center gap-3 border border-white/10 w-[240px] animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
+                    <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
+                      class="w-7 h-7 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-3 w-3 text-white ml-0.5" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <svg *ngIf="audioState().isPlaying" class="h-3 w-3 text-white" fill="currentColor"
+                        viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                      </svg>
+                    </button>
+
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[11px] font-bold text-center">
+                      Unavailable
+                    </div>
+
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-2">
+                      <div class="relative h-1.5 flex-1 bg-white/20 rounded-full cursor-pointer"
+                        (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
+                          [style.width.%]="audioState().progress"></div>
+                        <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
+                          <div class="h-full w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]">
+                          </div>
+                        </div>
+                      </div>
+                      <span class="text-[9px] font-bold text-gray-400 tracking-wider">{{
+                        formatTime(audioState().currentTime) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <span
+                  class="bg-white text-black border border-gray-300 font-bold px-2.5 py-1 text-[9px] uppercase tracking-wider rounded-[6px]">
+                  {{ visitor.lead_category }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer / Pagination -->
+    <div
+      class="px-5 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4"
+      *ngIf="filteredVisitors().length > 0">
+      <div class="text-xs font-medium text-gray-500">
+        Showing <span class="text-gray-900 font-bold">{{ filteredVisitors().length === 0 ? 0 : (currentPage() - 1) *
+          pageSize() + 1 }}</span> to
+        <span class="text-gray-900 font-bold">{{ (currentPage() * pageSize()) > filteredVisitors().length ?
+          filteredVisitors().length : (currentPage() * pageSize()) }}</span> of
+        <span class="text-gray-900 font-bold">{{ filteredVisitors().length }}</span> entries
+      </div>
+
+      <nav class="flex items-center space-x-1.5 bg-gray-50/80 p-1 border border-gray-200 rounded-lg"
+        aria-label="Pagination">
+        <button (click)="prevPage()" [disabled]="currentPage() === 1" [class.opacity-40]="currentPage() === 1"
+          [class.cursor-not-allowed]="currentPage() === 1"
+          class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <div
+          class="flex items-center justify-center px-2.5 min-w-[2rem] h-7 rounded-md bg-white border border-gray-200 text-xs font-bold text-gray-900 shadow-sm">
+          {{ currentPage() }}
+        </div>
+
+        <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()"
+          [class.opacity-40]="currentPage() >= totalPages()" [class.cursor-not-allowed]="currentPage() >= totalPages()"
+          class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Edit Visitor Modal -->
+  <div *ngIf="editingVisitor()"
+    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <div
+      class="bg-white rounded-[20px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/20">
+
+      <!-- Edit Header -->
+      <div class="flex justify-between items-center px-6 py-5 border-b border-gray-100 bg-white">
+        <div>
+          <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">Edit Visitor</h2>
+          <p class="text-xs text-gray-500 font-medium mt-0.5">Update enterprise record details</p>
+        </div>
+        <button (click)="closeEdit()"
+          class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Edit Body -->
+      <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
+              <input type="text" [(ngModel)]="editFormData().full_name"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Company
+                Name</label>
+              <input type="text" [(ngModel)]="editFormData().company_name"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email
+                Address</label>
+              <input type="email" [(ngModel)]="editFormData().email"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile
+                Number</label>
+              <input type="text" [(ngModel)]="editFormData().mobile"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Department</label>
+              <input type="text" [(ngModel)]="editFormData().department"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Lead
+                Category</label>
+              <select [(ngModel)]="editFormData().lead_category"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Venue</label>
+            <select [(ngModel)]="editFormData().venue_id"
+              class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+              <option [ngValue]="null">Select Venue</option>
+              <option *ngFor="let v of venues()" [ngValue]="v.venue_id">
+                {{ v.venue }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Footer -->
+      <div class="px-6 py-4 border-t border-gray-100 bg-white flex justify-end gap-3">
+        <button (click)="closeEdit()"
+          class="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-all">
+          Cancel
+        </button>
+        <button (click)="saveEdit()"
+          class="px-5 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-lg shadow-md transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monochrome Premium Modal (Details Review) -->
+  <div *ngIf="selectedVisitor() && !editingVisitor()"
+    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <div
+      class="bg-white rounded-[24px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/20">
+
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center px-8 py-5 border-b border-gray-100 bg-white">
+        <div>
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Visitor Insights</h2>
+          <p class="text-xs text-gray-500 font-medium mt-1">Detailed enterprise record</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <span
+            class="bg-white text-black border border-gray-300 font-bold px-3 py-1 text-xs uppercase tracking-wider rounded-[6px]">
+            {{ selectedVisitor()?.lead_category }}
+          </span>
+          <button (click)="closeReview()"
+            class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-8 overflow-y-auto flex-1 bg-gray-50/50">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          <!-- Details Left -->
+          <div class="lg:col-span-2 space-y-5 bg-white p-7 rounded-[20px] border border-gray-100 shadow-sm">
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Name</div>
+              <div class="col-span-2 text-sm font-bold text-gray-900">{{ selectedVisitor()?.title ?
+                selectedVisitor()?.title + ' ' : '' }}{{ selectedVisitor()?.full_name }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Organization</div>
+              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.company_name || '-' }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Job Title</div>
+              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.job_title || '-' }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Email Contact</div>
+              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.email }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Mobile Phone</div>
+              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.mobile }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Department</div>
+              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.department || '-' }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center">Interests
+              </div>
+              <div class="col-span-2">
+                <div class="flex flex-wrap gap-1.5">
+                  <span *ngFor="let interest of selectedVisitor()?.interests"
+                    class="px-2.5 py-1 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-md border border-gray-200">
+                    {{ interest }}
+                  </span>
+                  <span *ngIf="!selectedVisitor()?.interests?.length" class="text-xs text-gray-400 italic">None
+                    specified</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Remarks</div>
+              <div
+                class="col-span-2 text-xs text-gray-700 font-semibold leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100 min-h-[60px]">
+                {{ selectedVisitor()?.remarks || 'No remarks provided.' }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4" *ngIf="selectedVisitor()?.voice_note_url">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center">Voice Note
+              </div>
+              <div class="col-span-2">
+                <div *ngIf="expandedAudioId() !== selectedVisitor()?.id" class="w-full max-w-[320px]">
+                  <button (click)="toggleAudioPlayback(selectedVisitor()!.id, $event)"
+                    class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
+                        <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                      <span>Play Recording</span>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div *ngIf="expandedAudioId() === selectedVisitor()?.id"
+                  class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
+                  <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
+                    class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
+                    <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                    </svg>
+                  </button>
+
+                  <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
+                    Unavailable
+                  </div>
+
+                  <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
+                    <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{
+                      formatTime(audioState().currentTime) }}</span>
+                    <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress"
+                      (click)="seekAudio($event)">
+                      <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
+                        [style.width.%]="audioState().progress"></div>
+                      <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
+                        <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                      </div>
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                  </div>
+
+                  <button (click)="stopAudio($event)"
+                    class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
+                    <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Right -->
+          <div class="flex flex-col gap-4">
+            <div class="bg-white p-5 rounded-[20px] border border-gray-100 shadow-sm">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                </svg>
+                Visiting Card
+              </div>
+              <div
+                class="w-full bg-gray-50 border border-dashed border-gray-300 rounded-xl min-h-[200px] flex items-center justify-center p-2 relative group cursor-pointer transition-all duration-300 hover:border-gray-400 hover:bg-gray-100"
+                (click)="selectedVisitor()?.visiting_card_url ? openImageViewer() : null">
+                <img *ngIf="selectedVisitor()?.visiting_card_url"
+                  [src]="getImageUrl(selectedVisitor()?.visiting_card_url)"
+                  class="max-w-full max-h-[180px] object-contain rounded-md transition-transform duration-500 group-hover:scale-105 shadow-sm"
+                  alt="Visiting Card" />
+
+                <!-- Hint overlay -->
+                <div *ngIf="selectedVisitor()?.visiting_card_url"
+                  class="absolute inset-0 bg-black/10 flex items-center justify-center rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span
+                    class="bg-gray-900/90 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5 tracking-wide">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                    Expand Image
+                  </span>
+                </div>
+
+                <div *ngIf="!selectedVisitor()?.visiting_card_url"
+                  class="flex flex-col items-center justify-center text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-2 opacity-30" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="text-[10px] font-bold uppercase tracking-wider">No Card Uploaded</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Image Viewer Modal with Zoom -->
+  <div *ngIf="isImageViewerOpen() && selectedVisitor()?.visiting_card_url"
+    class="fixed inset-0 bg-gray-900/95 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <!-- Controls -->
+    <div
+      class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-3 z-[110] bg-white/10 p-2 rounded-2xl backdrop-blur-xl border border-white/20 shadow-2xl">
+      <button (click)="zoomOut()"
+        class="p-3 hover:bg-white/20 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        title="Zoom Out">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+        </svg>
+      </button>
+
+      <span class="text-white font-bold text-sm sm:text-base min-w-[4rem] text-center tracking-wider">{{ zoomLevel() *
+        100 | number:'1.0-0' }}%</span>
+
+      <button (click)="zoomIn()"
+        class="p-3 hover:bg-white/20 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        title="Zoom In">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+
+      <div class="w-px h-8 bg-white/20 mx-2"></div>
+
+      <button (click)="closeImageViewer()"
+        class="p-3 bg-white/10 hover:bg-red-500/90 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        title="Close Viewer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Interactive Image Container -->
+    <div class="relative w-full h-full flex items-center justify-center overflow-auto scrollbar-hide"
+      (click)="closeImageViewer()">
+      <img [src]="getImageUrl(selectedVisitor()?.visiting_card_url)" [style.transform]="'scale(' + zoomLevel() + ')'"
+        class="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-300 shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-xl origin-center border border-white/10"
+        [class.cursor-zoom-in]="zoomLevel() < 3" [class.cursor-default]="zoomLevel() >= 3"
+        (click)="$event.stopPropagation(); zoomIn()" alt="Visiting Card Full View" />
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="visitorToDelete()"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300 p-6">
+      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 mb-4 mx-auto">
+        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 text-center mb-2">Delete Visitor</h3>
+      <p class="text-sm text-gray-500 text-center mb-6">Are you sure you want to delete this visitor? This action cannot
+        be undone.</p>
+      <div class="flex gap-3 w-full">
+        <button (click)="closeDeleteConfirmation()"
+          class="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-sm font-bold transition-colors">Cancel</button>
+        <button (click)="confirmDelete()"
+          class="flex-1 px-4 py-2.5 bg-gray-900 text-white hover:bg-black rounded-xl text-sm font-bold transition-colors shadow-sm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Visitor Modal -->
+  <div *ngIf="isAddModalOpen()"
+    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-[200] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <div
+      class="bg-white rounded-[24px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/40">
+
+      <!-- Add Header -->
+      <div class="flex justify-between items-center px-8 py-6 border-b border-gray-100 bg-white">
+        <div>
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Add New Visitor</h2>
+          <p class="text-xs text-gray-500 font-medium mt-1">Create a new enterprise enquiry record</p>
+        </div>
+        <button (click)="closeAddModal()"
+          class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2.5 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Add Body -->
+      <div class="p-8 overflow-y-auto flex-1 bg-gray-50/50">
+        <form [formGroup]="addVisitorForm" class="space-y-8">
+
+          <!-- 1. Venue Information -->
+          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
+            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+              Venue Selection *</h3>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Venue</label>
+              <select formControlName="venueId"
+                class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                <option value="">Select Venue</option>
+                <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue }}</option>
+              </select>
+              <span *ngIf="addVisitorForm.get('venueId')?.invalid && addVisitorForm.get('venueId')?.touched"
+                class="text-[10px] text-red-500 font-bold mt-1 block">Venue is required</span>
+            </div>
+          </div>
+
+          <!-- 2. Personal Information -->
+          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
+            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+              Personal Information</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+              <!-- Title -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Title</label>
+                <select formControlName="title"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                  <option *ngFor="let t of titles" [value]="t">{{ t }}</option>
+                </select>
+              </div>
+
+              <!-- Full Name -->
+              <div class="md:col-span-3">
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Full Name
+                  *</label>
+                <input type="text" formControlName="fullName" (keypress)="onFullNameKeypress($event)"
+                  (input)="onFullNameInput($event)" (paste)="onPasteSanitizeFullName($event)"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="Enter full name" />
+                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                  *ngIf="!(addVisitorForm.get('fullName')?.invalid && addVisitorForm.get('fullName')?.touched)">Only
+                  alphabets and periods are allowed</span>
+                <span *ngIf="addVisitorForm.get('fullName')?.invalid && addVisitorForm.get('fullName')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid Full Name is required</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+              <!-- Mobile Number -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile Number
+                  *</label>
+                <input type="text" formControlName="mobile" (keypress)="onMobileKeypress($event)"
+                  (input)="onMobileInput($event)" (paste)="onPasteSanitizeMobile($event)" maxlength="10"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="10-digit number" />
+                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                  *ngIf="!(addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched)">Mobile
+                  number must contain exactly 10 digits</span>
+                <span *ngIf="addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid 10-digit Mobile is required</span>
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email Address
+                  *</label>
+                <input type="email" formControlName="email"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="name@company.com" />
+                <span *ngIf="addVisitorForm.get('email')?.invalid && addVisitorForm.get('email')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid Email is required</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Professional Information -->
+          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
+            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+              Professional Information</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Company
+                  Name</label>
+                <input type="text" formControlName="companyName"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="Organization name" />
+                <span *ngIf="addVisitorForm.get('companyName')?.invalid && addVisitorForm.get('companyName')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Invalid characters</span>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Job
+                  Title</label>
+                <select formControlName="jobTitle"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                  <option value="">Select job title</option>
+                  <option *ngFor="let jt of jobTitles" [value]="jt">{{ jt }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Department</label>
+                <select formControlName="department"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                  <option value="">Select department</option>
+                  <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Lead
+                  Category</label>
+                <select formControlName="leadCategory"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                  <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Product Interest -->
+          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
+            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+              Product Interests *</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label *ngFor="let interest of productInterests"
+                class="flex items-center p-3.5 border rounded-xl cursor-pointer transition-all duration-200 group"
+                [ngClass]="selectedInterests().includes(interest) ? 'bg-gray-900 border-gray-900 text-white shadow-md' : 'bg-white border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700'">
+                <div
+                  class="relative flex items-center justify-center w-4 h-4 mr-3 border-2 rounded flex-shrink-0 transition-colors"
+                  [ngClass]="selectedInterests().includes(interest) ? 'border-white bg-white' : 'border-gray-300 group-hover:border-gray-400'">
+                  <svg *ngIf="selectedInterests().includes(interest)" class="w-3 h-3 text-gray-900 absolute" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <input type="checkbox" class="hidden" [checked]="selectedInterests().includes(interest)"
+                  (change)="toggleInterest(interest)" />
+                <span class="text-sm font-semibold tracking-wide">{{ interest }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 4. Attachment & Remarks -->
+          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
+            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+              Attachment & Remarks</h3>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Upload Area -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting
+                  Card</label>
+
+                <div *ngIf="!selectedFile()"
+                  class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center h-48"
+                  (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+                  <svg class="w-10 h-10 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                  </svg>
+                  <p class="text-sm font-bold text-gray-900 mb-1">Click to upload or drag and drop</p>
+                  <p class="text-[11px] text-gray-500 font-medium">PNG or JPG (MAX. 5MB)</p>
+                  <input type="file" #fileInput class="hidden" accept="image/png, image/jpeg"
+                    (change)="onFileSelected($event)">
+                </div>
+
+                <div *ngIf="selectedFile()" class="border border-gray-200 rounded-xl p-3 bg-gray-50 h-48 flex flex-col">
+                  <div
+                    class="flex-1 relative overflow-hidden rounded-lg bg-black/5 flex items-center justify-center mb-2">
+                    <img [src]="filePreview()" class="max-h-full max-w-full object-contain" alt="Preview">
+                  </div>
+                  <div class="flex justify-between items-center px-1">
+                    <span class="text-xs font-semibold text-gray-700 truncate max-w-[150px]">{{ selectedFile()?.name
+                      }}</span>
+                    <button type="button" (click)="removeFile()"
+                      class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Remarks -->
+              <div class="flex flex-col">
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Remarks</label>
+                <textarea formControlName="remarks" rows="5"
+                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm flex-1 resize-none"
+                  placeholder="Share additional visitor details or requirements..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Voice Note -->
+          <div class="bg-gray-900 p-6 rounded-[20px] border border-gray-800 shadow-sm relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+            <h3
+              class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-800 relative z-10">
+              Voice Note</h3>
+
+            <!-- Recording Controls -->
+            <div
+              class="flex items-center justify-between bg-black/50 backdrop-blur-sm border border-gray-800/80 p-4 rounded-2xl relative z-10 hover:border-gray-700 transition-all duration-300">
+
+              <!-- Left side: Status & Timer -->
+              <div class="flex items-center gap-4">
+                <button type="button" (click)="toggleRecording()"
+                  class="relative w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none"
+                  [ngClass]="{'bg-red-500 hover:bg-red-600': isRecording(), 'bg-white hover:bg-gray-200': !isRecording() && !recordingUrl(), 'bg-gray-800 hover:bg-gray-700': !isRecording() && recordingUrl() }">
+
+                  <!-- Pulsing ring when recording -->
+                  <div *ngIf="isRecording()"
+                    class="absolute inset-0 rounded-full border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
+                  </div>
+
+                  <!-- Icon -->
+                  <svg *ngIf="!isRecording() && !recordingUrl()" xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                  <svg *ngIf="isRecording()" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  </svg>
+                  <svg *ngIf="!isRecording() && recordingUrl()" xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span *ngIf="isRecording()" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-sm font-bold tracking-wider"
+                      [ngClass]="{'text-red-400': isRecording(), 'text-gray-300': !isRecording()}">
+                      {{ isRecording() ? 'RECORDING' : (recordingUrl() ? 'RECORDED' : 'READY') }}
+                    </span>
+                  </div>
+                  <span class="text-2xl font-mono font-light text-white tracking-widest mt-0.5">
+                    {{ formatTime(recordingTime()) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Right side: Audio Player & Delete -->
+              <div *ngIf="recordingUrl()" class="flex items-center gap-4 animate-in fade-in duration-300">
+                <audio [src]="safeRecordingUrl()" controls
+                  class="h-10 w-48 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+
+                <button type="button" (click)="clearVoiceNote()"
+                  class="p-2.5 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-xl transition-all"
+                  title="Delete Recording">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Waveform placeholder when recording -->
+              <div *ngIf="isRecording()" class="flex items-center justify-center gap-1 h-10 w-48 pr-4">
+                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 40%; animation-delay: 0.1s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 80%; animation-delay: 0.2s"></div>
+                <div class="w-1.5 bg-white/80 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 60%; animation-delay: 0.3s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 100%; animation-delay: 0.4s"></div>
+                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 70%; animation-delay: 0.5s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 50%; animation-delay: 0.6s"></div>
+              </div>
+
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Add Footer -->
+      <div class="px-8 py-5 border-t border-gray-100 bg-white flex justify-end gap-3">
+        <button (click)="closeAddModal()" [disabled]="isSubmitting()"
+          class="px-6 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all disabled:opacity-50">
+          Cancel
+        </button>
+        <button (click)="saveNewVisitor()"
+          [disabled]="isSubmitting() || addVisitorForm.invalid || selectedInterests().length === 0"
+          class="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-xl shadow-md transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-60 disabled:cursor-not-allowed">
+          <svg *ngIf="isSubmitting()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          {{ isSubmitting() ? 'Saving...' : 'Save Visitor' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
