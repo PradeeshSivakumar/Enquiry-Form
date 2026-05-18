@@ -7,6 +7,7 @@ const multer = require('multer');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 dotenv.config({
   path: path.join(__dirname, '.env'),
@@ -14,8 +15,16 @@ dotenv.config({
 });
 
 const app = express();
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'niralteksolutions@gmail.com',
+    pass: 'toor qnnv zyqi ozzj'
+  }
+});
 const port = Number(process.env.PORT);
-
 const uploadDir = path.join(__dirname, '..', 'uploads');
 const visitingCardsDir = path.join(uploadDir, 'visiting-cards');
 const voiceNotesDir = path.join(uploadDir, 'voicenote');
@@ -247,113 +256,274 @@ app.delete('/api/visiting-cards/:id', async (req, res, next) => {
   }
 });
 
-app.post('/api/enquiries', upload.fields([{ name: 'visitingCard', maxCount: 1 }, { name: 'voiceNote', maxCount: 1 }]), async (req, res, next) => {
-  try {
-    const payload = normalizePayload(req.body);
-    validatePayload(payload);
+app.post(
+  '/api/enquiries',
 
-    let visitingCardId = null;
-    let visitingCardUrl = null;
-    let voiceNoteId = null;
-    let voiceNoteUrl = null;
+  upload.fields([
+    { name: 'visitingCard', maxCount: 1 },
+    { name: 'voiceNote', maxCount: 1 }
+  ]),
 
-    if (req.files && req.files['visitingCard'] && req.files['visitingCard'][0]) {
-      const file = req.files['visitingCard'][0];
-      const url = `/uploads/visiting-cards/${file.filename}`;
-      const [result] = await pool.execute(
-        `INSERT INTO visiting_cards (filename, url, file_size, mime_type, status)
-         VALUES (?, ?, ?, ?, ?)`,
-        [file.filename, url, file.size, file.mimetype, 0]
-      );
-      visitingCardId = result.insertId;
-      visitingCardUrl = url;
+  async (req, res) => {
+
+    try {
+
+      const payload =
+        normalizePayload(req.body);
+
+      validatePayload(payload);
+
+      let visitingCardId = null;
+      let visitingCardUrl = null;
+
+      let voiceNoteId = null;
+      let voiceNoteUrl = null;
+
+
+
+      // VISITING CARD
+      if (
+        req.files &&
+        req.files['visitingCard'] &&
+        req.files['visitingCard'][0]
+      ) {
+
+        const file =
+          req.files['visitingCard'][0];
+
+        const url =
+          `/uploads/visiting-cards/${file.filename}`;
+
+        const [result] =
+          await pool.execute(
+
+            `INSERT INTO visiting_cards
+            (
+              filename,
+              url,
+              file_size,
+              mime_type,
+              status
+            )
+            VALUES (?, ?, ?, ?, ?)`,
+
+            [
+              file.filename,
+              url,
+              file.size,
+              file.mimetype,
+              0
+            ]
+          );
+
+        visitingCardId =
+          result.insertId;
+
+        visitingCardUrl = url;
+      }
+
+
+
+      // VOICE NOTE
+      if (
+        req.files &&
+        req.files['voiceNote'] &&
+        req.files['voiceNote'][0]
+      ) {
+
+        const file =
+          req.files['voiceNote'][0];
+
+        voiceNoteUrl =
+          `/uploads/voicenote/${file.filename}`;
+
+        const [result] =
+          await pool.execute(
+
+            `INSERT INTO voice_notes
+            (
+              filename,
+              url,
+              file_size,
+              mime_type,
+              status
+            )
+            VALUES (?, ?, ?, ?, ?)`,
+
+            [
+              file.filename,
+              voiceNoteUrl,
+              file.size,
+              file.mimetype,
+              0
+            ]
+          );
+
+        voiceNoteId =
+          result.insertId;
+      }
+
+
+
+      // ENQUIRY INSERT
+      const [result] =
+        await pool.execute(
+
+          `INSERT INTO enquiries
+          (
+            title,
+            full_name,
+            company_name,
+            job_title,
+            email,
+            mobile,
+            department,
+            interests,
+            visiting_card_id,
+            visiting_card_url,
+            voice_note_id,
+            voice_note_url,
+            venue_id,
+            remarks,
+            lead_category
+          )
+
+          VALUES
+          (
+            ?, ?, ?, ?, ?, ?, ?,
+            CAST(? AS JSON),
+            ?, ?, ?, ?, ?, ?, ?
+          )`,
+
+          [
+            payload.title,
+            payload.fullName,
+            payload.companyName,
+            payload.jobTitle,
+            payload.email,
+            payload.mobile,
+            payload.department,
+            JSON.stringify(payload.interests),
+            visitingCardId,
+            visitingCardUrl,
+            voiceNoteId,
+            voiceNoteUrl,
+            payload.venueId,
+            payload.remarks,
+            payload.leadCategory || 'Potential',
+          ]
+        );
+
+
+
+      // SEND EMAIL
+      try {
+
+        await transporter.sendMail({
+
+          from: 'niralteksolutions@gmail.com',
+
+          to: payload.email,
+
+          subject:
+            'Thank You For Your Enquiry',
+
+          html: `
+
+            <div
+              style="
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                background: #f8fafc;
+              "
+            >
+
+              <div
+                style="
+                  max-width: 600px;
+                  margin: auto;
+                  background: white;
+                  border-radius: 12px;
+                  padding: 30px;
+                  border: 1px solid #e2e8f0;
+                "
+              >
+
+                <h2>
+                  Thank You For Your Enquiry
+                </h2>
+
+                <p>
+                  Dear ${payload.fullName},
+                </p>
+
+                <p>
+                  Thank you for contacting
+                  Niraltek Solutions.
+                </p>
+
+                <p>
+                  We have successfully received
+                  your enquiry and our team
+                  will contact you shortly.
+                </p>
+
+              </div>
+
+            </div>
+          `
+        });
+
+        console.log(
+          'Mail sent successfully'
+        );
+
+      }
+
+      catch (mailError) {
+
+        console.error(
+          'MAIL ERROR:',
+          mailError.message
+        );
+      }
+
+
+
+      // SUCCESS RESPONSE
+      res.status(201).json({
+
+        success: true,
+
+        payload: {
+
+          ...payload,
+
+          id: result.insertId,
+
+          visitingCardId,
+
+          createdAt:
+            new Date().toISOString(),
+        },
+      });
+
     }
 
-    if (req.files && req.files['voiceNote'] && req.files['voiceNote'][0]) {
-      const file = req.files['voiceNote'][0];
-      voiceNoteUrl = `/uploads/voicenote/${file.filename}`;
-      const [result] = await pool.execute(
-        `INSERT INTO voice_notes (filename, url, file_size, mime_type, status)
-         VALUES (?, ?, ?, ?, ?)`,
-        [file.filename, voiceNoteUrl, file.size, file.mimetype, 0]
-      );
-      voiceNoteId = result.insertId;
+    catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+
+        success: false,
+
+        message: error.message
+      });
     }
-
-    const [result] = await pool.execute(
-      `INSERT INTO enquiries
-        (title, full_name, company_name, job_title, email, mobile, department, interests, visiting_card_id, visiting_card_url, voice_note_id, voice_note_url, venue_id, remarks, lead_category)
-       VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS JSON), ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        payload.title,
-        payload.fullName,
-        payload.companyName,
-        payload.jobTitle,
-        payload.email,
-        payload.mobile,
-        payload.department,
-        JSON.stringify(payload.interests),
-        visitingCardId,
-        visitingCardUrl,
-        voiceNoteId,
-        voiceNoteUrl,
-        payload.venueId,
-        payload.remarks,
-        payload.leadCategory || 'Potential',
-      ]
-    );
-
-    res.status(201).json({
-      success: true,
-      payload: {
-        ...payload,
-        id: result.insertId,
-        visitingCardId,
-        createdAt: new Date().toISOString(),
-      },
-    });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-app.post('/api/enquiries/admin', authenticateToken, async (req, res, next) => {
-  try {
-    const { full_name, company_name, email, mobile, department, lead_category } = req.body;
-
-    if (!full_name || !email || !mobile) {
-      return res.status(400).json({ message: 'Full name, email and mobile are required.' });
-    }
-
-    const [result] = await pool.execute(
-      `INSERT INTO enquiries
-        (full_name, company_name, email, mobile, department, lead_category, interests)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        full_name,
-        company_name || null,
-        email,
-        mobile,
-        department || null,
-        lead_category || 'Potential',
-        JSON.stringify([])
-      ]
-    );
-
-    res.status(201).json({
-      id: result.insertId,
-      full_name,
-      company_name,
-      email,
-      mobile,
-      department,
-      lead_category: lead_category || 'Potential',
-      created_at: new Date().toISOString()
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
 app.get('/api/enquiries', authenticateToken, async (_req, res, next) => {
   try {
@@ -627,7 +797,7 @@ function normalizePayload(body) {
     interests: parseInterests(body.interests),
     remarks: emptyToNull(body.remarks),
     leadCategory: emptyToNull(body.leadCategory),
-    venueId: emptyToNull(body.venue_id),
+    venueId: emptyToNull(body.venueId ?? body.venue_id),
   };
 }
 
