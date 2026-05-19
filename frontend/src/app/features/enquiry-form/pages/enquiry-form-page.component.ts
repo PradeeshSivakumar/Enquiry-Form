@@ -5,7 +5,7 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, ReactiveFormsModu
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { DEPARTMENT_OPTIONS, INTEREST_OPTIONS, JOB_TITLE_OPTIONS, TITLE_OPTIONS } from '../../../core/constants/form-options';
+import { DEPARTMENT_OPTIONS, INTEREST_OPTIONS, JOB_TITLE_OPTIONS, OptionItem, TITLE_OPTIONS } from '../../../core/constants/form-options';
 import { SidebarBrandComponent } from '../../../layout/sidebar/sidebar-brand.component';
 import { CheckboxCardGroupComponent } from '../components/checkbox-card-group.component';
 import { CustomInputComponent } from '../components/custom-input.component';
@@ -16,6 +16,7 @@ import { TextareaComponent } from '../components/textarea.component';
 import { UploadDropzoneComponent } from '../components/upload-dropzone.component';
 import { EnquiryService } from '../services/enquiry.service';
 import { VenueService, Venue } from '../../venue/services/venue.service';
+import { ProductsService } from '../../products/services/products.service';
 
 @Component({
   selector: 'app-enquiry-form-page',
@@ -43,6 +44,7 @@ export class EnquiryFormPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly enquiryService = inject(EnquiryService);
   private readonly venueService = inject(VenueService);
+  private readonly productsService = inject(ProductsService);
   private readonly sanitizer = inject(DomSanitizer);
 
   readonly isSubmitting = signal(false);
@@ -54,7 +56,7 @@ export class EnquiryFormPageComponent {
   readonly titleOptions = TITLE_OPTIONS;
   readonly jobTitleOptions = JOB_TITLE_OPTIONS;
   readonly departmentOptions = DEPARTMENT_OPTIONS;
-  readonly interestOptions = INTEREST_OPTIONS;
+  interestOptions: OptionItem[] = [...INTEREST_OPTIONS];
 
   venues = signal<Venue[]>([]);
   venueOptions = computed(() => this.venues().map(v => ({ value: v.venue_id!, label: v.venue })));
@@ -103,12 +105,30 @@ export class EnquiryFormPageComponent {
 
     this.updateCompletion();
     this.loadVenues();
+    this.loadProductInterests();
   }
 
   loadVenues() {
     this.venueService.getVenues().subscribe({
       next: (data) => this.venues.set(data),
       error: (err) => console.error('Failed to load venues', err)
+    });
+  }
+
+  loadProductInterests() {
+    this.productsService.getActiveProducts().subscribe({
+      next: (products) => {
+        const productOptions = products.map(product => ({
+          label: product.name,
+          value: product.name,
+        }));
+
+        this.setInterestOptions(productOptions.length ? productOptions : INTEREST_OPTIONS);
+      },
+      error: (err) => {
+        console.error('Failed to load products', err);
+        this.setInterestOptions(INTEREST_OPTIONS);
+      }
     });
   }
 
@@ -249,6 +269,20 @@ export class EnquiryFormPageComponent {
       const formArray = control as FormArray<FormControl<boolean | null>>;
       return formArray.controls.some((item) => item.value) ? null : { atLeastOneRequired: true };
     };
+  }
+
+  private setInterestOptions(options: OptionItem[]): void {
+    const selectedValues = this.interestsArray.controls
+      .map((control, index) => (control.value ? this.interestOptions[index]?.value : null))
+      .filter((value): value is string => !!value);
+
+    this.interestOptions = options;
+    this.interestsArray.clear();
+    this.interestOptions.forEach(option => {
+      this.interestsArray.push(this.fb.control(selectedValues.includes(option.value)));
+    });
+    this.interestsArray.updateValueAndValidity();
+    this.updateCompletion();
   }
 
   private updateCompletion(): void {

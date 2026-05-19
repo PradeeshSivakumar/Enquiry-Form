@@ -49,6 +49,16 @@ export class VisitorsService {
     return this.http.post(`${this.apiUrl}`, formData);
   }
 
+  updateVisitorCard(id: number, file: File): Observable<{ visitingCardUrl: string | null }> {
+    const formData = new FormData();
+    formData.append('visitingCard', file);
+    return this.http.put<{ visitingCardUrl: string | null }>(`${this.apiUrl}/${id}/visiting-card`, formData);
+  }
+
+  removeVisitorCard(id: number): Observable<{ visitingCardUrl: string | null }> {
+    return this.http.delete<{ visitingCardUrl: string | null }>(`${this.apiUrl}/${id}/visiting-card`);
+  }
+
   deleteVisitor(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }

@@ -28,6 +28,7 @@ const port = Number(process.env.PORT);
 const uploadDir = path.join(__dirname, '..', 'uploads');
 const visitingCardsDir = path.join(uploadDir, 'visiting-cards');
 const voiceNotesDir = path.join(uploadDir, 'voicenote');
+const PRODUCT_MASTER_ROLES = ['Admin', 'Super Admin', 'Sales Manager'];
 
 fs.mkdirSync(visitingCardsDir, { recursive: true });
 fs.mkdirSync(voiceNotesDir, { recursive: true });
@@ -55,6 +56,7 @@ pool.getConnection()
     console.log('Database connected successfully.');
     const [rows] = await connection.query('SELECT 1 + 1 AS result');
     console.log('Query Result:', rows[0].result);
+    await ensureProductMasterTable(connection);
     connection.release();
   })
   .catch((err) => {
@@ -80,6 +82,18 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+const authorizeRoles = (allowedRoles) => (req, res, next) => {
+  const userRole = req.user?.role;
+
+  if (!userRole || !allowedRoles.some(role => role.toLowerCase() === userRole.toLowerCase())) {
+    return res.status(403).json({ message: 'Access denied. You are not authorized to perform this action.' });
+  }
+
+  next();
+};
+
+const authorizeProductMaster = authorizeRoles(PRODUCT_MASTER_ROLES);
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -139,14 +153,20 @@ app.get('/api/health', (_req, res) => {
 
 app.post('/api/auth/login', async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email || '').trim();
+    const password = String(req.body.password || '');
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required.' });
     }
 
-    // Query employee by email (status check removed because column doesn't exist in user DB)
-    const [users] = await pool.execute('SELECT * FROM employees WHERE email = ?', [email]);
+    const [users] = await pool.execute(
+      `SELECT id, name, email, password, role, status
+       FROM employees
+       WHERE LOWER(TRIM(email)) = LOWER(?)
+       LIMIT 1`,
+      [email.toLowerCase()]
+    );
 
     if (users.length === 0) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -154,7 +174,12 @@ app.post('/api/auth/login', async (req, res, next) => {
 
     const user = users[0];
 
-    if (password !== user.password) {
+    if (Number(user.status) === 0) {
+      return res.status(403).json({ message: 'This account is inactive. Please contact an administrator.' });
+    }
+
+    const passwordMatches = await verifyPassword(password, user.password);
+    if (!passwordMatches) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -557,16 +582,102 @@ app.put('/api/enquiries/:id/category', authenticateToken, async (req, res, next)
   }
 });
 
+app.put('/api/enquiries/:id/visiting-card', authenticateToken, upload.single('visitingCard'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Visiting card image is required.' });
+    }
+
+    const [existingRows] = await pool.execute(
+      `SELECT visiting_card_id FROM enquiries WHERE id = ? AND status = 0`,
+      [id]
+    );
+
+    if (existingRows.length === 0) {
+      return res.status(404).json({ message: 'Visitor not found.' });
+    }
+
+    const url = `/uploads/visiting-cards/${req.file.filename}`;
+    const [cardResult] = await pool.execute(
+      `INSERT INTO visiting_cards (filename, url, file_size, mime_type, status)
+       VALUES (?, ?, ?, ?, ?)`,
+      [req.file.filename, url, req.file.size, req.file.mimetype, 0]
+    );
+
+    await pool.execute(
+      `UPDATE enquiries SET visiting_card_id = ?, visiting_card_url = ? WHERE id = ?`,
+      [cardResult.insertId, url, id]
+    );
+
+    const previousCardId = existingRows[0].visiting_card_id;
+    if (previousCardId) {
+      await pool.execute(
+        `UPDATE visiting_cards SET status = 1 WHERE id = ?`,
+        [previousCardId]
+      );
+    }
+
+    res.json({
+      message: 'Visiting card updated successfully.',
+      visitingCardUrl: url
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/enquiries/:id/visiting-card', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const [existingRows] = await pool.execute(
+      `SELECT visiting_card_id FROM enquiries WHERE id = ? AND status = 0`,
+      [id]
+    );
+
+    if (existingRows.length === 0) {
+      return res.status(404).json({ message: 'Visitor not found.' });
+    }
+
+    await pool.execute(
+      `UPDATE enquiries SET visiting_card_id = NULL, visiting_card_url = NULL WHERE id = ?`,
+      [id]
+    );
+
+    const previousCardId = existingRows[0].visiting_card_id;
+    if (previousCardId) {
+      await pool.execute(
+        `UPDATE visiting_cards SET status = 1 WHERE id = ?`,
+        [previousCardId]
+      );
+    }
+
+    res.json({
+      message: 'Visiting card removed successfully.',
+      visitingCardUrl: null
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.put('/api/enquiries/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params;
     const { full_name, company_name, email, mobile, department, lead_category, venue_id } = req.body;
+    const interests = parseInterests(req.body.interests);
+
+    if (!interests.length) {
+      return res.status(400).json({ message: 'At least one product interest is required.' });
+    }
 
     await pool.execute(
       `UPDATE enquiries 
-       SET full_name = ?, company_name = ?, email = ?, mobile = ?, department = ?, lead_category = ?, venue_id = ?
+       SET full_name = ?, company_name = ?, email = ?, mobile = ?, department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?
        WHERE id = ?`,
-      [full_name, company_name || null, email, mobile, department || null, lead_category || 'Potential', venue_id || null, id]
+      [full_name, company_name || null, email, mobile, department || null, JSON.stringify(interests), lead_category || 'Potential', venue_id || null, id]
     );
 
     res.json({ message: 'Visitor updated successfully.' });
@@ -735,6 +846,147 @@ app.delete('/api/venues/:id', authenticateToken, async (req, res, next) => {
   }
 });
 
+app.get('/api/products/active', async (_req, res, next) => {
+  try {
+    const [products] = await pool.execute(
+      `SELECT id, product_id, name, category, description, status, created_at, updated_at
+       FROM product_master
+       WHERE is_deleted = 0 AND status = 1
+       ORDER BY name ASC`
+    );
+
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/products', authenticateToken, authorizeProductMaster, async (req, res, next) => {
+  try {
+    const search = String(req.query.search || '').trim();
+    const status = String(req.query.status || 'all').trim();
+    const filters = ['is_deleted = 0'];
+    const params = [];
+
+    if (status === '0' || status === '1') {
+      filters.push('status = ?');
+      params.push(Number(status));
+    }
+
+    if (search) {
+      filters.push('(product_id LIKE ? OR name LIKE ? OR category LIKE ? OR description LIKE ?)');
+      const likeSearch = `%${search}%`;
+      params.push(likeSearch, likeSearch, likeSearch, likeSearch);
+    }
+
+    const [products] = await pool.execute(
+      `SELECT id, product_id, name, category, description, status, created_at, updated_at
+       FROM product_master
+       WHERE ${filters.join(' AND ')}
+       ORDER BY created_at DESC`,
+      params
+    );
+
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/products', authenticateToken, authorizeProductMaster, async (req, res, next) => {
+  try {
+    const product = normalizeProductPayload(req.body);
+    const validationError = validateProductPayload(product);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const [duplicateRows] = await pool.execute(
+      `SELECT id FROM product_master WHERE LOWER(name) = LOWER(?) AND is_deleted = 0 LIMIT 1`,
+      [product.name]
+    );
+
+    if (duplicateRows.length > 0) {
+      return res.status(400).json({ message: 'Product name already exists.' });
+    }
+
+    const productId = await getNextProductId();
+    const [result] = await pool.execute(
+      `INSERT INTO product_master (product_id, name, category, description, status)
+       VALUES (?, ?, ?, ?, ?)`,
+      [productId, product.name, product.category, product.description, product.status]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      product_id: productId,
+      message: 'Product added successfully.'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put('/api/products/:id', authenticateToken, authorizeProductMaster, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = normalizeProductPayload(req.body);
+    const validationError = validateProductPayload(product);
+
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    const [existingRows] = await pool.execute(
+      `SELECT id FROM product_master WHERE id = ? AND is_deleted = 0`,
+      [id]
+    );
+
+    if (existingRows.length === 0) {
+      return res.status(404).json({ message: 'Product not found.' });
+    }
+
+    const [duplicateRows] = await pool.execute(
+      `SELECT id FROM product_master WHERE LOWER(name) = LOWER(?) AND id <> ? AND is_deleted = 0 LIMIT 1`,
+      [product.name, id]
+    );
+
+    if (duplicateRows.length > 0) {
+      return res.status(400).json({ message: 'Product name already exists.' });
+    }
+
+    await pool.execute(
+      `UPDATE product_master
+       SET name = ?, category = ?, description = ?, status = ?
+       WHERE id = ? AND is_deleted = 0`,
+      [product.name, product.category, product.description, product.status, id]
+    );
+
+    res.json({ message: 'Product updated successfully.' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/products/:id', authenticateToken, authorizeProductMaster, async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [result] = await pool.execute(
+      `UPDATE product_master SET is_deleted = 1 WHERE id = ? AND is_deleted = 0`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Product not found.' });
+    }
+
+    res.json({ message: 'Product deleted successfully.' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Serve frontend in production (catch-all for Angular router)
 const frontendDistPath = path.join(__dirname, '..', 'dist', 'niraltek-enquiry', 'browser');
 if (fs.existsSync(frontendDistPath)) {
@@ -836,4 +1088,92 @@ function validatePayload(payload) {
   if (!payload.interests.length) {
     throw new Error('At least one product interest is required.');
   }
+}
+
+async function verifyPassword(inputPassword, storedPassword) {
+  const stored = String(storedPassword || '');
+
+  if (!stored) {
+    return false;
+  }
+
+  if (inputPassword === stored) {
+    return true;
+  }
+
+  const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(stored);
+  if (!isBcryptHash) {
+    return false;
+  }
+
+  try {
+    return await bcrypt.compare(inputPassword, stored);
+  } catch {
+    return false;
+  }
+}
+
+async function ensureProductMasterTable(connection) {
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS product_master (
+      id INT NOT NULL AUTO_INCREMENT,
+      product_id VARCHAR(20) NOT NULL,
+      name VARCHAR(150) NOT NULL,
+      category VARCHAR(100) NULL,
+      description VARCHAR(500) NULL,
+      status TINYINT(1) NOT NULL DEFAULT 1,
+      is_deleted TINYINT(1) NOT NULL DEFAULT 0,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      PRIMARY KEY (id),
+      UNIQUE KEY uq_product_master_product_id (product_id),
+      KEY idx_product_master_status (status),
+      KEY idx_product_master_is_deleted (is_deleted)
+    )
+  `);
+}
+
+async function getNextProductId() {
+  const [rows] = await pool.execute(
+    `SELECT product_id FROM product_master ORDER BY id DESC LIMIT 1`
+  );
+
+  if (rows.length === 0) {
+    return 'PRD001';
+  }
+
+  const match = String(rows[0].product_id || '').match(/^PRD(\d+)$/);
+  const nextNumber = match ? Number(match[1]) + 1 : 1;
+  return `PRD${String(nextNumber).padStart(3, '0')}`;
+}
+
+function normalizeProductPayload(body) {
+  const status = Number(body.status ?? 1);
+
+  return {
+    name: String(body.name || '').trim(),
+    category: emptyToNull(body.category),
+    description: emptyToNull(body.description),
+    status: status === 0 ? 0 : 1,
+  };
+}
+
+function validateProductPayload(product) {
+  if (!product.name) {
+    return 'Product name is required.';
+  }
+
+  if (product.name.length > 150) {
+    return 'Product name cannot exceed 150 characters.';
+  }
+
+  if (product.category && product.category.length > 100) {
+    return 'Category cannot exceed 100 characters.';
+  }
+
+  if (product.description && product.description.length > 500) {
+    return 'Description cannot exceed 500 characters.';
+  }
+
+  return null;
 }

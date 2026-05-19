@@ -68,8 +68,37 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  isLoggedIn(): boolean {
+    return this.isAuthenticated();
+  }
+
   getToken(): string | null {
     return sessionStorage.getItem('token');
+  }
+
+  getUserRole(): string | null {
+    const current = this.currentUser();
+    if (current?.role) {
+      return current.role;
+    }
+
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    return this.decodeToken(token)?.role ?? null;
+  }
+
+  hasRole(roles: string | string[]): boolean {
+    const allowedRoles = Array.isArray(roles) ? roles : [roles];
+    const userRole = this.getUserRole();
+
+    if (!userRole) {
+      return false;
+    }
+
+    return allowedRoles.some(role => role.toLowerCase() === userRole.toLowerCase());
   }
 
   isAuthenticated(): boolean {
@@ -83,18 +112,22 @@ export class AuthService {
   }
 
   private isTokenExpired(token: string): boolean {
+    const payload = this.decodeToken(token);
+    return !payload || typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+  }
+
+  private decodeToken(token: string): any | null {
     try {
       const payloadPart = token.split('.')[1];
       if (!payloadPart) {
-        return true;
+        return null;
       }
 
       const base64Url = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
       const base64 = base64Url.padEnd(Math.ceil(base64Url.length / 4) * 4, '=');
-      const payload = JSON.parse(atob(base64));
-      return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+      return JSON.parse(atob(base64));
     } catch {
-      return true;
+      return null;
     }
   }
 

@@ -4,9 +4,22 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { DomSanitizer } from '@angular/platform-browser';
 import { Visitor, VisitorsService } from '../../services/visitors.service';
 import { Venue, VenueService } from '../../../venue/services/venue.service';
+import { ProductsService } from '../../../products/services/products.service';
+import { INTEREST_OPTIONS } from '../../../../core/constants/form-options';
 import { environment } from '../../../../../environments/environment';
 
 export type LeadCategory = 'Potential' | 'Non Potential' | 'Others';
+
+type ExtractedVisitingCardData = Partial<{
+  title: string;
+  fullName: string;
+  companyName: string;
+  email: string;
+  mobile: string;
+  jobTitle: string;
+  website: string;
+  address: string;
+}>;
 
 @Component({
   selector: 'app-visitors-page',
@@ -18,6 +31,7 @@ export type LeadCategory = 'Potential' | 'Non Potential' | 'Others';
 export class VisitorsPage implements OnInit {
   private visitorsService = inject(VisitorsService);
   private venueService = inject(VenueService);
+  private productsService = inject(ProductsService);
   private fb = inject(FormBuilder);
 
   visitors = signal<Visitor[]>([]);
@@ -45,6 +59,10 @@ export class VisitorsPage implements OnInit {
   selectedInterests = signal<string[]>([]);
   selectedFile = signal<File | null>(null);
   filePreview = signal<string | null>(null);
+  isScanningCard = signal<boolean>(false);
+  cardScanMessage = signal<string | null>(null);
+  private cardScanToken = 0;
+  isUpdatingVisitorCard = signal<boolean>(false);
   
   // Voice Note Recording
   isRecording = signal<boolean>(false);
@@ -93,10 +111,7 @@ export class VisitorsPage implements OnInit {
   titles = ['Mr', 'Ms', 'Mrs', 'Dr'];
   jobTitles = ['CEO', 'CTO', 'Manager', 'Engineer', 'Developer', 'Sales Executive', 'Consultant', 'Other'];
   departments = ['Engineering', 'Sales', 'Marketing', 'Operations', 'Management', 'HR', 'IT', 'Finance', 'Others'];
-  productInterests = [
-    'Andon System', 'DevsBot', 'Energy Meter', 'FullStack Application Service',
-    'IoT Service', 'OEE', 'Smart Irrigation', 'Warehouse Management System'
-  ];
+  productInterests = INTEREST_OPTIONS.map(option => option.value);
 
   filterTabs = ['All', 'Potential', 'Non Potential', 'Others'];
 
@@ -208,24 +223,32 @@ export class VisitorsPage implements OnInit {
     event.stopPropagation();
     this.editingVisitor.set(visitor);
     this.editFormData.set({ ...visitor });
+    this.isUpdatingVisitorCard.set(false);
   }
 
   closeEdit() {
     this.editingVisitor.set(null);
     this.editFormData.set({});
+    this.isUpdatingVisitorCard.set(false);
   }
 
   saveEdit() {
     const currentEdit = this.editingVisitor();
     const formData = this.editFormData();
+    const interests = Array.isArray(formData.interests) ? formData.interests : [];
     if (currentEdit) {
+      if (interests.length === 0) {
+        this.showToast('Please select at least one product interest.', 'error');
+        return;
+      }
+
       // Optimistic update
       this.visitors.update(vs => vs.map(v => 
-        v.id === currentEdit.id ? { ...v, ...formData } as Visitor : v
+        v.id === currentEdit.id ? { ...v, ...formData, interests } as Visitor : v
       ));
 
       // Persist to DB
-      this.visitorsService.updateVisitor(currentEdit.id, formData).subscribe({
+      this.visitorsService.updateVisitor(currentEdit.id, { ...formData, interests }).subscribe({
         next: () => {
           this.showToast('Visitor details saved successfully', 'success');
         },
@@ -236,6 +259,16 @@ export class VisitorsPage implements OnInit {
       });
       this.closeEdit();
     }
+  }
+
+  toggleEditInterest(interest: string) {
+    const formData = this.editFormData();
+    const current = Array.isArray(formData.interests) ? formData.interests : [];
+    const interests = current.includes(interest)
+      ? current.filter(item => item !== interest)
+      : [...current, interest];
+
+    this.editFormData.set({ ...formData, interests });
   }
 
   openDeleteConfirmation(visitor: Visitor, event: Event) {
@@ -284,6 +317,9 @@ export class VisitorsPage implements OnInit {
     this.selectedInterests.set([]);
     this.selectedFile.set(null);
     this.filePreview.set(null);
+    this.isScanningCard.set(false);
+    this.cardScanMessage.set(null);
+    this.cardScanToken++;
     this.clearVoiceNote();
     this.isAddModalOpen.set(true);
     document.body.style.overflow = 'hidden';
@@ -366,12 +402,211 @@ export class VisitorsPage implements OnInit {
         this.filePreview.set(e.target.result);
       };
       reader.readAsDataURL(file);
+      this.scanVisitingCard(file);
     }
   }
 
   removeFile() {
     this.selectedFile.set(null);
     this.filePreview.set(null);
+    this.isScanningCard.set(false);
+    this.cardScanMessage.set(null);
+    this.cardScanToken++;
+  }
+
+  private async scanVisitingCard(file: File) {
+    const scanToken = ++this.cardScanToken;
+    this.isScanningCard.set(true);
+    this.cardScanMessage.set('Scanning visiting card...');
+    let worker: any;
+
+    try {
+      const { createWorker, PSM } = await import('tesseract.js');
+      worker = await createWorker('eng', 1, {
+        logger: (message: any) => {
+          if (scanToken !== this.cardScanToken || !message?.status) return;
+          if (message.status === 'recognizing text' && typeof message.progress === 'number') {
+            this.cardScanMessage.set(`Scanning visiting card... ${Math.round(message.progress * 100)}%`);
+          }
+        }
+      });
+      await worker.setParameters({
+        tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+        preserve_interword_spaces: '1'
+      });
+      const result = await worker.recognize(file);
+
+      if (scanToken !== this.cardScanToken) return;
+
+      const extracted = this.extractVisitingCardData(result.data.text || '');
+      const filledCount = this.applyExtractedCardData(extracted);
+
+      if (filledCount > 0) {
+        this.cardScanMessage.set(`Auto-filled ${filledCount} field${filledCount === 1 ? '' : 's'} from the card.`);
+      } else {
+        this.cardScanMessage.set('No clear details found. Please enter the remaining fields manually.');
+      }
+    } catch (error) {
+      console.error('Visiting card scan failed', error);
+      if (scanToken === this.cardScanToken) {
+        this.cardScanMessage.set('Card scan failed. You can continue entering details manually.');
+      }
+    } finally {
+      if (worker) {
+        await worker.terminate();
+      }
+      if (scanToken === this.cardScanToken) {
+        this.isScanningCard.set(false);
+      }
+    }
+  }
+
+  private extractVisitingCardData(rawText: string): ExtractedVisitingCardData {
+    const lines = rawText
+      .split(/\r?\n/)
+      .map(line => line.replace(/[|•·]/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter(line => line.length > 1);
+
+    const text = lines.join('\n');
+    const email = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
+    const website = text.match(/(?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?=\/|\b)/i)?.[0];
+    const phone = this.extractPhoneNumber(text);
+    const title = this.extractTitle(lines);
+    const fullName = this.extractName(lines, email);
+    const jobTitle = this.extractDesignation(lines);
+    const companyName = this.extractCompany(lines, fullName, jobTitle, email, website);
+    const address = this.extractAddress(lines, email, website);
+
+    return {
+      title,
+      fullName,
+      companyName,
+      email,
+      mobile: phone,
+      jobTitle,
+      website,
+      address
+    };
+  }
+
+  private extractPhoneNumber(text: string): string | undefined {
+    const matches = text.match(/(?:\+?\d[\d\s().-]{7,}\d)/g) || [];
+    for (const match of matches) {
+      const digits = match.replace(/\D/g, '');
+      if (digits.length >= 10) {
+        return digits.slice(-10);
+      }
+    }
+    return undefined;
+  }
+
+  private extractTitle(lines: string[]): string | undefined {
+    const joined = lines.join(' ');
+    const match = joined.match(/\b(Mr|Ms|Mrs|Dr)\.?\b/i)?.[1];
+    if (!match) return undefined;
+    return this.titles.find(t => t.toLowerCase() === match.toLowerCase());
+  }
+
+  private extractName(lines: string[], email?: string): string | undefined {
+    const blockedWords = /(www|http|@|email|mail|phone|mobile|tel|fax|address|road|street|india|pvt|ltd|limited|inc|llc|solutions|technologies|systems|company|corp|manager|engineer|director|executive|consultant|officer|sales|marketing)/i;
+    const candidates = lines
+      .map(line => line.replace(/\b(Mr|Ms|Mrs|Dr)\.?\s+/i, '').trim())
+      .filter(line => /^[a-zA-Z .]{3,}$/.test(line))
+      .filter(line => !blockedWords.test(line))
+      .filter(line => !email || !line.toLowerCase().includes(email.toLowerCase()));
+
+    return candidates
+      .sort((a, b) => this.nameScore(b) - this.nameScore(a))[0]
+      ?.replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  private nameScore(value: string): number {
+    const parts = value.split(/\s+/).filter(Boolean);
+    let score = parts.length >= 2 && parts.length <= 4 ? 4 : 0;
+    if (parts.every(part => /^[A-Z][a-z.]+$/.test(part) || /^[A-Z]{2,}$/.test(part))) score += 2;
+    if (value.length > 28) score -= 3;
+    return score;
+  }
+
+  private extractDesignation(lines: string[]): string | undefined {
+    const designationWords = /(founder|co-founder|ceo|cto|cfo|director|president|manager|engineer|developer|consultant|executive|officer|head|lead|sales|marketing|operations|architect|analyst|specialist|administrator)/i;
+    const designation = lines.find(line => designationWords.test(line) && !/@|www|http/i.test(line));
+    return designation?.replace(/\s{2,}/g, ' ').trim();
+  }
+
+  private extractCompany(lines: string[], fullName?: string, jobTitle?: string, email?: string, website?: string): string | undefined {
+    const companyWords = /(pvt|private|ltd|limited|llp|inc|llc|corp|corporation|company|solutions|technologies|technology|systems|industries|enterprises|automation|services|group)/i;
+    const obvious = lines.find(line => companyWords.test(line) && !/@|www|http/i.test(line));
+    if (obvious) return this.cleanCompanyName(obvious);
+
+    const candidate = lines.find(line => {
+      const normalized = line.toLowerCase();
+      return line.length >= 3 &&
+        !/@|www|http|\d{5,}/i.test(line) &&
+        normalized !== fullName?.toLowerCase() &&
+        normalized !== jobTitle?.toLowerCase() &&
+        normalized !== email?.toLowerCase() &&
+        normalized !== website?.toLowerCase();
+    });
+
+    return candidate ? this.cleanCompanyName(candidate) : undefined;
+  }
+
+  private cleanCompanyName(value: string): string {
+    return value
+      .replace(/\b(company|organization)\s*[:\-]\s*/i, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  private extractAddress(lines: string[], email?: string, website?: string): string | undefined {
+    const addressWords = /(address|road|rd\.?|street|st\.?|avenue|ave\.?|nagar|phase|sector|floor|block|plot|city|state|pin|zip|india|\b\d{5,6}\b)/i;
+    const addressLines = lines.filter(line =>
+      addressWords.test(line) &&
+      !/@|www|http/i.test(line) &&
+      line.toLowerCase() !== email?.toLowerCase() &&
+      line.toLowerCase() !== website?.toLowerCase()
+    );
+
+    return addressLines.length ? addressLines.join(', ') : undefined;
+  }
+
+  private applyExtractedCardData(data: ExtractedVisitingCardData): number {
+    let filledCount = 0;
+    const fillIfEmpty = (controlName: string, value?: string) => {
+      const control = this.addVisitorForm.get(controlName);
+      const normalized = value?.trim();
+      if (!control || !normalized || String(control.value || '').trim()) return;
+      control.setValue(normalized);
+      control.markAsPristine();
+      filledCount++;
+    };
+
+    if (data.title && this.addVisitorForm.get('title')?.pristine) {
+      this.addVisitorForm.get('title')?.setValue(data.title);
+    }
+
+    fillIfEmpty('fullName', data.fullName?.replace(/[^a-zA-Z\s.]/g, '').replace(/\s{2,}/g, ' '));
+    fillIfEmpty('companyName', data.companyName?.replace(/[^a-zA-Z0-9\s&.-]/g, '').replace(/\s{2,}/g, ' '));
+    fillIfEmpty('email', data.email);
+    fillIfEmpty('mobile', data.mobile);
+
+    if (data.jobTitle?.trim()) {
+      const designation = data.jobTitle.trim();
+      if (!this.jobTitles.includes(designation)) {
+        this.jobTitles = [...this.jobTitles, designation];
+      }
+      fillIfEmpty('jobTitle', designation);
+    }
+
+    const extraDetails = [
+      data.website ? `Website: ${data.website}` : '',
+      data.address ? `Address: ${data.address}` : ''
+    ].filter(Boolean).join('\n');
+    fillIfEmpty('remarks', extraDetails);
+
+    return filledCount;
   }
 
   onDragOver(event: DragEvent) {
@@ -716,11 +951,13 @@ export class VisitorsPage implements OnInit {
 
   openReview(visitor: Visitor) {
     this.selectedVisitor.set(visitor);
+    this.isUpdatingVisitorCard.set(false);
   }
 
   closeReview() {
     this.stopAudio();
     this.selectedVisitor.set(null);
+    this.isUpdatingVisitorCard.set(false);
   }
 
   isImageViewerOpen = signal<boolean>(false);
@@ -728,6 +965,7 @@ export class VisitorsPage implements OnInit {
 
   ngOnInit() {
     this.initForm();
+    this.loadProductInterests();
     this.visitorsService.getVisitors().subscribe({
       next: (data) => {
         const initializedData = data.map(v => ({
@@ -758,6 +996,139 @@ export class VisitorsPage implements OnInit {
   closeImageViewer() {
     this.isImageViewerOpen.set(false);
     this.zoomLevel.set(1);
+  }
+
+  private loadProductInterests() {
+    this.productsService.getActiveProducts().subscribe({
+      next: (products) => {
+        const productNames = products.map(product => product.name);
+        this.productInterests = productNames.length ? productNames : INTEREST_OPTIONS.map(option => option.value);
+      },
+      error: (err) => {
+        console.error('Error fetching products', err);
+        this.productInterests = INTEREST_OPTIONS.map(option => option.value);
+      }
+    });
+  }
+
+  onReviewCardSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+      this.showToast('Only PNG and JPG images are allowed.', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('File size should not exceed 5MB.', 'error');
+      return;
+    }
+
+    const visitor = this.selectedVisitor();
+    if (!visitor) return;
+
+    this.isUpdatingVisitorCard.set(true);
+    this.visitorsService.updateVisitorCard(visitor.id, file).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, visiting_card_url: response.visitingCardUrl };
+        this.selectedVisitor.set(updatedVisitor);
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Visiting card updated successfully', 'success');
+        this.isUpdatingVisitorCard.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to update visiting card', err);
+        this.showToast('Failed to update visiting card', 'error');
+        this.isUpdatingVisitorCard.set(false);
+      }
+    });
+  }
+
+  onEditCardSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+      this.showToast('Only PNG and JPG images are allowed.', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('File size should not exceed 5MB.', 'error');
+      return;
+    }
+
+    const visitor = this.editingVisitor();
+    if (!visitor) return;
+
+    this.isUpdatingVisitorCard.set(true);
+    this.visitorsService.updateVisitorCard(visitor.id, file).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), visiting_card_url: response.visitingCardUrl } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), visiting_card_url: response.visitingCardUrl });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Visiting card updated successfully', 'success');
+        this.isUpdatingVisitorCard.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to update visiting card', err);
+        this.showToast('Failed to update visiting card', 'error');
+        this.isUpdatingVisitorCard.set(false);
+      }
+    });
+  }
+
+  removeEditVisitorCard(event: Event) {
+    event.stopPropagation();
+    const visitor = this.editingVisitor();
+    const currentCardUrl = this.editFormData().visiting_card_url;
+    if (!visitor || !currentCardUrl || this.isUpdatingVisitorCard()) return;
+
+    this.isUpdatingVisitorCard.set(true);
+    this.visitorsService.removeVisitorCard(visitor.id).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), visiting_card_url: response.visitingCardUrl } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), visiting_card_url: response.visitingCardUrl });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Visiting card removed successfully', 'success');
+        this.isUpdatingVisitorCard.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to remove visiting card', err);
+        this.showToast('Failed to remove visiting card', 'error');
+        this.isUpdatingVisitorCard.set(false);
+      }
+    });
+  }
+
+  removeVisitorCard(event: Event) {
+    event.stopPropagation();
+    const visitor = this.selectedVisitor();
+    if (!visitor || !visitor.visiting_card_url || this.isUpdatingVisitorCard()) return;
+
+    this.isUpdatingVisitorCard.set(true);
+    this.visitorsService.removeVisitorCard(visitor.id).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, visiting_card_url: response.visitingCardUrl };
+        this.selectedVisitor.set(updatedVisitor);
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.closeImageViewer();
+        this.showToast('Visiting card removed successfully', 'success');
+        this.isUpdatingVisitorCard.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to remove visiting card', err);
+        this.showToast('Failed to remove visiting card', 'error');
+        this.isUpdatingVisitorCard.set(false);
+      }
+    });
   }
 
   zoomIn() {

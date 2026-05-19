@@ -1,8 +1,8 @@
 export const environment = {
   production: false,
-  baseUrl: 'http://localhost:3000',
-  apiUrl: 'http://localhost:3000/api/enquiries',
-  uploadUrl: 'http://localhost:3000/uploads'
+  baseUrl: 'http://192.168.0.2:3000',
+  apiUrl: 'http://192.168.0.2:3000/api/enquiries',
+  uploadUrl: 'http://192.168.0.2:3000/uploads'
 };
 
 // export const environment = {

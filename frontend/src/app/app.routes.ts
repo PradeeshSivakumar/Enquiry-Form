@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authChildGuard, authGuard } from './core/auth/auth.guard';
+import { PRODUCT_MASTER_ROLES, roleGuard } from './auth/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,10 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./features/auth/pages/login-page.component').then((m) => m.LoginPageComponent),
+  },
+  {
+    path: 'access-denied',
+    loadComponent: () => import('./features/auth/pages/access-denied-page.component').then((m) => m.AccessDeniedPageComponent),
   },
   {
     path: '',
@@ -28,6 +33,12 @@ export const routes: Routes = [
       {
         path: 'venue',
         loadComponent: () => import('./features/venue/pages/venue-page/venue-page.component').then((m) => m.VenuePageComponent),
+      },
+      {
+        path: 'products',
+        canActivate: [roleGuard],
+        data: { roles: PRODUCT_MASTER_ROLES },
+        loadComponent: () => import('./features/products/pages/products-page/products-page.component').then((m) => m.ProductsPageComponent),
       }
     ]
   },

@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LayoutService } from '../layout.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { PRODUCT_MASTER_ROLES } from '../../auth/guards/role.guard';
 
 @Component({
   selector: 'app-sidebar',
@@ -41,6 +42,16 @@ import { AuthService } from '../../core/auth/auth.service';
           </svg>
           <span class="whitespace-nowrap transition-opacity duration-200" [class.opacity-0]="layout.isSidebarCollapsed()" [class.hidden]="layout.isSidebarCollapsed()">Venue</span>
         </a>
+
+        <a *ngIf="canAccessProducts()" routerLink="/products" routerLinkActive="bg-black text-white" [routerLinkActiveOptions]="{exact: false}" 
+           class="flex items-center rounded-xl transition-all group font-semibold text-[14px]"
+           [ngClass]="layout.isSidebarCollapsed() ? 'justify-center p-3' : 'gap-3 px-4 py-3 hover:bg-gray-100 text-gray-600'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16V8z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.29 7L12 12l8.71-5M12 22V12" />
+          </svg>
+          <span class="whitespace-nowrap transition-opacity duration-200" [class.opacity-0]="layout.isSidebarCollapsed()" [class.hidden]="layout.isSidebarCollapsed()">Products</span>
+        </a>
       </nav>
 
       <!-- Bottom Section -->
@@ -60,6 +71,7 @@ import { AuthService } from '../../core/auth/auth.service';
 export class SidebarComponent {
   layout = inject(LayoutService);
   authService = inject(AuthService);
+  canAccessProducts = computed(() => this.authService.hasRole(PRODUCT_MASTER_ROLES));
 
   logout() {
     this.authService.logout();
