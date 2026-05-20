@@ -7,6 +7,8 @@ export interface Venue {
   id?: number;
   venue_id?: string;
   venue: string;
+  booth_number?: string | null;
+  venue_date?: string | null;
   created_at?: string;
   updated_at?: string;
 }

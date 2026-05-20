@@ -5,6 +5,7 @@ export interface EnquiryFormData {
   jobTitle?: string;
   email: string;
   mobile: string;
+  officeNumber?: string;
   department?: string;
   interests: string[];
   visitingCard?: File | null;
@@ -20,6 +21,7 @@ export interface EnquiryPayload {
   jobTitle: string;
   email: string;
   mobile: string;
+  officeNumber: string;
   department: string;
   interests: string[];
   visitingCardUrl: string;

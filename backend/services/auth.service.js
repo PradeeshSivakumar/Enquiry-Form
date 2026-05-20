@@ -1,4 +1,3 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
@@ -55,18 +54,50 @@ async function verifyPassword(inputPassword, storedPassword) {
     return true;
   }
 
-  const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(stored);
-  if (!isBcryptHash) {
-    return false;
+async function verifyPassword(inputPassword, storedPassword) {
+  return String(inputPassword || '') === String(storedPassword || '');
+}
+
+}
+
+async function hashPassword(password) {
+  return String(password || '');
+}
+
+async function changePassword(userId, currentPassword, newPassword) {
+  const [users] = await pool.execute(
+    `SELECT id, password, status
+     FROM employees
+     WHERE id = ? AND \`delete\` = 1
+     LIMIT 1`,
+    [userId]
+  );
+
+  if (users.length === 0 || Number(users[0].status) === 0) {
+    const err = new Error('Account is not authorized to change password.');
+    err.statusCode = 403;
+    throw err;
   }
 
-  try {
-    return await bcrypt.compare(inputPassword, stored);
-  } catch {
-    return false;
+  const currentPasswordMatches = await verifyPassword(currentPassword, users[0].password);
+  if (!currentPasswordMatches) {
+    const err = new Error('Current password is incorrect.');
+    err.statusCode = 400;
+    throw err;
   }
+
+  const hashedPassword = await hashPassword(newPassword);
+  await pool.execute(
+    `UPDATE employees SET password = ? WHERE id = ? AND \`delete\` = 1`,
+    [hashedPassword, userId]
+  );
+
+  return { message: 'Password changed successfully.' };
 }
 
 module.exports = {
-  login
+  login,
+  verifyPassword,
+  hashPassword,
+  changePassword
 };

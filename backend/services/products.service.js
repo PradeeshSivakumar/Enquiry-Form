@@ -2,23 +2,18 @@ const { pool } = require('../config/db');
 
 async function getActiveProducts() {
   const [products] = await pool.execute(
-    `SELECT id, product_id, name, category, description, status, created_at, updated_at
+    `SELECT id, product_id, name, category, description, created_at, updated_at
      FROM product_master
-     WHERE is_deleted = 0 AND status = 1
+     WHERE is_deleted = 0
      ORDER BY name ASC`
   );
 
   return products;
 }
 
-async function getProducts({ search = '', status = 'all' }) {
+async function getProducts({ search = '' }) {
   const filters = ['is_deleted = 0'];
   const params = [];
-
-  if (status === '0' || status === '1') {
-    filters.push('status = ?');
-    params.push(Number(status));
-  }
 
   if (search) {
     filters.push('(product_id LIKE ? OR name LIKE ? OR category LIKE ? OR description LIKE ?)');
@@ -27,7 +22,7 @@ async function getProducts({ search = '', status = 'all' }) {
   }
 
   const [products] = await pool.execute(
-    `SELECT id, product_id, name, category, description, status, created_at, updated_at
+    `SELECT id, product_id, name, category, description, created_at, updated_at
      FROM product_master
      WHERE ${filters.join(' AND ')}
      ORDER BY created_at DESC`,
@@ -51,9 +46,9 @@ async function createProduct(product) {
 
   const productId = await getNextProductId();
   const [result] = await pool.execute(
-    `INSERT INTO product_master (product_id, name, category, description, status)
-     VALUES (?, ?, ?, ?, ?)`,
-    [productId, product.name, product.category, product.description, product.status]
+    `INSERT INTO product_master (product_id, name, category, description)
+     VALUES (?, ?, ?, ?)`,
+    [productId, product.name, product.category, product.description]
   );
 
   return {
@@ -88,9 +83,9 @@ async function updateProduct(id, product) {
 
   await pool.execute(
     `UPDATE product_master
-     SET name = ?, category = ?, description = ?, status = ?
+     SET name = ?, category = ?, description = ?
      WHERE id = ? AND is_deleted = 0`,
-    [product.name, product.category, product.description, product.status, id]
+    [product.name, product.category, product.description, id]
   );
 
   return { message: 'Product updated successfully.' };

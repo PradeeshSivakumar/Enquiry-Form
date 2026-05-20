@@ -68,6 +68,10 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  changePassword(payload: { currentPassword: string; newPassword: string }): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.apiUrl}/change-password`, payload);
+  }
+
   isLoggedIn(): boolean {
     return this.isAuthenticated();
   }

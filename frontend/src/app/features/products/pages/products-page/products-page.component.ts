@@ -18,9 +18,10 @@ export class ProductsPageComponent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   searchQuery = signal<string>('');
-  statusFilter = signal<string>('all');
   pageSize = signal<number>(10);
   currentPage = signal<number>(1);
+  sortKey = signal<string>('product');
+  sortDirection = signal<'asc' | 'desc'>('asc');
   toastMessage = signal<{ text: string, type: 'success' | 'error' } | null>(null);
   isModalOpen = signal<boolean>(false);
   editingProduct = signal<Product | null>(null);
@@ -31,13 +32,12 @@ export class ProductsPageComponent implements OnInit {
   form!: FormGroup;
 
   filteredProducts = computed(() => this.products());
-  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredProducts().length / this.pageSize())));
-  activeCount = computed(() => this.products().filter(product => product.status === 1).length);
-  inactiveCount = computed(() => this.products().filter(product => product.status === 0).length);
+  sortedProducts = computed(() => this.sortRows(this.filteredProducts(), this.getProductSortValue.bind(this)));
+  totalPages = computed(() => Math.max(1, Math.ceil(this.sortedProducts().length / this.pageSize())));
 
   paginatedProducts = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
-    return this.filteredProducts().slice(start, start + this.pageSize());
+    return this.sortedProducts().slice(start, start + this.pageSize());
   });
 
   ngOnInit(): void {
@@ -50,7 +50,6 @@ export class ProductsPageComponent implements OnInit {
       name: ['', [Validators.required, Validators.maxLength(150)]],
       category: ['', Validators.maxLength(100)],
       description: ['', Validators.maxLength(500)],
-      status: [1, Validators.required],
     });
   }
 
@@ -58,7 +57,7 @@ export class ProductsPageComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.productsService.getProducts(this.searchQuery(), this.statusFilter()).subscribe({
+    this.productsService.getProducts(this.searchQuery()).subscribe({
       next: (data) => {
         this.products.set(data);
         this.loading.set(false);
@@ -80,17 +79,27 @@ export class ProductsPageComponent implements OnInit {
     this.fetchProducts();
   }
 
-  onStatusFilterChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.statusFilter.set(target.value);
-    this.currentPage.set(1);
-    this.fetchProducts();
-  }
-
   onPageSizeChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.pageSize.set(Number(target.value));
     this.currentPage.set(1);
+  }
+
+  sortBy(key: string): void {
+    if (this.sortKey() === key) {
+      this.sortDirection.update(direction => direction === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortKey.set(key);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+  }
+
+  sortIndicator(key: string): string {
+    if (this.sortKey() !== key) {
+      return '↕';
+    }
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
 
   prevPage(): void {
@@ -107,7 +116,7 @@ export class ProductsPageComponent implements OnInit {
 
   openAddModal(): void {
     this.editingProduct.set(null);
-    this.form.reset({ name: '', category: '', description: '', status: 1 });
+    this.form.reset({ name: '', category: '', description: '' });
     this.isModalOpen.set(true);
   }
 
@@ -117,7 +126,6 @@ export class ProductsPageComponent implements OnInit {
       name: product.name,
       category: product.category || '',
       description: product.description || '',
-      status: product.status,
     });
     this.isModalOpen.set(true);
   }
@@ -162,7 +170,6 @@ export class ProductsPageComponent implements OnInit {
       name: value.name.trim(),
       category: value.category?.trim() || null,
       description: value.description?.trim() || null,
-      status: Number(value.status),
     };
 
     this.isSubmitting.set(true);
@@ -196,29 +203,38 @@ export class ProductsPageComponent implements OnInit {
     });
   }
 
-  toggleProductStatus(product: Product): void {
-    if (!product.id) {
-      return;
-    }
-
-    const nextStatus = product.status === 1 ? 0 : 1;
-    this.productsService.updateProduct(product.id, {
-      name: product.name,
-      category: product.category || null,
-      description: product.description || null,
-      status: nextStatus,
-    }).subscribe({
-      next: () => {
-        this.showToast(nextStatus === 1 ? 'Product activated' : 'Product deactivated', 'success');
-        this.fetchProducts();
-      },
-      error: (err) => this.showToast(err.error?.message || 'Failed to update status', 'error')
-    });
-  }
-
   showError(controlName: string): boolean {
     const control = this.form.get(controlName);
     return !!(control?.invalid && (control.touched || control.dirty));
+  }
+
+  private sortRows<T>(rows: T[], valueGetter: (row: T, index: number) => string | number): T[] {
+    const key = this.sortKey();
+    const direction = this.sortDirection();
+    const indexed = rows.map((row, index) => ({ row, index }));
+
+    indexed.sort((a, b) => {
+      const aValue = key === 'serial' ? a.index : valueGetter(a.row, a.index);
+      const bValue = key === 'serial' ? b.index : valueGetter(b.row, b.index);
+      const comparison = typeof aValue === 'number' && typeof bValue === 'number'
+        ? aValue - bValue
+        : String(aValue || '').localeCompare(String(bValue || ''), undefined, { numeric: true, sensitivity: 'base' });
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return indexed.map(item => item.row);
+  }
+
+  private getProductSortValue(product: Product): string {
+    switch (this.sortKey()) {
+      case 'product':
+        return product.name || '';
+      case 'category':
+        return product.category || '';
+      default:
+        return '';
+    }
   }
 
   private showToast(text: string, type: 'success' | 'error'): void {

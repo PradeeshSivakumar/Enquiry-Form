@@ -1,10 +1,11 @@
+const { hashPassword } = require('./auth.service');
 const { pool } = require('../config/db');
 
 async function getEmployees() {
   const [employees] = await pool.execute(
-    `SELECT id, name, email, password, mobile_number, role, created_at, updated_at
+    `SELECT id, name, email, mobile_number, role, status, \`delete\`, created_at, updated_at
      FROM employees
-     WHERE status != 0
+     WHERE \`delete\` = 1
      ORDER BY created_at DESC`
   );
 
@@ -13,9 +14,11 @@ async function getEmployees() {
 
 async function createEmployee(employee) {
   try {
+    const status = Number(employee.status) === 0 ? 0 : 1;
+    const hashedPassword = await hashPassword(employee.password);
     const [result] = await pool.execute(
-      `INSERT INTO employees (name, email, password, mobile_number, role,status) VALUES (?, ?, ?, ?, ?,1)`,
-      [employee.name, employee.email, employee.password, employee.mobile_number, employee.role]
+      `INSERT INTO employees (name, email, password, mobile_number, role, status, \`delete\`) VALUES (?, ?, ?, ?, ?, ?, 1)`,
+      [employee.name, employee.email, hashedPassword, employee.mobile_number, employee.role, status]
     );
 
     return { id: result.insertId, message: 'Employee added successfully.' };
@@ -30,15 +33,11 @@ async function createEmployee(employee) {
 
 async function updateEmployee(id, employee) {
   try {
-    let query = `UPDATE employees SET name = ?, email = ?, mobile_number = ?, role = ? WHERE id = ?`;
-    let params = [employee.name, employee.email, employee.mobile_number, employee.role, id];
-
-    if (employee.password && employee.password.trim() !== '') {
-      query = `UPDATE employees SET name = ?, email = ?, password = ?, mobile_number = ?, role = ? WHERE id = ?`;
-      params = [employee.name, employee.email, employee.password, employee.mobile_number, employee.role, id];
-    }
-
-    await pool.execute(query, params);
+    const status = Number(employee.status) === 0 ? 0 : 1;
+    await pool.execute(
+      `UPDATE employees SET name = ?, email = ?, mobile_number = ?, role = ?, status = ? WHERE id = ?`,
+      [employee.name, employee.email, employee.mobile_number, employee.role, status, id]
+    );
     return { message: 'Employee updated successfully.' };
   } catch (error) {
     if (error.code === 'ER_DUP_ENTRY') {
@@ -51,11 +50,11 @@ async function updateEmployee(id, employee) {
 
 async function deleteEmployee(id) {
   await pool.execute(
-    'UPDATE employees SET status = 0 WHERE id = ?',
+    'UPDATE employees SET `delete` = 0 WHERE id = ?',
     [id]
   );
 
-  return { message: 'Employee status updated to inactive successfully.' };
+  return { message: 'Employee deleted successfully.' };
 }
 
 module.exports = {

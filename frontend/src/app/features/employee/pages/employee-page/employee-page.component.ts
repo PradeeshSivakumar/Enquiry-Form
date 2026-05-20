@@ -19,9 +19,12 @@ export class EmployeePageComponent implements OnInit {
   error = signal<string | null>(null);
   
   searchQuery = signal<string>('');
+  statusFilter = signal<string>('1');
   
   pageSize = signal<number>(10);
   currentPage = signal<number>(1);
+  sortKey = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
   
   toastMessage = signal<{text: string, type: 'success' | 'error'} | null>(null);
   private toastTimeout: any;
@@ -36,25 +39,33 @@ export class EmployeePageComponent implements OnInit {
 
   filteredEmployees = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
+    const status = this.statusFilter();
     let result = this.employees();
+
+    if (status !== 'all') {
+      result = result.filter(emp => Number(emp.status) === Number(status));
+    }
     
     if (query) {
       result = result.filter(emp => 
         emp.name.toLowerCase().includes(query) ||
         emp.email.toLowerCase().includes(query) ||
         emp.mobile_number.includes(query) ||
-        emp.role.toLowerCase().includes(query)
+        emp.role.toLowerCase().includes(query) ||
+        this.getStatusLabel(emp.status).toLowerCase().includes(query)
       );
     }
     return result;
   });
 
-  totalPages = computed(() => Math.ceil(this.filteredEmployees().length / this.pageSize()));
+  sortedEmployees = computed(() => this.sortRows(this.filteredEmployees(), this.getEmployeeSortValue.bind(this)));
+
+  totalPages = computed(() => Math.max(1, Math.ceil(this.sortedEmployees().length / this.pageSize())));
 
   paginatedEmployees = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     const end = start + this.pageSize();
-    return this.filteredEmployees().slice(start, end);
+    return this.sortedEmployees().slice(start, end);
   });
 
   ngOnInit(): void {
@@ -68,7 +79,8 @@ export class EmployeePageComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       mobile_number: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      role: ['', Validators.required]
+      role: ['', Validators.required],
+      status: [1, Validators.required]
     });
   }
 
@@ -88,14 +100,15 @@ export class EmployeePageComponent implements OnInit {
     const data = this.filteredEmployees();
     if (data.length === 0) return;
 
-    const headers = ['Name', 'Email', 'Mobile Number', 'Role'];
+    const headers = ['Name', 'Email', 'Mobile Number', 'Role', 'Status'];
     const csvContent = [
       headers.join(','),
       ...data.map(emp => [
         `"${emp.name}"`,
         `"${emp.email}"`,
         `"${emp.mobile_number}"`,
-        `"${emp.role}"`
+        `"${emp.role}"`,
+        `"${this.getStatusLabel(emp.status)}"`
       ].join(','))
     ].join('\n');
 
@@ -129,10 +142,33 @@ export class EmployeePageComponent implements OnInit {
     this.currentPage.set(1);
   }
 
+  onStatusFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.statusFilter.set(target.value);
+    this.currentPage.set(1);
+  }
+
   onPageSizeChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     this.pageSize.set(Number(target.value));
     this.currentPage.set(1);
+  }
+
+  sortBy(key: string): void {
+    if (this.sortKey() === key) {
+      this.sortDirection.update(direction => direction === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortKey.set(key);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+  }
+
+  sortIndicator(key: string): string {
+    if (this.sortKey() !== key) {
+      return '↕';
+    }
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
 
   prevPage(): void {
@@ -149,7 +185,7 @@ export class EmployeePageComponent implements OnInit {
 
   openAddModal(): void {
     this.editingEmployee.set(null);
-    this.form.reset({ role: '' });
+    this.form.reset({ role: '', status: 1 });
     this.form.get('password')?.setValidators([Validators.required]);
     this.form.get('password')?.updateValueAndValidity();
     this.isModalOpen.set(true);
@@ -157,14 +193,15 @@ export class EmployeePageComponent implements OnInit {
 
   openEditModal(emp: Employee): void {
     this.editingEmployee.set(emp);
-    this.form.get('password')?.setValidators([Validators.required]);
+    this.form.get('password')?.clearValidators();
+    this.form.get('password')?.setValue('');
     this.form.get('password')?.updateValueAndValidity();
     this.form.patchValue({
       name: emp.name,
       email: emp.email,
-      password: emp.password,
       mobile_number: emp.mobile_number,
-      role: emp.role
+      role: emp.role,
+      status: Number(emp.status) === 0 ? 0 : 1
     });
     this.isModalOpen.set(true);
   }
@@ -206,8 +243,17 @@ export class EmployeePageComponent implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    const employeeData = this.form.value;
     const editing = this.editingEmployee();
+    const rawValue = this.form.value;
+    const employeeData = editing
+      ? {
+          name: rawValue.name,
+          email: rawValue.email,
+          mobile_number: rawValue.mobile_number,
+          role: rawValue.role,
+          status: rawValue.status
+        }
+      : rawValue;
 
     if (editing && editing.id) {
       this.employeeService.updateEmployee(editing.id, employeeData).subscribe({
@@ -246,6 +292,45 @@ export class EmployeePageComponent implements OnInit {
   maskPassword(password: string | undefined): string {
     if (!password) return '';
     return '•'.repeat(password.length > 8 ? 8 : password.length);
+  }
+
+  getStatusLabel(status: number | undefined): string {
+    return Number(status) === 0 ? 'Inactive' : 'Active';
+  }
+
+  private sortRows<T>(rows: T[], valueGetter: (row: T, index: number) => string | number): T[] {
+    const key = this.sortKey();
+    const direction = this.sortDirection();
+    const indexed = rows.map((row, index) => ({ row, index }));
+
+    indexed.sort((a, b) => {
+      const aValue = key === 'serial' ? a.index : valueGetter(a.row, a.index);
+      const bValue = key === 'serial' ? b.index : valueGetter(b.row, b.index);
+      const comparison = typeof aValue === 'number' && typeof bValue === 'number'
+        ? aValue - bValue
+        : String(aValue || '').localeCompare(String(bValue || ''), undefined, { numeric: true, sensitivity: 'base' });
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return indexed.map(item => item.row);
+  }
+
+  private getEmployeeSortValue(employee: Employee): string | number {
+    switch (this.sortKey()) {
+      case 'name':
+        return employee.name || '';
+      case 'email':
+        return employee.email || '';
+      case 'mobile':
+        return employee.mobile_number || '';
+      case 'role':
+        return employee.role || '';
+      case 'status':
+        return this.getStatusLabel(employee.status);
+      default:
+        return '';
+    }
   }
 
   private showToast(text: string, type: 'success' | 'error'): void {

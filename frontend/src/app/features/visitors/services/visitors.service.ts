@@ -11,6 +11,7 @@ export interface Visitor {
   job_title: string | null;
   email: string;
   mobile: string;
+  office_number: string | null;
   department: string | null;
   interests: string[];
   visiting_card_url: string | null;

@@ -11,6 +11,25 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+let officeNumberColumnExists;
+
+async function hasOfficeNumberColumn() {
+  if (officeNumberColumnExists !== undefined) {
+    return officeNumberColumnExists;
+  }
+
+  const [rows] = await pool.execute(
+    `SELECT COUNT(*) AS count
+     FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = 'enquiries'
+       AND COLUMN_NAME = 'office_number'`
+  );
+
+  officeNumberColumnExists = Number(rows[0]?.count || 0) > 0;
+  return officeNumberColumnExists;
+}
+
 async function uploadVisitingCard(file) {
   const url = `/uploads/visiting-cards/${file.filename}`;
   const [result] = await pool.execute(
@@ -65,48 +84,48 @@ async function createEnquiry(payload, files = {}) {
     voiceNoteId = result.insertId;
   }
 
+  const hasOfficeNumber = await hasOfficeNumberColumn();
+  const columns = [
+    'title',
+    'full_name',
+    'company_name',
+    'job_title',
+    'email',
+    'mobile',
+    ...(hasOfficeNumber ? ['office_number'] : []),
+    'department',
+    'interests',
+    'visiting_card_id',
+    'visiting_card_url',
+    'voice_note_id',
+    'voice_note_url',
+    'venue_id',
+    'remarks',
+    'lead_category'
+  ];
+  const values = [
+    payload.title,
+    payload.fullName,
+    payload.companyName,
+    payload.jobTitle,
+    payload.email,
+    payload.mobile,
+    ...(hasOfficeNumber ? [payload.officeNumber] : []),
+    payload.department,
+    JSON.stringify(payload.interests),
+    visitingCardId,
+    visitingCardUrl,
+    voiceNoteId,
+    voiceNoteUrl,
+    payload.venueId,
+    payload.remarks,
+    payload.leadCategory || 'Potential'
+  ];
+  const placeholders = columns.map(column => column === 'interests' ? 'CAST(? AS JSON)' : '?').join(', ');
+
   const [result] = await pool.execute(
-    `INSERT INTO enquiries
-    (
-      title,
-      full_name,
-      company_name,
-      job_title,
-      email,
-      mobile,
-      department,
-      interests,
-      visiting_card_id,
-      visiting_card_url,
-      voice_note_id,
-      voice_note_url,
-      venue_id,
-      remarks,
-      lead_category
-    )
-    VALUES
-    (
-      ?, ?, ?, ?, ?, ?, ?,
-      CAST(? AS JSON),
-      ?, ?, ?, ?, ?, ?, ?
-    )`,
-    [
-      payload.title,
-      payload.fullName,
-      payload.companyName,
-      payload.jobTitle,
-      payload.email,
-      payload.mobile,
-      payload.department,
-      JSON.stringify(payload.interests),
-      visitingCardId,
-      visitingCardUrl,
-      voiceNoteId,
-      voiceNoteUrl,
-      payload.venueId,
-      payload.remarks,
-      payload.leadCategory || 'Potential'
-    ]
+    `INSERT INTO enquiries (${columns.join(', ')}) VALUES (${placeholders})`,
+    values
   );
 
   sendThankYouMail(payload).catch((mailError) => {
@@ -128,8 +147,9 @@ async function createEnquiry(payload, files = {}) {
 }
 
 async function getEnquiries() {
+  const officeNumberSelect = await hasOfficeNumberColumn() ? 'office_number' : 'NULL AS office_number';
   const [enquiries] = await pool.execute(
-    `SELECT id, title, full_name, company_name, job_title, email, mobile, department, interests, visiting_card_url, voice_note_url, venue_id, remarks, created_at, lead_category
+    `SELECT id, title, full_name, company_name, job_title, email, mobile, ${officeNumberSelect}, department, interests, visiting_card_url, voice_note_url, venue_id, remarks, created_at, lead_category
      FROM enquiries WHERE status = 0 ORDER BY created_at DESC`
   );
 
@@ -210,15 +230,20 @@ async function removeVisitingCard(id) {
 }
 
 async function updateEnquiry(id, enquiry) {
+  const hasOfficeNumber = await hasOfficeNumberColumn();
+  const officeNumberSet = hasOfficeNumber ? 'office_number = ?, ' : '';
+  const officeNumberValue = hasOfficeNumber ? [enquiry.office_number || null] : [];
+
   await pool.execute(
     `UPDATE enquiries
-     SET full_name = ?, company_name = ?, email = ?, mobile = ?, department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?
+     SET full_name = ?, company_name = ?, email = ?, mobile = ?, ${officeNumberSet}department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?
      WHERE id = ?`,
     [
       enquiry.full_name,
       enquiry.company_name || null,
       enquiry.email,
       enquiry.mobile,
+      ...officeNumberValue,
       enquiry.department || null,
       JSON.stringify(enquiry.interests),
       enquiry.lead_category || 'Potential',

@@ -82,6 +82,7 @@ export class EnquiryFormPageComponent {
     jobTitle: [''],
     email: ['', [Validators.required, Validators.email]],
     mobile: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+    officeNumber: [''],
     department: [''],
     interests: this.fb.array<FormControl<boolean | null>>(this.interestOptions.map(() => this.fb.control(false)), [this.atLeastOneSelectedValidator()]),
     visitingCard: [null as File | null],
@@ -110,7 +111,7 @@ export class EnquiryFormPageComponent {
 
   loadVenues() {
     this.venueService.getVenues().subscribe({
-      next: (data) => this.venues.set(data),
+      next: (data) => this.venues.set(this.uniqueVenues(data)),
       error: (err) => console.error('Failed to load venues', err)
     });
   }
@@ -141,10 +142,10 @@ export class EnquiryFormPageComponent {
     return !!(control.invalid && (control.touched || this.formSubmitted()));
   }
 
-  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'department'): boolean {
+  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'officeNumber' | 'department'): boolean {
     const control = this.form.controls[controlName];
     const value = `${control.value ?? ''}`.trim();
-    const optionalFields = new Set(['title', 'companyName', 'jobTitle', 'department']);
+    const optionalFields = new Set(['title', 'companyName', 'jobTitle', 'officeNumber', 'department']);
     if (optionalFields.has(controlName)) {
       return value.length > 0;
     }
@@ -173,6 +174,15 @@ export class EnquiryFormPageComponent {
       input.value = digitsOnly;
     }
     this.form.controls.mobile.setValue(digitsOnly, { emitEvent: false });
+  }
+
+  onOfficeNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitsOnly = input.value.replace(/\D/g, '').slice(0, 15);
+    if (input.value !== digitsOnly) {
+      input.value = digitsOnly;
+    }
+    this.form.controls.officeNumber.setValue(digitsOnly, { emitEvent: false });
   }
 
   startNewEnquiry(): void {
@@ -224,6 +234,7 @@ export class EnquiryFormPageComponent {
       jobTitle: rawValue.jobTitle ?? undefined,
       email: rawValue.email ?? '',
       mobile: rawValue.mobile ?? '',
+      officeNumber: rawValue.officeNumber ?? undefined,
       department: rawValue.department ?? undefined,
       interests: selectedInterests,
       visitingCard: rawValue.visitingCard,
@@ -287,8 +298,8 @@ export class EnquiryFormPageComponent {
 
   private updateCompletion(): void {
     const values = this.form.getRawValue();
-    const total = 9;
-    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.department, values.remarks].filter(
+    const total = 10;
+    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.officeNumber, values.department, values.remarks].filter(
       (value) => `${value ?? ''}`.trim().length > 0
     ).length;
 
@@ -372,5 +383,22 @@ export class EnquiryFormPageComponent {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  private uniqueVenues(venues: Venue[]): Venue[] {
+    const seen = new Set<string>();
+    return venues.filter(venue => {
+      const key = String(venue.venue || '')
+        .split('-')
+        .map(part => part.trim().replace(/\s+/g, ' '))
+        .join('-')
+        .toLowerCase();
+
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
   }
 }

@@ -17,66 +17,42 @@
   <div class="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
     <div class="flex flex-col">
       <h1 class="text-[2.2rem] lg:text-[2.5rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">Products</h1>
-      <p class="text-sm text-gray-500 font-medium mt-2">Manage product records, visibility, and master catalogue status.</p>
+      <p class="text-sm text-gray-500 font-medium mt-2">Manage product records and master catalogue details.</p>
     </div>
 
-    <div class="grid grid-cols-2 sm:flex items-stretch sm:items-center gap-3 w-full xl:w-auto">
-      <div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Active</p>
-        <p class="text-lg font-extrabold text-black leading-tight">{{ activeCount() }}</p>
+    <div class="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
+      <div class="relative w-full sm:w-[300px] group">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <input type="text" placeholder="Search products..." (input)="onSearch($event)"
+               class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
       </div>
-      <div class="rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Inactive</p>
-        <p class="text-lg font-extrabold text-black leading-tight">{{ inactiveCount() }}</p>
-      </div>
-      <button (click)="openAddModal()" class="col-span-2 sm:col-span-1 w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
+      <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
         + Add Product
       </button>
     </div>
   </div>
 
-  <div class="mb-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-    <div class="relative w-full lg:w-[360px] group">
-      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-        </svg>
-      </div>
-      <input type="text" placeholder="Search products..." (input)="onSearch($event)"
-             class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
-    </div>
-
-    <div class="flex flex-col sm:flex-row gap-3">
-      <div class="relative group">
-        <select (change)="onStatusFilterChange($event)" class="w-full appearance-none bg-white border-2 border-black rounded-[24px] px-5 py-2.5 pr-10 text-[14px] font-bold text-black outline-none cursor-pointer hover:bg-gray-50 transition-all shadow-sm">
-          <option value="all">All status</option>
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
-          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </div>
-      </div>
-
-      <div class="relative group">
-        <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border-2 border-black rounded-[24px] px-5 py-2.5 pr-10 text-[14px] font-bold text-black outline-none cursor-pointer hover:bg-gray-50 transition-all shadow-sm">
+  <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
+    <div class="px-6 py-5 border-b border-gray-100 flex justify-end bg-white relative z-20">
+      <div class="relative w-full sm:w-auto group">
+        <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-200 text-gray-800 py-3 pl-5 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer shadow-sm">
           <option value="5">5 rows</option>
           <option value="10" selected>10 rows</option>
           <option value="25">25 rows</option>
           <option value="50">50 rows</option>
         </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
     <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
@@ -103,28 +79,24 @@
       <table class="min-w-full text-left text-sm whitespace-nowrap">
         <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
           <tr>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Product ID</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Product</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Category</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Status</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
+              <button type="button" (click)="sortBy('product')" class="flex items-center gap-1 uppercase tracking-widest">Product <span>{{ sortIndicator('product') }}</span></button>
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
+              <button type="button" (click)="sortBy('category')" class="flex items-center gap-1 uppercase tracking-widest">Category <span>{{ sortIndicator('category') }}</span></button>
+            </th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 bg-white">
-          <tr *ngFor="let product of paginatedProducts()" class="transition-colors duration-200 hover:bg-gray-50/50 group">
-            <td class="px-6 py-6 text-black font-semibold text-sm">{{ product.product_id }}</td>
+          <tr *ngFor="let product of paginatedProducts(); let i = index" class="transition-colors duration-200 hover:bg-gray-50/50 group">
+            <td class="px-6 py-6 text-gray-500 font-bold text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
             <td class="px-6 py-6">
               <p class="text-black font-semibold text-sm">{{ product.name }}</p>
               <p class="max-w-[440px] truncate text-xs font-medium text-gray-500 mt-1">{{ product.description || '-' }}</p>
             </td>
             <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ product.category || '-' }}</td>
-            <td class="px-6 py-6">
-              <button (click)="toggleProductStatus(product)"
-                      class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold transition-all"
-                      [ngClass]="product.status === 1 ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'">
-                {{ product.status === 1 ? 'Active' : 'Inactive' }}
-              </button>
-            </td>
             <td class="px-6 py-6 text-right">
               <div class="flex items-center justify-end gap-2">
                 <button (click)="openEditModal(product)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Edit">
@@ -189,18 +161,9 @@
           <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Product Name</label>
           <input type="text" formControlName="name" placeholder="e.g. Network Switch" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('name')" />
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
-            <input type="text" formControlName="category" placeholder="e.g. Hardware" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Status</label>
-            <select formControlName="status" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm">
-              <option [ngValue]="1">Active</option>
-              <option [ngValue]="0">Inactive</option>
-            </select>
-          </div>
+        <div>
+          <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
+          <input type="text" formControlName="category" placeholder="e.g. Hardware" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
         </div>
         <div>
           <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Description</label>

@@ -203,14 +203,21 @@
       <table class="min-w-full text-left text-sm whitespace-nowrap">
         <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
           <tr>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Visitor Name</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Company</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Venue & City</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
+              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-widest">Visitor Name <span>{{ sortIndicator('name') }}</span></button>
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
+              <button type="button" (click)="sortBy('company')" class="flex items-center gap-1 uppercase tracking-widest">Company <span>{{ sortIndicator('company') }}</span></button>
+            </th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
+              <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-widest">Venue & City <span>{{ sortIndicator('venue') }}</span></button>
+            </th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Contact</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Office Number</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Lead Category</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Department</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Voice Note
-            </th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Voice Note</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right no-print">
               Actions</th>
           </tr>
@@ -219,6 +226,8 @@
           <ng-container *ngFor="let visitor of paginatedVisitors(); let i = index">
             <tr class="transition-colors duration-200 hover:bg-gray-50/50 relative group cursor-pointer"
               (click)="openReview(visitor)">
+
+              <td class="px-6 py-6 text-gray-500 font-bold text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
 
               <td class="px-6 py-6">
                 <div class="flex flex-col">
@@ -246,6 +255,8 @@
                   <span class="text-gray-500 text-[11px]">{{ visitor.mobile }}</span>
                 </div>
               </td>
+
+              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.office_number || '-' }}</td>
 
               <td class="px-6 py-6" (click)="$event.stopPropagation()">
                 <div class="relative inline-block">
@@ -310,7 +321,7 @@
 
             <!-- Accordion Audio Player Row -->
             <tr *ngIf="expandedAudioId() === visitor.id" class="bg-gray-50/80 border-b border-gray-100">
-              <td colspan="7" class="p-0">
+              <td colspan="10" class="p-0">
                 <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-6 py-4 flex justify-center">
                   <div class="bg-black rounded-full px-5 py-2.5 flex items-center gap-4 shadow-xl w-full max-w-[400px]">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
@@ -590,6 +601,12 @@
               <input type="text" [(ngModel)]="editFormData().mobile"
                 class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
             </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
+                Number</label>
+              <input type="text" [(ngModel)]="editFormData().office_number"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+            </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -767,6 +784,11 @@
             <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
               <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Mobile Phone</div>
               <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.mobile }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Office Number</div>
+              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.office_number || '-' }}</div>
             </div>
 
             <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
@@ -1079,7 +1101,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
               <!-- Mobile Number -->
               <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile Number
@@ -1093,6 +1115,15 @@
                   number must contain exactly 10 digits</span>
                 <span *ngIf="addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched"
                   class="text-[10px] text-red-500 font-bold mt-1 block">Valid 10-digit Mobile is required</span>
+              </div>
+
+              <!-- Office Number -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
+                  Number</label>
+                <input type="text" formControlName="officeNumber" (input)="onOfficeNumberInput($event)" maxlength="15"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="Office number" />
               </div>
 
               <!-- Email -->

@@ -7,9 +7,10 @@ export interface Employee {
   id?: number;
   name: string;
   email: string;
-  password?: string;
   mobile_number: string;
   role: string;
+  status?: number;
+  delete?: number;
   created_at?: string;
   updated_at?: string;
 }

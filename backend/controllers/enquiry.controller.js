@@ -103,6 +103,7 @@ function normalizePayload(body) {
     jobTitle: emptyToNull(body.jobTitle),
     email: String(body.email || '').trim(),
     mobile: String(body.mobile || '').trim(),
+    officeNumber: emptyToNull(body.officeNumber ?? body.office_number),
     department: emptyToNull(body.department),
     interests: parseInterests(body.interests),
     remarks: emptyToNull(body.remarks),

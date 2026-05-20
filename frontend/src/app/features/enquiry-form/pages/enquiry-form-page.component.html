@@ -60,7 +60,7 @@
               <app-custom-input label="Company Name" inputId="companyName" [control]="form.controls.companyName" [showSuccess]="showSuccess('companyName')" />
               <app-custom-select label="Job Title" inputId="jobTitle" [control]="form.controls.jobTitle" placeholder="Choose Job" [options]="jobTitleOptions" [showSuccess]="showSuccess('jobTitle')" />
             </div>
-            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
               <app-custom-input label="Email *" inputId="email" [control]="form.controls.email" [showError]="showError('email')" [showSuccess]="showSuccess('email')" errorMessage="Please enter a valid email." />
               <div>
                 <label for="mobile" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Mobile *</label>
@@ -80,6 +80,21 @@
                 @if (showError('mobile')) {
                   <p class="mt-2 text-xs font-medium text-[#ef4444]">Please enter a valid 10-digit mobile number.</p>
                 }
+              </div>
+              <div>
+                <label for="officeNumber" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Office Number</label>
+                <div class="flex h-[52px] items-center overflow-hidden rounded-xl border border-[#d1d5db] bg-white transition duration-200 hover:!border-[#1f1f1f] hover:shadow-[0_0_0_4px_rgba(31,31,31,0.08)] focus-within:border-[#1f1f1f] focus-within:ring-4 focus-within:ring-[rgba(31,31,31,0.1)]">
+                  <input
+                    id="officeNumber"
+                    type="tel"
+                    formControlName="officeNumber"
+                    maxlength="15"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    class="h-full w-full px-4 text-sm outline-none"
+                    (input)="onOfficeNumberInput($event)"
+                  />
+                </div>
               </div>
             </div>
             <div class="mt-6">

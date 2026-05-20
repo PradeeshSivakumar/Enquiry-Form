@@ -118,6 +118,8 @@ export class VisitorsPage implements OnInit {
   // Pagination
   pageSize = signal<number>(5);
   currentPage = signal<number>(1);
+  sortKey = signal<string>('name');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   filteredVisitors = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -141,6 +143,7 @@ export class VisitorsPage implements OnInit {
         (v.job_title?.toLowerCase().includes(query)) ||
         (v.email?.toLowerCase().includes(query)) ||
         (v.mobile?.toLowerCase().includes(query)) ||
+        (v.office_number?.toLowerCase().includes(query)) ||
         (v.department?.toLowerCase().includes(query)) ||
         (v.interests?.some(i => i.toLowerCase().includes(query)))
       );
@@ -155,15 +158,17 @@ export class VisitorsPage implements OnInit {
   nonPotentialLeads = computed(() => this.visitors().filter(v => v.lead_category === 'Non Potential').length);
   otherLeads = computed(() => this.visitors().filter(v => v.lead_category === 'Others').length);
 
+  sortedVisitors = computed(() => this.sortRows(this.filteredVisitors(), this.getVisitorSortValue.bind(this)));
+
   totalPages = computed(() => {
-    const total = this.filteredVisitors().length;
+    const total = this.sortedVisitors().length;
     return Math.max(1, Math.ceil(total / this.pageSize()));
   });
 
   paginatedVisitors = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     const end = start + this.pageSize();
-    return this.filteredVisitors().slice(start, end);
+    return this.sortedVisitors().slice(start, end);
   });
 
   showToast(text: string, type: 'success' | 'error' = 'success') {
@@ -191,6 +196,23 @@ export class VisitorsPage implements OnInit {
     const target = event.target as HTMLSelectElement;
     this.activeDepartment.set(target.value);
     this.currentPage.set(1);
+  }
+
+  sortBy(key: string) {
+    if (this.sortKey() === key) {
+      this.sortDirection.update(direction => direction === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortKey.set(key);
+      this.sortDirection.set('asc');
+    }
+    this.currentPage.set(1);
+  }
+
+  sortIndicator(key: string): string {
+    if (this.sortKey() !== key) {
+      return '↕';
+    }
+    return this.sortDirection() === 'asc' ? '↑' : '↓';
   }
 
   updateLeadCategory(visitor: Visitor, event: Event) {
@@ -305,6 +327,7 @@ export class VisitorsPage implements OnInit {
       jobTitle: [''],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      officeNumber: [''],
       department: [''],
       leadCategory: ['Potential'],
       venueId: ['', Validators.required],
@@ -353,6 +376,16 @@ export class VisitorsPage implements OnInit {
     }
     inputElement.value = value;
     this.addVisitorForm.get('mobile')?.setValue(value, { emitEvent: false });
+  }
+
+  onOfficeNumberInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    let value = inputElement.value.replace(/[^0-9]/g, '');
+    if (value.length > 15) {
+      value = value.substring(0, 15);
+    }
+    inputElement.value = value;
+    this.addVisitorForm.get('officeNumber')?.setValue(value, { emitEvent: false });
   }
 
   onFullNameKeypress(event: KeyboardEvent) {
@@ -850,6 +883,7 @@ export class VisitorsPage implements OnInit {
     formData.append('fullName', formValues.fullName);
     formData.append('email', formValues.email);
     formData.append('mobile', formValues.mobile);
+    if (formValues.officeNumber) formData.append('officeNumber', formValues.officeNumber);
     if (formValues.companyName) formData.append('companyName', formValues.companyName);
     if (formValues.jobTitle) formData.append('jobTitle', formValues.jobTitle);
     if (formValues.department) formData.append('department', formValues.department);
@@ -880,6 +914,7 @@ export class VisitorsPage implements OnInit {
           job_title: response.payload.jobTitle,
           email: response.payload.email,
           mobile: response.payload.mobile,
+          office_number: response.payload.officeNumber,
           department: response.payload.department,
           interests: response.payload.interests,
           visiting_card_url: response.payload.visitingCardUrl,
@@ -908,12 +943,12 @@ export class VisitorsPage implements OnInit {
       return;
     }
 
-    const headers = ['Visitor Name', 'Company Name', 'Email', 'Mobile', 'Department', 'Lead Category', 'Created Date'];
+    const headers = ['Visitor Name', 'Company Name', 'Email', 'Mobile', 'Office Number', 'Department', 'Lead Category', 'Created Date'];
     
     const rows = data.map(v => {
       const name = (v.title ? v.title + ' ' : '') + v.full_name;
       const date = new Date(v.created_at).toLocaleDateString();
-      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.department || ''}","${v.lead_category || 'Potential'}","${date}"`;
+      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.office_number || ''}","${v.department || ''}","${v.lead_category || 'Potential'}","${date}"`;
     });
 
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
@@ -970,6 +1005,7 @@ export class VisitorsPage implements OnInit {
       next: (data) => {
         const initializedData = data.map(v => ({
           ...v,
+          office_number: v.office_number || null,
           lead_category: v.lead_category || 'Potential'
         }));
         this.visitors.set(initializedData);
@@ -983,7 +1019,7 @@ export class VisitorsPage implements OnInit {
     });
 
     this.venueService.getVenues().subscribe({
-      next: (data: Venue[]) => this.venues.set(data),
+      next: (data: Venue[]) => this.venues.set(this.uniqueVenues(data)),
       error: (err: any) => console.error('Error fetching venues', err)
     });
   }
@@ -1157,5 +1193,63 @@ export class VisitorsPage implements OnInit {
       return { venue, city, year };
     }
     return { venue: v.venue, city: '-', year: '-' };
+  }
+
+  private uniqueVenues(venues: Venue[]): Venue[] {
+    const seen = new Set<string>();
+    return venues.filter(venue => {
+      const key = String(venue.venue || '')
+        .split('-')
+        .map(part => part.trim().replace(/\s+/g, ' '))
+        .join('-')
+        .toLowerCase();
+
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }
+
+  private sortRows<T>(rows: T[], valueGetter: (row: T, index: number) => string | number): T[] {
+    const key = this.sortKey();
+    const direction = this.sortDirection();
+    const indexed = rows.map((row, index) => ({ row, index }));
+
+    indexed.sort((a, b) => {
+      const aValue = key === 'serial' ? a.index : valueGetter(a.row, a.index);
+      const bValue = key === 'serial' ? b.index : valueGetter(b.row, b.index);
+      const comparison = typeof aValue === 'number' && typeof bValue === 'number'
+        ? aValue - bValue
+        : String(aValue || '').localeCompare(String(bValue || ''), undefined, { numeric: true, sensitivity: 'base' });
+
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    return indexed.map(item => item.row);
+  }
+
+  private getVisitorSortValue(visitor: Visitor): string | number {
+    const venue = this.getVenueDetails(visitor.venue_id);
+
+    switch (this.sortKey()) {
+      case 'name':
+        return `${visitor.title || ''} ${visitor.full_name || ''}`.trim();
+      case 'company':
+        return visitor.company_name || '';
+      case 'venue':
+        return `${venue.venue} ${venue.city} ${venue.year}`;
+      case 'contact':
+        return `${visitor.email || ''} ${visitor.mobile || ''} ${visitor.office_number || ''}`;
+      case 'lead':
+        return visitor.lead_category || '';
+      case 'department':
+        return visitor.department || '';
+      case 'voice':
+        return visitor.voice_note_url ? 1 : 0;
+      default:
+        return '';
+    }
   }
 }

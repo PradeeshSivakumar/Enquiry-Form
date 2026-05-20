@@ -11,8 +11,7 @@ async function getActiveProducts(_req, res, next) {
 async function getProducts(req, res, next) {
   try {
     const search = String(req.query.search || '').trim();
-    const status = String(req.query.status || 'all').trim();
-    res.json(await productsService.getProducts({ search, status }));
+    res.json(await productsService.getProducts({ search }));
   } catch (error) {
     next(error);
   }
@@ -57,13 +56,10 @@ async function deleteProduct(req, res, next) {
 }
 
 function normalizeProductPayload(body) {
-  const status = Number(body.status ?? 1);
-
   return {
     name: String(body.name || '').trim(),
     category: emptyToNull(body.category),
-    description: emptyToNull(body.description),
-    status: status === 0 ? 0 : 1
+    description: emptyToNull(body.description)
   };
 }
 

@@ -9,7 +9,6 @@ export interface Product {
   name: string;
   category?: string | null;
   description?: string | null;
-  status: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -18,7 +17,6 @@ export interface ProductPayload {
   name: string;
   category?: string | null;
   description?: string | null;
-  status?: number;
 }
 
 @Injectable({
@@ -28,15 +26,11 @@ export class ProductsService {
   private http = inject(HttpClient);
   private apiUrl = environment.baseUrl + '/api/products';
 
-  getProducts(search = '', status = 'all'): Observable<Product[]> {
+  getProducts(search = ''): Observable<Product[]> {
     let params = new HttpParams();
 
     if (search.trim()) {
       params = params.set('search', search.trim());
-    }
-
-    if (status !== 'all') {
-      params = params.set('status', status);
     }
 
     return this.http.get<Product[]>(this.apiUrl, { params });
