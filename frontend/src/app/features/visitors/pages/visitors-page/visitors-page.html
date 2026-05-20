@@ -69,70 +69,7 @@
     </div>
   </div>
 
-  <!-- Analytics Cards -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6 mb-8">
-    <!-- Total Visitors -->
-    <div
-      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
-      <div class="flex justify-between items-start w-full">
-        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Total Visitors</span>
-        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-        </div>
-      </div>
-      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ totalVisitors()
-        }}</span>
-    </div>
 
-    <!-- Potential Leads -->
-    <div
-      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
-      <div class="flex justify-between items-start w-full">
-        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Potential Leads</span>
-        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>
-        </div>
-      </div>
-      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ potentialLeads()
-        }}</span>
-    </div>
-
-    <!-- Non Potential -->
-    <div
-      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
-      <div class="flex justify-between items-start w-full">
-        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Non Potential</span>
-        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-          </svg>
-        </div>
-      </div>
-      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ nonPotentialLeads()
-        }}</span>
-    </div>
-
-    <!-- Others -->
-    <div
-      class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]">
-      <div class="flex justify-between items-start w-full">
-        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mt-1">Others</span>
-        <div class="p-2 bg-gray-50 rounded-[10px] text-gray-400">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-          </svg>
-        </div>
-      </div>
-      <span class="text-[2.2rem] font-[800] text-black leading-none font-['Syne',sans-serif]">{{ otherLeads() }}</span>
-    </div>
-  </div>
 
   <!-- Main Content Card -->
   <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
@@ -141,18 +78,29 @@
     <div
       class="px-6 py-5 border-b border-gray-100 flex flex-col xl:flex-row justify-between items-center gap-4 bg-white relative z-20">
 
-      <!-- Segmented Category Filters -->
-      <div class="flex items-center w-full xl:w-auto">
-        <div class="flex flex-wrap gap-2">
-          <button *ngFor="let tab of filterTabs" (click)="onCategoryChange(tab)" [ngClass]="{
-                    'bg-black text-white font-bold border-transparent': activeCategory() === tab,
-                    'bg-white text-gray-700 hover:text-black hover:border-gray-400 font-semibold border-gray-200': activeCategory() !== tab
-                  }" class="px-5 py-2.5 rounded-full text-[13px] tracking-wide transition-all duration-200 border">
-            {{ tab }}
-          </button>
-        </div>
-      </div>
+<!-- Category Dropdown -->
+<div class="relative w-full sm:w-[220px]">
+  <select
+    [value]="activeCategory()"
+    (change)="onCategoryChange($any($event.target).value)"
+    class="appearance-none w-full bg-white border border-gray-200 text-gray-800 py-3 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer shadow-sm">
 
+    <option *ngFor="let tab of filterTabs" [value]="tab">
+      {{ tab }}
+    </option>
+
+  </select>
+
+  <!-- Dropdown Arrow -->
+  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+    <svg
+      class="fill-current h-4 w-4"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20">
+      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+    </svg>
+  </div>
+</div>
       <!-- Controls -->
       <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
 

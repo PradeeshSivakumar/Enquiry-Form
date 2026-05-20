@@ -1,0 +1,154 @@
+<section class="dashboard-shell">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Enterprise CRM</p>
+      <h1>Dashboard</h1>
+      <p>Enterprise Enquiry Analytics Overview</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="loadDashboard()" [disabled]="loading()">
+      <svg class="refresh-icon" [class.is-spinning]="loading()" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h8V3l-3.3 3.3Z"></path>
+      </svg>
+      Refresh
+    </button>
+  </header>
+
+  <div *ngIf="error()" class="error-banner">
+    <span>{{ error() }}</span>
+    <button type="button" (click)="loadDashboard()">Retry</button>
+  </div>
+
+  <div class="stats-grid" aria-label="Dashboard summary">
+    <ng-container *ngIf="!loading(); else statsSkeleton">
+      <article *ngFor="let card of statCards()" class="stat-card" [attr.data-accent]="card.accent">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path [attr.d]="card.icon"></path>
+          </svg>
+        </div>
+        <div>
+          <p>{{ card.label }}</p>
+          <strong>{{ card.value | number }}</strong>
+        </div>
+      </article>
+    </ng-container>
+
+    <ng-template #statsSkeleton>
+      <article class="stat-card skeleton-card" *ngFor="let item of [1, 2, 3, 4]">
+        <span class="skeleton icon"></span>
+        <span class="skeleton line"></span>
+        <span class="skeleton value"></span>
+      </article>
+    </ng-template>
+  </div>
+
+  <div class="analytics-grid">
+    <article class="panel trend-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Daily Enquiry Trends</h2>
+          <p>Enquiry volume by date</p>
+        </div>
+      </div>
+
+      <div class="chart-frame" [class.is-loading]="loading()">
+        <div *ngIf="loading()" class="chart-skeleton"></div>
+        <canvas #trendCanvas aria-label="Monthly enquiry trends chart"></canvas>
+      </div>
+    </article>
+
+    <article class="panel product-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Product Interest Distribution</h2>
+          <p>Dynamic split from product master and enquiries</p>
+        </div>
+      </div>
+
+      <div class="chart-frame" [class.is-loading]="loading()">
+        <div *ngIf="loading()" class="chart-skeleton"></div>
+        <canvas #productCanvas aria-label="Product interest distribution chart"></canvas>
+      </div>
+
+      <div *ngIf="!loading() && !hasProductDistribution()" class="empty-note">
+        No product interests have been captured yet.
+      </div>
+    </article>
+  </div>
+
+  <article class="panel table-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Recent Enquiries</h2>
+        <p>Latest 10 visitor enquiries from the directory</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading()" class="table-loading">
+      <span class="skeleton row" *ngFor="let item of [1, 2, 3, 4, 5]"></span>
+    </div>
+
+    <div *ngIf="!loading() && hasRecentEnquiries()" class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Visitor Name</th>
+            <th>Company</th>
+            <th>Venue</th>
+            <th>Lead Category</th>
+            <th>Products Interested</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let enquiry of recentEnquiries(); trackBy: trackById">
+            <td>
+              <strong>{{ enquiry.full_name }}</strong>
+            </td>
+            <td>{{ enquiry.company_name || '-' }}</td>
+            <td>{{ enquiry.venue || '-' }}</td>
+            <td>
+              <span class="category-pill" [class.non-potential]="enquiry.lead_category === 'Non Potential'">
+                {{ enquiry.lead_category || 'Potential' }}
+              </span>
+            </td>
+            <td class="products-cell">{{ formatProducts(enquiry.interests) }}</td>
+            <td>{{ enquiry.created_at | date: 'dd MMM yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!loading() && !hasRecentEnquiries()" class="empty-state">
+      <strong>No enquiries found</strong>
+      <span>New enquiry submissions will appear here automatically.</span>
+    </div>
+  </article>
+
+  <article class="panel venue-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Venue Analytics</h2>
+        <p>Venue-wise enquiry count across Chennai, Bangalore, Coimbatore, and Hyderabad</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading()" class="venue-loading">
+      <span class="skeleton venue-row" *ngFor="let item of [1, 2, 3, 4]"></span>
+    </div>
+
+    <div *ngIf="!loading()" class="venue-list">
+      <div class="venue-row-item" *ngFor="let item of venueAnalytics(); trackBy: trackByVenue">
+        <div class="venue-meta">
+          <strong>{{ item.city }}</strong>
+          <span>{{ item.venue }}</span>
+        </div>
+        <div class="venue-meter" aria-hidden="true">
+          <span [style.width]="venueWidth(item.count)"></span>
+        </div>
+        <strong class="venue-count">{{ item.count | number }}</strong>
+      </div>
+    </div>
+  </article>
+</section>

@@ -23,6 +23,10 @@ export const routes: Routes = [
     canActivateChild: [authChildGuard],
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () => import('./features/Dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      },
+      {
         path: 'visitors-directory',
         loadComponent: () => import('./features/visitors/pages/visitors-page/visitors-page').then((m) => m.VisitorsPage),
       },

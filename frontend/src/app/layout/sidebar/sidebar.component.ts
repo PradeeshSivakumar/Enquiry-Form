@@ -15,6 +15,15 @@ import { PRODUCT_MASTER_ROLES } from '../../auth/guards/role.guard';
       
       <!-- Navigation -->
       <nav class="flex-1 space-y-2 mt-6" [ngClass]="layout.isSidebarCollapsed() ? 'px-3' : 'px-4'">
+        <a routerLink="/dashboard" routerLinkActive="bg-black text-white" [routerLinkActiveOptions]="{exact: false}" 
+           class="flex items-center rounded-xl transition-all group font-semibold text-[14px]"
+           [ngClass]="layout.isSidebarCollapsed() ? 'justify-center p-3' : 'gap-3 px-4 py-3 hover:bg-gray-100 text-gray-600'">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 19V5m0 14h16M8 16V9m4 7V6m4 10v-4" />
+          </svg>
+          <span class="whitespace-nowrap transition-opacity duration-200" [class.opacity-0]="layout.isSidebarCollapsed()" [class.hidden]="layout.isSidebarCollapsed()">Dashboard</span>
+        </a>
+
         <a routerLink="/visitors-directory" routerLinkActive="bg-black text-white" [routerLinkActiveOptions]="{exact: false}" 
            class="flex items-center rounded-xl transition-all group font-semibold text-[14px]"
            [ngClass]="layout.isSidebarCollapsed() ? 'justify-center p-3' : 'gap-3 px-4 py-3 hover:bg-gray-100 text-gray-600'">
