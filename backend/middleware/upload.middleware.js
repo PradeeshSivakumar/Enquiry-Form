@@ -11,7 +11,7 @@ fs.mkdirSync(voiceNotesDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, file, callback) => {
-    if (file.fieldname === 'voiceNote') {
+    if (file.fieldname === 'voiceNote' || file.fieldname === 'voiceNote2') {
       callback(null, voiceNotesDir);
       return;
     }
@@ -34,12 +34,19 @@ const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, callback) => {
-    if (file.fieldname === 'visitingCard' && !file.mimetype.startsWith('image/')) {
+    if (
+      (file.fieldname === 'visitingCard' || file.fieldname === 'visitingCard2') &&
+      !file.mimetype.startsWith('image/')
+    ) {
       callback(new Error('Only image files are allowed for visiting cards.'));
       return;
     }
 
-    if (file.fieldname === 'voiceNote' && !file.mimetype.startsWith('audio/') && !file.mimetype.startsWith('video/webm')) {
+    if (
+      (file.fieldname === 'voiceNote' || file.fieldname === 'voiceNote2') &&
+      !file.mimetype.startsWith('audio/') &&
+      !file.mimetype.startsWith('video/webm')
+    ) {
       callback(new Error('Only audio files are allowed for voice notes.'));
       return;
     }

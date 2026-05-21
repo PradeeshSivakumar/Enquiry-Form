@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
-async function login(email, password) {
+async function login(emailOrMobile, password) {
+  const identifier = String(emailOrMobile || '').trim();
   const [users] = await pool.execute(
     `SELECT id, name, email, password, role, status
      FROM employees
-     WHERE LOWER(TRIM(email)) = LOWER(?)
+     WHERE (LOWER(TRIM(email)) = LOWER(?) OR TRIM(mobile_number) = ?)
      LIMIT 1`,
-    [email.toLowerCase()]
+    [identifier.toLowerCase(), identifier]
   );
 
   if (users.length === 0) {
@@ -44,20 +45,7 @@ async function login(email, password) {
 }
 
 async function verifyPassword(inputPassword, storedPassword) {
-  const stored = String(storedPassword || '');
-
-  if (!stored) {
-    return false;
-  }
-
-  if (inputPassword === stored) {
-    return true;
-  }
-
-async function verifyPassword(inputPassword, storedPassword) {
   return String(inputPassword || '') === String(storedPassword || '');
-}
-
 }
 
 async function hashPassword(password) {

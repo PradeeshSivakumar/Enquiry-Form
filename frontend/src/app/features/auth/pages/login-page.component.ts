@@ -66,16 +66,16 @@ import { AuthService } from '../../../core/auth/auth.service';
           </div>
 
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-            <!-- Email -->
+            <!-- Email or Mobile -->
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Employee Email</label>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Employee Email or Mobile</label>
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-black transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                   </svg>
                 </div>
-                <input type="email" formControlName="email" placeholder="email@niraltek.com"
+                <input type="text" formControlName="email" placeholder="Email or Mobile Number"
                        class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-[14px] font-bold text-gray-900 outline-none focus:ring-2 focus:ring-black focus:border-black transition-all placeholder-gray-400 shadow-sm"
                        [class.border-red-400]="showError('email')" [class.focus:ring-red-500]="showError('email')" />
               </div>
@@ -139,7 +139,7 @@ export class LoginPageComponent {
 
   constructor() {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.pattern(/^([0-9]{10}|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})$/i)]],
       password: ['', Validators.required]
     });
   }

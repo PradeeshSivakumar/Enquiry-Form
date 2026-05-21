@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node --watch server.js"
+    "start": "node --watch server.js",
+    "migrate:voice-note-2": "node scripts/run-voice-note-2-migration.js",
+    "migrate:enquiry-fields": "node scripts/run-enquiry-fields-migration.js"
   },
   "keywords": [],
   "author": "",

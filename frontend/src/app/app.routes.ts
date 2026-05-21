@@ -40,8 +40,6 @@ export const routes: Routes = [
       },
       {
         path: 'products',
-        canActivate: [roleGuard],
-        data: { roles: PRODUCT_MASTER_ROLES },
         loadComponent: () => import('./features/products/pages/products-page/products-page.component').then((m) => m.ProductsPageComponent),
       }
     ]

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LayoutService } from '../layout.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { PRODUCT_MASTER_ROLES } from '../../auth/guards/role.guard';
 
 @Component({
   selector: 'app-sidebar',
@@ -52,7 +51,7 @@ import { PRODUCT_MASTER_ROLES } from '../../auth/guards/role.guard';
           <span class="whitespace-nowrap transition-opacity duration-200" [class.opacity-0]="layout.isSidebarCollapsed()" [class.hidden]="layout.isSidebarCollapsed()">Venue</span>
         </a>
 
-        <a *ngIf="canAccessProducts()" routerLink="/products" routerLinkActive="bg-black text-white" [routerLinkActiveOptions]="{exact: false}" 
+        <a routerLink="/products" routerLinkActive="bg-black text-white" [routerLinkActiveOptions]="{exact: false}" 
            class="flex items-center rounded-xl transition-all group font-semibold text-[14px]"
            [ngClass]="layout.isSidebarCollapsed() ? 'justify-center p-3' : 'gap-3 px-4 py-3 hover:bg-gray-100 text-gray-600'">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -80,7 +79,6 @@ import { PRODUCT_MASTER_ROLES } from '../../auth/guards/role.guard';
 export class SidebarComponent {
   layout = inject(LayoutService);
   authService = inject(AuthService);
-  canAccessProducts = computed(() => this.authService.hasRole(PRODUCT_MASTER_ROLES));
 
   logout() {
     this.authService.logout();

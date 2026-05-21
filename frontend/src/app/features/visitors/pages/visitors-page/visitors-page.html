@@ -214,9 +214,9 @@
               <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-widest">Venue & City <span>{{ sortIndicator('venue') }}</span></button>
             </th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Contact</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Office Number</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Lead Category</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Department</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Visiting Card</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Voice Note</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right no-print">
               Actions</th>
@@ -256,25 +256,21 @@
                 </div>
               </td>
 
-              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.office_number || '-' }}</td>
-
-              <td class="px-6 py-6" (click)="$event.stopPropagation()">
-                <div class="relative inline-block">
-                  <select [value]="visitor.lead_category" (change)="updateLeadCategory(visitor, $event)"
-                    class="appearance-none bg-white text-black border border-gray-300 text-[11px] font-bold py-2 pl-4 pr-8 rounded-[8px] outline-none focus:border-black transition-all cursor-pointer tracking-wider uppercase">
-                    <option *ngFor="let cat of leadCategories" [value]="cat" [selected]="cat === visitor.lead_category"
-                      class="font-medium">{{ cat }}</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-black">
-                    <svg class="fill-current h-3 w-3 transition-transform" xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20">
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                  </div>
-                </div>
-              </td>
+              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.lead_category || '-' }}</td>
 
               <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.department || '-' }}</td>
+
+              <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
+                <div *ngIf="visitor.visiting_card_url" class="flex items-center justify-center">
+                 <button
+                        type="button"
+                        (click)="$event.stopPropagation(); openCardViewer(visitor, $event)"
+                        class="px-3 py-1 bg-gray-900 text-white text-[11px] font-semibold rounded-full hover:bg-black transition-all">
+                         View Card
+                </button>
+                </div>
+                <span *ngIf="!visitor.visiting_card_url" class="text-gray-300">-</span>
+              </td>
 
               <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
                 <div *ngIf="visitor.voice_note_url" class="flex items-center justify-center">
@@ -321,7 +317,7 @@
 
             <!-- Accordion Audio Player Row -->
             <tr *ngIf="expandedAudioId() === visitor.id" class="bg-gray-50/80 border-b border-gray-100">
-              <td colspan="10" class="p-0">
+              <td colspan="11" class="p-0">
                 <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-6 py-4 flex justify-center">
                   <div class="bg-black rounded-full px-5 py-2.5 flex items-center gap-4 shadow-xl w-full max-w-[400px]">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
@@ -598,14 +594,29 @@
             <div>
               <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile
                 Number</label>
-              <input type="text" [(ngModel)]="editFormData().mobile"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+              <input type="tel" [ngModel]="editFormData().mobile" (ngModelChange)="editFormData.set({ ...editFormData(), mobile: $event })"
+                maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
+                (input)="sanitizeEditPhoneField('mobile', $event, 10)"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                placeholder="10-digit number" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alternate Mobile
+                Number</label>
+              <input type="tel" [ngModel]="editFormData().alternate_mobile" (ngModelChange)="editFormData.set({ ...editFormData(), alternate_mobile: $event })"
+                maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
+                (input)="sanitizeEditPhoneField('alternate_mobile', $event, 10)"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                placeholder="10-digit number" />
             </div>
             <div>
               <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
                 Number</label>
-              <input type="text" [(ngModel)]="editFormData().office_number"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+              <input type="tel" [ngModel]="editFormData().office_number" (ngModelChange)="editFormData.set({ ...editFormData(), office_number: $event })"
+                maxlength="15" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 15)"
+                (input)="sanitizeEditPhoneField('office_number', $event, 15)"
+                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                placeholder="Digits only, up to 15" />
             </div>
           </div>
 
@@ -668,14 +679,20 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                 </svg>
-                Visiting Card
+                Visiting Card Image 1
               </div>
-              <div class="flex items-center gap-1.5">
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 <input #editCardInput type="file" class="hidden" accept="image/png, image/jpeg"
+                  (change)="onEditCardSelected($event)" />
+                <input #editCardCamera type="file" class="hidden" accept="image/*" capture="environment"
                   (change)="onEditCardSelected($event)" />
                 <button type="button" (click)="editCardInput.click()" [disabled]="isUpdatingVisitorCard()"
                   class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
-                  {{ editFormData().visiting_card_url ? 'Change' : 'Add' }}
+                  Upload
+                </button>
+                <button type="button" (click)="editCardCamera.click()" [disabled]="isUpdatingVisitorCard()"
+                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Camera
                 </button>
                 <button *ngIf="editFormData().visiting_card_url" type="button"
                   (click)="removeEditVisitorCard($event)" [disabled]="isUpdatingVisitorCard()"
@@ -688,12 +705,12 @@
             <div
               class="w-full min-h-[160px] bg-gray-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center p-3 relative overflow-hidden">
               <img *ngIf="editFormData().visiting_card_url" [src]="getImageUrl(editFormData().visiting_card_url)"
-                class="max-w-full max-h-[145px] object-contain rounded-md shadow-sm" alt="Visiting Card" />
+                class="max-w-full max-h-[145px] object-contain rounded-md shadow-sm" alt="Visiting Card 1" />
 
               <div *ngIf="isUpdatingVisitorCard()"
                 class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 text-gray-900">
                 <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
-                <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card 1</span>
               </div>
 
               <div *ngIf="!editFormData().visiting_card_url && !isUpdatingVisitorCard()"
@@ -703,9 +720,185 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span class="text-[10px] font-bold uppercase tracking-wider">No Card Uploaded</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider">No Card 1 Uploaded</span>
               </div>
             </div>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                Visiting Card Image 2
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <input #editCardInput2 type="file" class="hidden" accept="image/png, image/jpeg"
+                  (change)="onEditCardSelected2($event)" />
+                <input #editCardCamera2 type="file" class="hidden" accept="image/*" capture="environment"
+                  (change)="onEditCardSelected2($event)" />
+                <button type="button" (click)="editCardInput2.click()" [disabled]="isUpdatingVisitorCard2()"
+                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Upload
+                </button>
+                <button type="button" (click)="editCardCamera2.click()" [disabled]="isUpdatingVisitorCard2()"
+                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Camera
+                </button>
+                <button *ngIf="editFormData().visiting_card_url_2" type="button"
+                  (click)="removeEditVisitorCard2($event)" [disabled]="isUpdatingVisitorCard2()"
+                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="w-full min-h-[160px] bg-gray-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center p-3 relative overflow-hidden">
+              <img *ngIf="editFormData().visiting_card_url_2" [src]="getImageUrl(editFormData().visiting_card_url_2)"
+                class="max-w-full max-h-[145px] object-contain rounded-md shadow-sm" alt="Visiting Card 2" />
+
+              <div *ngIf="isUpdatingVisitorCard2()"
+                class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 text-gray-900">
+                <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card 2</span>
+              </div>
+
+              <div *ngIf="!editFormData().visiting_card_url_2 && !isUpdatingVisitorCard2()"
+                class="flex flex-col items-center justify-center text-gray-400">
+                <span class="text-[10px] font-bold uppercase tracking-wider">No Card 2 Uploaded</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
+            <textarea [(ngModel)]="editFormData().details" rows="5"
+              class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+              placeholder="Text extracted from visiting card image 1..."></textarea>
+          </div>
+
+          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5a7 7 0 100 14 7 7 0 000-14zm0 0v4m0 0h4" />
+                </svg>
+                Voice Note
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <input #editVoiceNoteInput type="file" class="hidden" accept="audio/*" (change)="onEditVoiceNoteSelected($event)" />
+                <button type="button" (click)="editVoiceNoteInput.click()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
+                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  {{ editFormData().voice_note_url ? 'Upload' : 'Add file' }}
+                </button>
+                <button type="button" (click)="startEditVoiceNoteRecording()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
+                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Record new
+                </button>
+                <button *ngIf="editFormData().voice_note_url" type="button" (click)="removeEditVoiceNote($event)"
+                  [disabled]="isUpdatingVoiceNote() || isEditRecording()"
+                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Remove
+                </button>
+              </div>
+            </div>
+            <div *ngIf="isUpdatingVoiceNote()"
+              class="mb-3 text-[11px] font-medium text-gray-500">Updating voice note...</div>
+            <div *ngIf="showEditVoiceRecorder() || isEditRecording() || editRecordingUrl()" class="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <button type="button" (click)="toggleEditRecording()" [disabled]="isUpdatingVoiceNote()"
+                    class="w-10 h-10 flex items-center justify-center rounded-full transition-all"
+                    [ngClass]="isEditRecording() ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-900 hover:bg-black'">
+                    <svg *ngIf="!isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    <svg *ngIf="isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    </svg>
+                  </button>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">{{ isEditRecording() ? 'Recording...' : 'Ready to record' }}</p>
+                    <p class="text-lg font-mono text-gray-900">{{ formatTime(editRecordingTime()) }}</p>
+                  </div>
+                </div>
+                <button type="button" (click)="cancelEditVoiceRecording()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
+                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-600 disabled:opacity-60">
+                  Cancel
+                </button>
+              </div>
+              <audio *ngIf="editRecordingUrl() && !isEditRecording()" [src]="safeEditRecordingUrl()" controls class="w-full rounded-lg"></audio>
+            </div>
+            <div *ngIf="editFormData().voice_note_url && !showEditVoiceRecorder() && !isEditRecording()" class="space-y-3">
+              <audio [src]="getImageUrl(editFormData().voice_note_url)" controls class="w-full rounded-lg"></audio>
+            </div>
+            <div *ngIf="!editFormData().voice_note_url && !showEditVoiceRecorder() && !isEditRecording()"
+              class="text-[11px] font-medium text-gray-500">No voice note attached. Record new or upload a file.</div>
+          </div>
+
+          <!-- Voice Note 2 -->
+          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5a7 7 0 100 14 7 7 0 000-14zm0 0v4m0 0h4" />
+                </svg>
+                Voice Note 2
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <input #editVoiceNoteInput2 type="file" class="hidden" accept="audio/*" (change)="onEditVoiceNoteSelected2($event)" />
+                <button type="button" (click)="editVoiceNoteInput2.click()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
+                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  {{ editFormData().voice_note_url_2 ? 'Upload' : 'Add file' }}
+                </button>
+                <button type="button" (click)="startEditVoiceNoteRecording2()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
+                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Record new
+                </button>
+                <button *ngIf="editFormData().voice_note_url_2" type="button" (click)="removeEditVoiceNote2($event)"
+                  [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
+                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  Remove
+                </button>
+              </div>
+            </div>
+            <div *ngIf="isUpdatingVoiceNote2()"
+              class="mb-3 text-[11px] font-medium text-gray-500">Updating voice note 2...</div>
+            <div *ngIf="showEditVoiceRecorder2() || isEditRecording2() || editRecordingUrl2()" class="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <button type="button" (click)="toggleEditRecording2()" [disabled]="isUpdatingVoiceNote2()"
+                    class="w-10 h-10 flex items-center justify-center rounded-full transition-all"
+                    [ngClass]="isEditRecording2() ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-900 hover:bg-black'">
+                    <svg *ngIf="!isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    <svg *ngIf="isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    </svg>
+                  </button>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">{{ isEditRecording2() ? 'Recording...' : 'Ready to record' }}</p>
+                    <p class="text-lg font-mono text-gray-900">{{ formatTime(editRecordingTime2()) }}</p>
+                  </div>
+                </div>
+                <button type="button" (click)="cancelEditVoiceRecording2()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
+                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-600 disabled:opacity-60">
+                  Cancel
+                </button>
+              </div>
+              <audio *ngIf="editRecordingUrl2() && !isEditRecording2()" [src]="safeEditRecordingUrl2()" controls class="w-full rounded-lg"></audio>
+            </div>
+            <div *ngIf="editFormData().voice_note_url_2 && !showEditVoiceRecorder2() && !isEditRecording2()" class="space-y-3">
+              <audio [src]="getImageUrl(editFormData().voice_note_url_2)" controls class="w-full rounded-lg"></audio>
+            </div>
+            <div *ngIf="!editFormData().voice_note_url_2 && !showEditVoiceRecorder2() && !isEditRecording2()"
+              class="text-[11px] font-medium text-gray-500">No second voice note attached. Record new or upload a file.</div>
           </div>
         </div>
       </div>
@@ -787,6 +980,11 @@
             </div>
 
             <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Alternate Mobile</div>
+              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.alternate_mobile || '-' }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
               <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Office Number</div>
               <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.office_number || '-' }}</div>
             </div>
@@ -817,6 +1015,11 @@
               <div
                 class="col-span-2 text-xs text-gray-700 font-semibold leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100 min-h-[60px]">
                 {{ selectedVisitor()?.remarks || 'No remarks provided.' }}</div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Details</div>
+              <div class="col-span-2 text-sm text-gray-700 whitespace-pre-wrap">{{ selectedVisitor()?.details || 'No details extracted.' }}</div>
             </div>
 
             <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4" *ngIf="selectedVisitor()?.voice_note_url">
@@ -906,10 +1109,17 @@
                 <div class="flex items-center gap-1.5">
                   <input #reviewCardInput type="file" class="hidden" accept="image/png, image/jpeg"
                     (change)="onReviewCardSelected($event)" />
+                  <input #reviewCardCameraInput type="file" class="hidden" accept="image/*" capture="environment"
+                    (change)="onReviewCardSelected($event)" />
                   <button type="button" (click)="$event.stopPropagation(); reviewCardInput.click()"
                     [disabled]="isUpdatingVisitorCard()"
                     class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                     {{ selectedVisitor()?.visiting_card_url ? 'Change' : 'Add' }}
+                  </button>
+                  <button type="button" (click)="$event.stopPropagation(); reviewCardCameraInput.click()"
+                    [disabled]="isUpdatingVisitorCard()"
+                    class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                    Camera
                   </button>
                 </div>
               </div>
@@ -960,8 +1170,9 @@
   </div>
 
   <!-- Dedicated Image Viewer Modal with Zoom -->
-  <div *ngIf="isImageViewerOpen() && selectedVisitor()?.visiting_card_url"
+  <div *ngIf="isImageViewerOpen() && selectedCardVisitor()?.visiting_card_url"
     class="fixed inset-0 bg-gray-900/95 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+
     <!-- Controls -->
     <div
       class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-3 z-[110] bg-white/10 p-2 rounded-2xl backdrop-blur-xl border border-white/20 shadow-2xl">
@@ -1001,8 +1212,9 @@
     <!-- Interactive Image Container -->
     <div class="relative w-full h-full flex items-center justify-center overflow-auto scrollbar-hide"
       (click)="closeImageViewer()">
-      <img [src]="getImageUrl(selectedVisitor()?.visiting_card_url)" [style.transform]="'scale(' + zoomLevel() + ')'"
+      <img [src]="getImageUrl(selectedCardVisitor()?.visiting_card_url)" [style.transform]="'scale(' + zoomLevel() + ')'"
         class="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-300 shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-xl origin-center border border-white/10"
+
         [class.cursor-zoom-in]="zoomLevel() < 3" [class.cursor-default]="zoomLevel() >= 3"
         (click)="$event.stopPropagation(); zoomIn()" alt="Visiting Card Full View" />
     </div>
@@ -1101,29 +1313,50 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
               <!-- Mobile Number -->
               <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile Number
                   *</label>
-                <input type="text" formControlName="mobile" (keypress)="onMobileKeypress($event)"
+                <input type="tel" formControlName="mobile" (keypress)="onMobileKeypress($event)"
                   (input)="onMobileInput($event)" (paste)="onPasteSanitizeMobile($event)" maxlength="10"
+                  inputmode="numeric"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
                   placeholder="10-digit number" />
                 <span class="text-[10px] text-gray-400 font-medium mt-1 block"
-                  *ngIf="!(addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched)">Mobile
-                  number must contain exactly 10 digits</span>
+                  *ngIf="!(addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched)">Digits only, exactly 10 digits</span>
                 <span *ngIf="addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched"
                   class="text-[10px] text-red-500 font-bold mt-1 block">Valid 10-digit Mobile is required</span>
+              </div>
+
+              <!-- Alternate Mobile Number -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alternate Mobile
+                  Number</label>
+                <input type="tel" formControlName="alternateMobile" (keypress)="onAlternateMobileKeypress($event)"
+                  (input)="onAlternateMobileInput($event)" (paste)="onPasteSanitizeAlternateMobile($event)" maxlength="10"
+                  inputmode="numeric"
+                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="10-digit number" />
+                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                  *ngIf="!(addVisitorForm.get('alternateMobile')?.invalid && addVisitorForm.get('alternateMobile')?.touched)">Digits only, exactly 10 digits if provided</span>
+                <span *ngIf="addVisitorForm.get('alternateMobile')?.invalid && addVisitorForm.get('alternateMobile')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Alternate mobile must be exactly 10 digits</span>
               </div>
 
               <!-- Office Number -->
               <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
                   Number</label>
-                <input type="text" formControlName="officeNumber" (input)="onOfficeNumberInput($event)" maxlength="15"
+                <input type="tel" formControlName="officeNumber" (keypress)="onOfficeNumberKeypress($event)"
+                  (input)="onOfficeNumberInput($event)" (paste)="onPasteSanitizeOfficeNumber($event)" maxlength="15"
+                  inputmode="numeric"
                   class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
-                  placeholder="Office number" />
+                  placeholder="Digits only, up to 15" />
+                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                  *ngIf="!(addVisitorForm.get('officeNumber')?.invalid && addVisitorForm.get('officeNumber')?.touched)">Digits only, up to 15 digits</span>
+                <span *ngIf="addVisitorForm.get('officeNumber')?.invalid && addVisitorForm.get('officeNumber')?.touched"
+                  class="text-[10px] text-red-500 font-bold mt-1 block">Office number can only contain digits</span>
               </div>
 
               <!-- Email -->
@@ -1158,30 +1391,54 @@
               <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Job
                   Title</label>
-                <select formControlName="jobTitle"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
-                  <option value="">Select job title</option>
-                  <option *ngFor="let jt of jobTitles" [value]="jt">{{ jt }}</option>
-                </select>
+                <div class="relative">
+                  <select formControlName="jobTitle"
+                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    <option value="">Select job title</option>
+                    <option *ngFor="let jt of jobTitles" [value]="jt">{{ jt }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>
                 <label
                   class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Department</label>
-                <select formControlName="department"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
-                  <option value="">Select department</option>
-                  <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
-                </select>
+                <div class="relative">
+                  <select formControlName="department"
+                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    <option value="">Select department</option>
+                    <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
 
               <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Lead
                   Category</label>
-                <select formControlName="leadCategory"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
-                  <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
-                </select>
+                <div class="relative">
+                  <select formControlName="leadCategory"
+                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1215,42 +1472,16 @@
               Attachment & Remarks</h3>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <!-- Upload Area -->
+              <!-- Upload Area Card 1 -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting
-                  Card</label>
-
-                <div *ngIf="!selectedFile()"
-                  class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer flex flex-col items-center justify-center h-48"
-                  (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
-                  <svg class="w-10 h-10 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                  </svg>
-                  <p class="text-sm font-bold text-gray-900 mb-1">Click to upload or drag and drop</p>
-                  <p class="text-[11px] text-gray-500 font-medium">PNG or JPG (MAX. 5MB)</p>
-                  <input type="file" #fileInput class="hidden" accept="image/png, image/jpeg"
-                    (change)="onFileSelected($event)">
-                </div>
-
-                <div *ngIf="selectedFile()" class="border border-gray-200 rounded-xl p-3 bg-gray-50 h-48 flex flex-col">
-                  <div
-                    class="flex-1 relative overflow-hidden rounded-lg bg-black/5 flex items-center justify-center mb-2">
-                    <img [src]="filePreview()" class="max-h-full max-w-full object-contain" alt="Preview">
-                    <div *ngIf="isScanningCard()"
-                      class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 text-gray-900">
-                      <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
-                      <span class="text-[11px] font-bold uppercase tracking-wider">Scanning Card</span>
-                    </div>
-                  </div>
-                  <div class="flex justify-between items-center px-1">
-                    <span class="text-xs font-semibold text-gray-700 truncate max-w-[150px]">{{ selectedFile()?.name
-                      }}</span>
-                    <button type="button" (click)="removeFile()"
-                      class="text-xs font-bold text-red-500 hover:text-red-700 transition-colors">Remove</button>
-                  </div>
-                </div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting Card Image 1</label>
+                <app-visiting-card-upload
+                  title="Visiting Card Image 1"
+                  [previewUrl]="filePreview()"
+                  [scanning]="isScanningCard()"
+                  (fileSelected)="onVisitingCard1File($event)"
+                  (removed)="removeFile()"
+                />
                 <div *ngIf="cardScanMessage()"
                   class="mt-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-[11px] font-semibold"
                   [ngClass]="isScanningCard() ? 'bg-gray-50 border-gray-200 text-gray-600' : 'bg-white border-gray-200 text-gray-700'">
@@ -1264,12 +1495,32 @@
                 </div>
               </div>
 
+              <!-- Upload Area Card 2 -->
+              <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting Card Image 2</label>
+                <app-visiting-card-upload
+                  title="Visiting Card Image 2"
+                  [previewUrl]="filePreview2()"
+                  (fileSelected)="onVisitingCard2File($event)"
+                  (removed)="removeFile2()"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <div class="flex flex-col">
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
+                <textarea formControlName="details" rows="5" readonly
+                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none flex-1 resize-none"
+                  placeholder="Text from visiting card image 1 will appear here after scan..."></textarea>
+              </div>
+
               <!-- Remarks -->
               <div class="flex flex-col">
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Remarks</label>
                 <textarea formControlName="remarks" rows="5"
                   class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm flex-1 resize-none"
-                  placeholder="Share additional visitor details or requirements..."></textarea>
+                  placeholder="Share additional visitor notes..."></textarea>
               </div>
             </div>
           </div>
@@ -1330,10 +1581,16 @@
                 </div>
               </div>
 
-              <!-- Right side: Audio Player & Delete -->
-              <div *ngIf="recordingUrl()" class="flex items-center gap-4 animate-in fade-in duration-300">
+              <!-- Right side: Audio Player, Record new & Delete -->
+              <div *ngIf="recordingUrl() && !isRecording()" class="flex items-center gap-3 animate-in fade-in duration-300">
                 <audio [src]="safeRecordingUrl()" controls
                   class="h-10 w-48 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+
+                <button type="button" (click)="recordNewVoiceNote()"
+                  class="h-9 px-3 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-[10px] font-bold uppercase tracking-wider text-white transition-all"
+                  title="Record new">
+                  Record new
+                </button>
 
                 <button type="button" (click)="clearVoiceNote()"
                   class="p-2.5 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-xl transition-all"
@@ -1348,6 +1605,103 @@
 
               <!-- Waveform placeholder when recording -->
               <div *ngIf="isRecording()" class="flex items-center justify-center gap-1 h-10 w-48 pr-4">
+                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 40%; animation-delay: 0.1s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 80%; animation-delay: 0.2s"></div>
+                <div class="w-1.5 bg-white/80 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 60%; animation-delay: 0.3s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 100%; animation-delay: 0.4s"></div>
+                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 70%; animation-delay: 0.5s"></div>
+                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                  style="height: 50%; animation-delay: 0.6s"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 6. Voice Note 2 -->
+          <div class="bg-gray-900 p-6 rounded-[20px] border border-gray-800 shadow-sm relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+            <h3
+              class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-800 relative z-10">
+              Voice Note 2</h3>
+
+            <!-- Recording Controls -->
+            <div
+              class="flex items-center justify-between bg-black/50 backdrop-blur-sm border border-gray-800/80 p-4 rounded-2xl relative z-10 hover:border-gray-700 transition-all duration-300">
+
+              <!-- Left side: Status & Timer -->
+              <div class="flex items-center gap-4">
+                <button type="button" (click)="toggleRecording2()"
+                  class="relative w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none"
+                  [ngClass]="{'bg-red-500 hover:bg-red-600': isRecording2(), 'bg-white hover:bg-gray-200': !isRecording2() && !recordingUrl2(), 'bg-gray-800 hover:bg-gray-700': !isRecording2() && recordingUrl2() }">
+
+                  <!-- Pulsing ring when recording -->
+                  <div *ngIf="isRecording2()"
+                    class="absolute inset-0 rounded-full border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
+                  </div>
+
+                  <!-- Icon -->
+                  <svg *ngIf="!isRecording2() && !recordingUrl2()" xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                  <svg *ngIf="isRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  </svg>
+                  <svg *ngIf="!isRecording2() && recordingUrl2()" xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span *ngIf="isRecording2()" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-sm font-bold tracking-wider"
+                      [ngClass]="{'text-red-400': isRecording2(), 'text-gray-300': !isRecording2()}">
+                      {{ isRecording2() ? 'RECORDING' : (recordingUrl2() ? 'RECORDED' : 'READY') }}
+                    </span>
+                  </div>
+                  <span class="text-2xl font-mono font-light text-white tracking-widest mt-0.5">
+                    {{ formatTime(recordingTime2()) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Right side: Audio Player, Record new & Delete -->
+              <div *ngIf="recordingUrl2() && !isRecording2()" class="flex items-center gap-3 animate-in fade-in duration-300">
+                <audio [src]="safeRecordingUrl2()" controls
+                  class="h-10 w-48 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+
+                <button type="button" (click)="recordNewVoiceNote2()"
+                  class="h-9 px-3 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-[10px] font-bold uppercase tracking-wider text-white transition-all"
+                  title="Record new">
+                  Record new
+                </button>
+
+                <button type="button" (click)="clearVoiceNote2()"
+                  class="p-2.5 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-xl transition-all"
+                  title="Delete Recording">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Waveform placeholder when recording -->
+              <div *ngIf="isRecording2()" class="flex items-center justify-center gap-1 h-10 w-48 pr-4">
                 <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 40%; animation-delay: 0.1s"></div>
                 <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"

@@ -18,6 +18,7 @@ export class EnquiryService {
     formData.append('jobTitle', data.jobTitle ?? '');
     formData.append('email', data.email);
     formData.append('mobile', data.mobile);
+    formData.append('alternateMobile', data.alternateMobile ?? '');
     formData.append('officeNumber', data.officeNumber ?? '');
     formData.append('department', data.department ?? '');
     formData.append('interests', JSON.stringify(data.interests));
@@ -26,6 +27,10 @@ export class EnquiryService {
 
     if (data.visitingCard) {
       formData.append('visitingCard', data.visitingCard);
+    }
+
+    if (data.visitingCard2) {
+      formData.append('visitingCard2', data.visitingCard2);
     }
     
     if (data.voiceNote) {

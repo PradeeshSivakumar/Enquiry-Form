@@ -1,5 +1,5 @@
 import { animate, style, transition, trigger } from '@angular/animations';
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormArray, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -13,7 +13,7 @@ import { CustomSelectComponent } from '../components/custom-select.component';
 import { FormSectionComponent } from '../components/form-section.component';
 import { PrimaryButtonComponent } from '../components/primary-button.component';
 import { TextareaComponent } from '../components/textarea.component';
-import { UploadDropzoneComponent } from '../components/upload-dropzone.component';
+import { VisitingCardUploadComponent } from '../components/visiting-card-upload.component';
 import { EnquiryService } from '../services/enquiry.service';
 import { VenueService, Venue } from '../../venue/services/venue.service';
 import { ProductsService } from '../../products/services/products.service';
@@ -28,7 +28,7 @@ import { ProductsService } from '../../products/services/products.service';
     CustomInputComponent,
     CustomSelectComponent,
     CheckboxCardGroupComponent,
-    UploadDropzoneComponent,
+    VisitingCardUploadComponent,
     TextareaComponent,
     PrimaryButtonComponent,
   ],
@@ -49,6 +49,7 @@ export class EnquiryFormPageComponent {
 
   readonly isSubmitting = signal(false);
   readonly imagePreview = signal<string | null>(null);
+  readonly imagePreview2 = signal<string | null>(null);
   readonly submitState = signal<'idle' | 'success' | 'error'>('idle');
   readonly formSubmitted = signal(false);
   readonly completionPercentage = signal(0);
@@ -82,10 +83,12 @@ export class EnquiryFormPageComponent {
     jobTitle: [''],
     email: ['', [Validators.required, Validators.email]],
     mobile: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
-    officeNumber: [''],
+    alternateMobile: ['', [Validators.pattern(/^\d{10}$/)]],
+    officeNumber: ['', [Validators.pattern(/^\d{0,15}$/)]],
     department: [''],
     interests: this.fb.array<FormControl<boolean | null>>(this.interestOptions.map(() => this.fb.control(false)), [this.atLeastOneSelectedValidator()]),
     visitingCard: [null as File | null],
+    visitingCard2: [null as File | null],
     remarks: [''],
   });
 
@@ -142,29 +145,60 @@ export class EnquiryFormPageComponent {
     return !!(control.invalid && (control.touched || this.formSubmitted()));
   }
 
-  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'officeNumber' | 'department'): boolean {
+  showOptionalPhoneError(controlName: 'alternateMobile' | 'officeNumber'): boolean {
     const control = this.form.controls[controlName];
     const value = `${control.value ?? ''}`.trim();
-    const optionalFields = new Set(['title', 'companyName', 'jobTitle', 'officeNumber', 'department']);
+    return value.length > 0 && !!(control.invalid && (control.touched || this.formSubmitted()));
+  }
+
+  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'alternateMobile' | 'officeNumber' | 'department'): boolean {
+    const control = this.form.controls[controlName];
+    const value = `${control.value ?? ''}`.trim();
+    const optionalFields = new Set(['title', 'companyName', 'jobTitle', 'alternateMobile', 'officeNumber', 'department']);
     if (optionalFields.has(controlName)) {
       return value.length > 0;
     }
     return value.length > 0 && control.valid;
   }
 
+  onVisitingCardFileSelected(file: File, slot: 1 | 2): void {
+    if (slot === 1) {
+      this.applyVisitingCardFile(file, 'visitingCard', this.imagePreview);
+      return;
+    }
+    this.applyVisitingCardFile(file, 'visitingCard2', this.imagePreview2);
+  }
+
   onFileSelected(file: File): void {
+    this.onVisitingCardFileSelected(file, 1);
+  }
+
+  private applyVisitingCardFile(
+    file: File,
+    control: 'visitingCard' | 'visitingCard2',
+    preview: WritableSignal<string | null>
+  ): void {
     if (!file.type.startsWith('image/')) {
       return;
     }
-    this.form.controls.visitingCard.setValue(file);
+    this.form.controls[control].setValue(file);
     const reader = new FileReader();
-    reader.onload = () => this.imagePreview.set(reader.result as string);
+    reader.onload = () => preview.set(reader.result as string);
     reader.readAsDataURL(file);
   }
 
   onRemoveFile(): void {
     this.form.controls.visitingCard.setValue(null);
     this.imagePreview.set(null);
+  }
+
+  onFileSelected2(file: File): void {
+    this.onVisitingCardFileSelected(file, 2);
+  }
+
+  onRemoveFile2(): void {
+    this.form.controls.visitingCard2.setValue(null);
+    this.imagePreview2.set(null);
   }
 
   onMobileInput(event: Event): void {
@@ -176,13 +210,32 @@ export class EnquiryFormPageComponent {
     this.form.controls.mobile.setValue(digitsOnly, { emitEvent: false });
   }
 
+  onPhoneKeypress(event: KeyboardEvent, maxLength: number): void {
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
+      event.preventDefault();
+    }
+    const input = event.target as HTMLInputElement;
+    if (/[0-9]/.test(event.key) && input.value.replace(/\D/g, '').length >= maxLength) {
+      event.preventDefault();
+    }
+  }
+
+  onAlternateMobileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitsOnly = input.value.replace(/\D/g, '').slice(0, 10);
+    if (input.value !== digitsOnly) {
+      input.value = digitsOnly;
+    }
+    this.form.controls.alternateMobile.setValue(digitsOnly, { emitEvent: true });
+  }
+
   onOfficeNumberInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     const digitsOnly = input.value.replace(/\D/g, '').slice(0, 15);
     if (input.value !== digitsOnly) {
       input.value = digitsOnly;
     }
-    this.form.controls.officeNumber.setValue(digitsOnly, { emitEvent: false });
+    this.form.controls.officeNumber.setValue(digitsOnly, { emitEvent: true });
   }
 
   startNewEnquiry(): void {
@@ -195,6 +248,7 @@ export class EnquiryFormPageComponent {
 
     this.interestsArray.controls.forEach((control) => control.setValue(false));
     this.imagePreview.set(null);
+    this.imagePreview2.set(null);
     this.clearVoiceNote();
     this.formSubmitted.set(false);
     this.updateCompletion();
@@ -234,10 +288,12 @@ export class EnquiryFormPageComponent {
       jobTitle: rawValue.jobTitle ?? undefined,
       email: rawValue.email ?? '',
       mobile: rawValue.mobile ?? '',
-      officeNumber: rawValue.officeNumber ?? undefined,
+      alternateMobile: rawValue.alternateMobile || undefined,
+      officeNumber: rawValue.officeNumber || undefined,
       department: rawValue.department ?? undefined,
       interests: selectedInterests,
       visitingCard: rawValue.visitingCard,
+      visitingCard2: rawValue.visitingCard2,
       voiceNote: voiceNoteData,
       venueId: rawValue.venueId ?? undefined,
       remarks: rawValue.remarks ?? undefined,
@@ -257,6 +313,7 @@ export class EnquiryFormPageComponent {
 
           this.interestsArray.controls.forEach((control) => control.setValue(false));
           this.imagePreview.set(null);
+          this.imagePreview2.set(null);
           this.clearVoiceNote();
           this.formSubmitted.set(false);
           this.updateCompletion();
@@ -299,7 +356,7 @@ export class EnquiryFormPageComponent {
   private updateCompletion(): void {
     const values = this.form.getRawValue();
     const total = 10;
-    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.officeNumber, values.department, values.remarks].filter(
+    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.alternateMobile, values.officeNumber, values.department, values.remarks, values.visitingCard, values.visitingCard2].filter(
       (value) => `${value ?? ''}`.trim().length > 0
     ).length;
 

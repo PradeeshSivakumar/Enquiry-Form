@@ -60,10 +60,12 @@
               <app-custom-input label="Company Name" inputId="companyName" [control]="form.controls.companyName" [showSuccess]="showSuccess('companyName')" />
               <app-custom-select label="Job Title" inputId="jobTitle" [control]="form.controls.jobTitle" placeholder="Choose Job" [options]="jobTitleOptions" [showSuccess]="showSuccess('jobTitle')" />
             </div>
-            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               <app-custom-input label="Email *" inputId="email" [control]="form.controls.email" [showError]="showError('email')" [showSuccess]="showSuccess('email')" errorMessage="Please enter a valid email." />
+            </div>
+            <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label for="mobile" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Mobile *</label>
+                <label for="mobile" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Mobile Number *</label>
                 <div class="flex h-[52px] items-center overflow-hidden rounded-xl border border-[#d1d5db] bg-white transition duration-200 hover:!border-[#1f1f1f] hover:shadow-[0_0_0_4px_rgba(31,31,31,0.08)] focus-within:border-[#1f1f1f] focus-within:ring-4 focus-within:ring-[rgba(31,31,31,0.1)]" [class.border-[#ef4444]]="showError('mobile')">
                   <span class="border-r border-[#d1d5db] px-4 text-sm font-medium text-slate-600">+91</span>
                   <input
@@ -74,6 +76,7 @@
                     inputmode="numeric"
                     pattern="[0-9]*"
                     class="h-full w-full px-4 text-sm outline-none"
+                    (keypress)="onPhoneKeypress($event, 10)"
                     (input)="onMobileInput($event)"
                   />
                 </div>
@@ -82,19 +85,42 @@
                 }
               </div>
               <div>
+                <label for="alternateMobile" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Alternate Mobile Number</label>
+                <input
+                  id="alternateMobile"
+                  type="tel"
+                  formControlName="alternateMobile"
+                  maxlength="10"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  class="h-[52px] w-full rounded-xl border border-[#d1d5db] bg-white px-4 text-sm outline-none transition duration-200 hover:!border-[#1f1f1f] hover:shadow-[0_0_0_4px_rgba(31,31,31,0.08)] focus:border-[#1f1f1f] focus:ring-4 focus:ring-[rgba(31,31,31,0.1)]"
+                  [class.border-[#ef4444]]="showOptionalPhoneError('alternateMobile')"
+                  placeholder="10-digit number"
+                  (keypress)="onPhoneKeypress($event, 10)"
+                  (input)="onAlternateMobileInput($event)"
+                />
+                @if (showOptionalPhoneError('alternateMobile')) {
+                  <p class="mt-2 text-xs font-medium text-[#ef4444]">Alternate mobile must be exactly 10 digits.</p>
+                }
+              </div>
+              <div>
                 <label for="officeNumber" class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Office Number</label>
-                <div class="flex h-[52px] items-center overflow-hidden rounded-xl border border-[#d1d5db] bg-white transition duration-200 hover:!border-[#1f1f1f] hover:shadow-[0_0_0_4px_rgba(31,31,31,0.08)] focus-within:border-[#1f1f1f] focus-within:ring-4 focus-within:ring-[rgba(31,31,31,0.1)]">
-                  <input
-                    id="officeNumber"
-                    type="tel"
-                    formControlName="officeNumber"
-                    maxlength="15"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    class="h-full w-full px-4 text-sm outline-none"
-                    (input)="onOfficeNumberInput($event)"
-                  />
-                </div>
+                <input
+                  id="officeNumber"
+                  type="tel"
+                  formControlName="officeNumber"
+                  maxlength="15"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  class="h-[52px] w-full rounded-xl border border-[#d1d5db] bg-white px-4 text-sm outline-none transition duration-200 hover:!border-[#1f1f1f] hover:shadow-[0_0_0_4px_rgba(31,31,31,0.08)] focus:border-[#1f1f1f] focus:ring-4 focus:ring-[rgba(31,31,31,0.1)]"
+                  [class.border-[#ef4444]]="showOptionalPhoneError('officeNumber')"
+                  placeholder="Digits only, up to 15"
+                  (keypress)="onPhoneKeypress($event, 15)"
+                  (input)="onOfficeNumberInput($event)"
+                />
+                @if (showOptionalPhoneError('officeNumber')) {
+                  <p class="mt-2 text-xs font-medium text-[#ef4444]">Office number can only contain digits (max 15).</p>
+                }
               </div>
             </div>
             <div class="mt-6">
@@ -115,9 +141,15 @@
           <app-form-section title="Attachment & Remarks" icon="attachment">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Visiting Card</label>
-                <app-upload-dropzone [previewUrl]="imagePreview()" (fileSelected)="onFileSelected($event)" (removed)="onRemoveFile()" />
+                <label class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Visiting Card Image 1</label>
+                <app-visiting-card-upload title="Visiting Card Image 1" [previewUrl]="imagePreview()" (fileSelected)="onVisitingCardFileSelected($event, 1)" (removed)="onRemoveFile()" />
               </div>
+              <div>
+                <label class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Visiting Card Image 2</label>
+                <app-visiting-card-upload title="Visiting Card Image 2" [previewUrl]="imagePreview2()" (fileSelected)="onVisitingCardFileSelected($event, 2)" (removed)="onRemoveFile2()" />
+              </div>
+            </div>
+            <div class="mt-6 grid grid-cols-1 gap-4">
               <div class="flex flex-col gap-4">
                 <app-textarea
                   label="Remarks"

@@ -7,6 +7,7 @@ import { Venue, VenueService } from '../../../venue/services/venue.service';
 import { ProductsService } from '../../../products/services/products.service';
 import { INTEREST_OPTIONS } from '../../../../core/constants/form-options';
 import { environment } from '../../../../../environments/environment';
+import { VisitingCardUploadComponent } from '../../../enquiry-form/components/visiting-card-upload.component';
 
 export type LeadCategory = 'Potential' | 'Non Potential' | 'Others';
 
@@ -24,7 +25,7 @@ type ExtractedVisitingCardData = Partial<{
 @Component({
   selector: 'app-visitors-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, VisitingCardUploadComponent],
   templateUrl: './visitors-page.html',
   styleUrl: './visitors-page.css',
 })
@@ -40,6 +41,8 @@ export class VisitorsPage implements OnInit {
   error = signal<string | null>(null);
   viewMode = signal<'grid' | 'table'>('table');
   selectedVisitor = signal<Visitor | null>(null);
+  selectedCardVisitor = signal<Visitor | null>(null);
+  
   
   // Toast Notification
   toastMessage = signal<{text: string, type: 'success' | 'error'} | null>(null);
@@ -58,11 +61,16 @@ export class VisitorsPage implements OnInit {
   addVisitorForm!: FormGroup;
   selectedInterests = signal<string[]>([]);
   selectedFile = signal<File | null>(null);
+  selectedFile2 = signal<File | null>(null);
   filePreview = signal<string | null>(null);
+  filePreview2 = signal<string | null>(null);
   isScanningCard = signal<boolean>(false);
   cardScanMessage = signal<string | null>(null);
   private cardScanToken = 0;
   isUpdatingVisitorCard = signal<boolean>(false);
+  isUpdatingVisitorCard2 = signal<boolean>(false);
+  isUpdatingVoiceNote = signal<boolean>(false);
+  isUpdatingVoiceNote2 = signal<boolean>(false);
   
   // Voice Note Recording
   isRecording = signal<boolean>(false);
@@ -74,6 +82,38 @@ export class VisitorsPage implements OnInit {
     const url = this.recordingUrl();
     return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
   });
+
+  // Voice Note 2 Recording
+  isRecording2 = signal<boolean>(false);
+  recordingTime2 = signal<number>(0);
+  recordingBlob2 = signal<Blob | null>(null);
+  recordingUrl2 = signal<string | null>(null);
+  safeRecordingUrl2 = computed(() => {
+    const url = this.recordingUrl2();
+    return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
+  });
+
+  // Edit modal voice note recording
+  showEditVoiceRecorder = signal<boolean>(false);
+  isEditRecording = signal<boolean>(false);
+  editRecordingTime = signal<number>(0);
+  editRecordingBlob = signal<Blob | null>(null);
+  editRecordingUrl = signal<string | null>(null);
+  safeEditRecordingUrl = computed(() => {
+    const url = this.editRecordingUrl();
+    return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
+  });
+
+  showEditVoiceRecorder2 = signal<boolean>(false);
+  isEditRecording2 = signal<boolean>(false);
+  editRecordingTime2 = signal<number>(0);
+  editRecordingBlob2 = signal<Blob | null>(null);
+  editRecordingUrl2 = signal<string | null>(null);
+  safeEditRecordingUrl2 = computed(() => {
+    const url = this.editRecordingUrl2();
+    return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
+  });
+  
   expandedAudioId = signal<number | null>(null);
   
   // Voice Note Custom Player State
@@ -99,6 +139,12 @@ export class VisitorsPage implements OnInit {
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private recordingInterval: any;
+  private editMediaRecorder: MediaRecorder | null = null;
+  private editAudioChunks: Blob[] = [];
+  private editRecordingInterval: ReturnType<typeof setInterval> | null = null;
+  private editMediaRecorder2: MediaRecorder | null = null;
+  private editAudioChunks2: Blob[] = [];
+  private editRecordingInterval2: ReturnType<typeof setInterval> | null = null;
   
   searchQuery = signal<string>('');
   activeCategory = signal<string>('All');
@@ -143,7 +189,9 @@ export class VisitorsPage implements OnInit {
         (v.job_title?.toLowerCase().includes(query)) ||
         (v.email?.toLowerCase().includes(query)) ||
         (v.mobile?.toLowerCase().includes(query)) ||
+        (v.alternate_mobile?.toLowerCase().includes(query)) ||
         (v.office_number?.toLowerCase().includes(query)) ||
+        (v.details?.toLowerCase().includes(query)) ||
         (v.department?.toLowerCase().includes(query)) ||
         (v.interests?.some(i => i.toLowerCase().includes(query)))
       );
@@ -243,15 +291,25 @@ export class VisitorsPage implements OnInit {
 
   openEdit(visitor: Visitor, event: Event) {
     event.stopPropagation();
+    this.clearEditVoiceRecording();
+    this.clearEditVoiceRecording2();
     this.editingVisitor.set(visitor);
     this.editFormData.set({ ...visitor });
     this.isUpdatingVisitorCard.set(false);
+    this.isUpdatingVisitorCard2.set(false);
+    this.isUpdatingVoiceNote.set(false);
+    this.isUpdatingVoiceNote2.set(false);
   }
 
   closeEdit() {
+    this.clearEditVoiceRecording();
+    this.clearEditVoiceRecording2();
     this.editingVisitor.set(null);
     this.editFormData.set({});
     this.isUpdatingVisitorCard.set(false);
+    this.isUpdatingVisitorCard2.set(false);
+    this.isUpdatingVoiceNote.set(false);
+    this.isUpdatingVoiceNote2.set(false);
   }
 
   saveEdit() {
@@ -327,11 +385,13 @@ export class VisitorsPage implements OnInit {
       jobTitle: [''],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      officeNumber: [''],
+      alternateMobile: ['', [Validators.pattern(/^\d{10}$/)]],
+      officeNumber: ['', [Validators.pattern(/^\d{0,15}$/)]],
       department: [''],
       leadCategory: ['Potential'],
       venueId: ['', Validators.required],
-      remarks: ['', Validators.maxLength(500)]
+      remarks: ['', Validators.maxLength(500)],
+      details: ['']
     });
   }
 
@@ -344,6 +404,9 @@ export class VisitorsPage implements OnInit {
     this.cardScanMessage.set(null);
     this.cardScanToken++;
     this.clearVoiceNote();
+    this.clearVoiceNote2();
+    this.selectedFile2.set(null);
+    this.filePreview2.set(null);
     this.isAddModalOpen.set(true);
     document.body.style.overflow = 'hidden';
   }
@@ -378,6 +441,35 @@ export class VisitorsPage implements OnInit {
     this.addVisitorForm.get('mobile')?.setValue(value, { emitEvent: false });
   }
 
+  onAlternateMobileKeypress(event: KeyboardEvent) {
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  onAlternateMobileInput(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    let value = inputElement.value.replace(/[^0-9]/g, '');
+    if (value.length > 10) {
+      value = value.substring(0, 10);
+    }
+    inputElement.value = value;
+    this.addVisitorForm.get('alternateMobile')?.setValue(value, { emitEvent: false });
+  }
+
+  onPasteSanitizeAlternateMobile(event: ClipboardEvent) {
+    event.preventDefault();
+    const pastedData = event.clipboardData?.getData('text') || '';
+    const sanitized = pastedData.replace(/\D/g, '').slice(0, 10);
+    this.addVisitorForm.get('alternateMobile')?.setValue(sanitized);
+  }
+
+  onOfficeNumberKeypress(event: KeyboardEvent) {
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
   onOfficeNumberInput(event: Event) {
     const inputElement = event.target as HTMLInputElement;
     let value = inputElement.value.replace(/[^0-9]/g, '');
@@ -386,6 +478,32 @@ export class VisitorsPage implements OnInit {
     }
     inputElement.value = value;
     this.addVisitorForm.get('officeNumber')?.setValue(value, { emitEvent: false });
+  }
+
+  onPasteSanitizeOfficeNumber(event: ClipboardEvent) {
+    event.preventDefault();
+    const pastedData = event.clipboardData?.getData('text') || '';
+    const sanitized = pastedData.replace(/\D/g, '').slice(0, 15);
+    this.addVisitorForm.get('officeNumber')?.setValue(sanitized);
+  }
+
+  sanitizeEditPhoneField(field: 'mobile' | 'alternate_mobile' | 'office_number', event: Event, maxLength: number) {
+    const input = event.target as HTMLInputElement;
+    const digitsOnly = input.value.replace(/\D/g, '').slice(0, maxLength);
+    if (input.value !== digitsOnly) {
+      input.value = digitsOnly;
+    }
+    this.editFormData.set({ ...this.editFormData(), [field]: digitsOnly });
+  }
+
+  onEditPhoneKeypress(event: KeyboardEvent, maxLength: number) {
+    if (!/[0-9]/.test(event.key) && !['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'].includes(event.key)) {
+      event.preventDefault();
+    }
+    const input = event.target as HTMLInputElement;
+    if (/[0-9]/.test(event.key) && input.value.replace(/\D/g, '').length >= maxLength) {
+      event.preventDefault();
+    }
   }
 
   onFullNameKeypress(event: KeyboardEvent) {
@@ -417,25 +535,43 @@ export class VisitorsPage implements OnInit {
     this.addVisitorForm.get('fullName')?.setValue(sanitized);
   }
 
+  onVisitingCard1File(file: File) {
+    this.applyVisitorCardFile(file, 1);
+  }
+
+  onVisitingCard2File(file: File) {
+    this.applyVisitorCardFile(file, 2);
+  }
+
+  private applyVisitorCardFile(file: File, slot: 1 | 2) {
+    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+      this.showToast('Only PNG and JPG images are allowed.', 'error');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('File size should not exceed 5MB.', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const result = e.target?.result as string;
+      if (slot === 1) {
+        this.selectedFile.set(file);
+        this.filePreview.set(result);
+        this.scanVisitingCard(file);
+        return;
+      }
+      this.selectedFile2.set(file);
+      this.filePreview2.set(result);
+    };
+    reader.readAsDataURL(file);
+  }
+
   onFileSelected(event: any) {
-    const file = event.target.files[0] as File;
+    const file = event.target.files?.[0] as File;
     if (file) {
-      if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
-        this.showToast('Only PNG and JPG images are allowed.', 'error');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        this.showToast('File size should not exceed 5MB.', 'error');
-        return;
-      }
-      
-      this.selectedFile.set(file);
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.filePreview.set(e.target.result);
-      };
-      reader.readAsDataURL(file);
-      this.scanVisitingCard(file);
+      this.applyVisitorCardFile(file, 1);
     }
   }
 
@@ -445,6 +581,19 @@ export class VisitorsPage implements OnInit {
     this.isScanningCard.set(false);
     this.cardScanMessage.set(null);
     this.cardScanToken++;
+    this.addVisitorForm.get('details')?.setValue('');
+  }
+
+  onFileSelected2(event: any) {
+    const file = event.target.files?.[0] as File;
+    if (file) {
+      this.applyVisitorCardFile(file, 2);
+    }
+  }
+
+  removeFile2() {
+    this.selectedFile2.set(null);
+    this.filePreview2.set(null);
   }
 
   private async scanVisitingCard(file: File) {
@@ -471,8 +620,9 @@ export class VisitorsPage implements OnInit {
 
       if (scanToken !== this.cardScanToken) return;
 
-      const extracted = this.extractVisitingCardData(result.data.text || '');
-      const filledCount = this.applyExtractedCardData(extracted);
+      const rawText = result.data.text || '';
+      const extracted = this.extractVisitingCardData(rawText);
+      const filledCount = this.applyExtractedCardData(extracted, rawText);
 
       if (filledCount > 0) {
         this.cardScanMessage.set(`Auto-filled ${filledCount} field${filledCount === 1 ? '' : 's'} from the card.`);
@@ -605,7 +755,7 @@ export class VisitorsPage implements OnInit {
     return addressLines.length ? addressLines.join(', ') : undefined;
   }
 
-  private applyExtractedCardData(data: ExtractedVisitingCardData): number {
+  private applyExtractedCardData(data: ExtractedVisitingCardData, rawText: string): number {
     let filledCount = 0;
     const fillIfEmpty = (controlName: string, value?: string) => {
       const control = this.addVisitorForm.get(controlName);
@@ -633,11 +783,11 @@ export class VisitorsPage implements OnInit {
       fillIfEmpty('jobTitle', designation);
     }
 
-    const extraDetails = [
-      data.website ? `Website: ${data.website}` : '',
-      data.address ? `Address: ${data.address}` : ''
-    ].filter(Boolean).join('\n');
-    fillIfEmpty('remarks', extraDetails);
+    const normalizedDetails = rawText.trim();
+    if (normalizedDetails) {
+      this.addVisitorForm.get('details')?.setValue(normalizedDetails);
+      filledCount++;
+    }
 
     return filledCount;
   }
@@ -717,6 +867,298 @@ export class VisitorsPage implements OnInit {
     this.recordingBlob.set(null);
     this.recordingUrl.set(null);
     this.recordingTime.set(0);
+  }
+
+  async toggleRecording2() {
+    if (this.isRecording2()) {
+      this.stopRecording2();
+    } else {
+      await this.startRecording2();
+    }
+  }
+
+  async startRecording2() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.audioChunks = [];
+      
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+        }
+      };
+      
+      this.mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        this.recordingBlob2.set(audioBlob);
+        this.recordingUrl2.set(URL.createObjectURL(audioBlob));
+        
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      this.mediaRecorder.start();
+      this.isRecording2.set(true);
+      this.recordingTime2.set(0);
+      
+      this.recordingInterval = setInterval(() => {
+        this.recordingTime2.update(t => t + 1);
+      }, 1000);
+      
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      this.showToast('Could not access microphone. Please check permissions.', 'error');
+    }
+  }
+
+  stopRecording2() {
+    if (this.mediaRecorder && this.isRecording2()) {
+      this.mediaRecorder.stop();
+      this.isRecording2.set(false);
+      clearInterval(this.recordingInterval);
+    }
+  }
+
+  clearVoiceNote2() {
+    if (this.isRecording2()) {
+      this.stopRecording2();
+    }
+    const currentUrl = this.recordingUrl2();
+    if (currentUrl) {
+      URL.revokeObjectURL(currentUrl);
+    }
+    this.recordingBlob2.set(null);
+    this.recordingUrl2.set(null);
+    this.recordingTime2.set(0);
+  }
+
+  async recordNewVoiceNote() {
+    this.clearVoiceNote();
+    await this.startRecording();
+  }
+
+  async recordNewVoiceNote2() {
+    this.clearVoiceNote2();
+    await this.startRecording2();
+  }
+
+  async startEditVoiceNoteRecording() {
+    this.clearEditVoiceRecording2();
+    this.clearEditVoiceRecording();
+    this.showEditVoiceRecorder.set(true);
+    if (!this.isEditRecording()) {
+      await this.toggleEditRecording();
+    }
+  }
+
+  async startEditVoiceNoteRecording2() {
+    this.clearEditVoiceRecording();
+    this.clearEditVoiceRecording2();
+    this.showEditVoiceRecorder2.set(true);
+    if (!this.isEditRecording2()) {
+      await this.toggleEditRecording2();
+    }
+  }
+
+  async toggleEditRecording() {
+    if (this.isEditRecording()) {
+      this.stopEditRecording();
+    } else {
+      await this.startEditRecording();
+    }
+  }
+
+  async startEditRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.editMediaRecorder = new MediaRecorder(stream);
+      this.editAudioChunks = [];
+
+      this.editMediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.editAudioChunks.push(event.data);
+        }
+      };
+
+      this.editMediaRecorder.onstop = () => {
+        const audioBlob = new Blob(this.editAudioChunks, { type: 'audio/webm' });
+        this.editRecordingBlob.set(audioBlob);
+        this.editRecordingUrl.set(URL.createObjectURL(audioBlob));
+        stream.getTracks().forEach(track => track.stop());
+        this.uploadEditVoiceNoteFromBlob(audioBlob);
+      };
+
+      this.editMediaRecorder.start();
+      this.isEditRecording.set(true);
+      this.editRecordingTime.set(0);
+
+      this.editRecordingInterval = setInterval(() => {
+        this.editRecordingTime.update(t => t + 1);
+      }, 1000);
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      this.showToast('Could not access microphone. Please check permissions.', 'error');
+    }
+  }
+
+  stopEditRecording() {
+    if (this.editMediaRecorder && this.isEditRecording()) {
+      this.editMediaRecorder.stop();
+      this.isEditRecording.set(false);
+      if (this.editRecordingInterval) {
+        clearInterval(this.editRecordingInterval);
+        this.editRecordingInterval = null;
+      }
+    }
+  }
+
+  cancelEditVoiceRecording() {
+    this.clearEditVoiceRecording();
+  }
+
+  clearEditVoiceRecording() {
+    if (this.isEditRecording()) {
+      this.stopEditRecording();
+    }
+    const currentUrl = this.editRecordingUrl();
+    if (currentUrl) {
+      URL.revokeObjectURL(currentUrl);
+    }
+    this.showEditVoiceRecorder.set(false);
+    this.editRecordingBlob.set(null);
+    this.editRecordingUrl.set(null);
+    this.editRecordingTime.set(0);
+  }
+
+  async toggleEditRecording2() {
+    if (this.isEditRecording2()) {
+      this.stopEditRecording2();
+    } else {
+      await this.startEditRecording2();
+    }
+  }
+
+  async startEditRecording2() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.editMediaRecorder2 = new MediaRecorder(stream);
+      this.editAudioChunks2 = [];
+
+      this.editMediaRecorder2.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.editAudioChunks2.push(event.data);
+        }
+      };
+
+      this.editMediaRecorder2.onstop = () => {
+        const audioBlob = new Blob(this.editAudioChunks2, { type: 'audio/webm' });
+        this.editRecordingBlob2.set(audioBlob);
+        this.editRecordingUrl2.set(URL.createObjectURL(audioBlob));
+        stream.getTracks().forEach(track => track.stop());
+        this.uploadEditVoiceNoteFromBlob2(audioBlob);
+      };
+
+      this.editMediaRecorder2.start();
+      this.isEditRecording2.set(true);
+      this.editRecordingTime2.set(0);
+
+      this.editRecordingInterval2 = setInterval(() => {
+        this.editRecordingTime2.update(t => t + 1);
+      }, 1000);
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      this.showToast('Could not access microphone. Please check permissions.', 'error');
+    }
+  }
+
+  stopEditRecording2() {
+    if (this.editMediaRecorder2 && this.isEditRecording2()) {
+      this.editMediaRecorder2.stop();
+      this.isEditRecording2.set(false);
+      if (this.editRecordingInterval2) {
+        clearInterval(this.editRecordingInterval2);
+        this.editRecordingInterval2 = null;
+      }
+    }
+  }
+
+  cancelEditVoiceRecording2() {
+    this.clearEditVoiceRecording2();
+  }
+
+  clearEditVoiceRecording2() {
+    if (this.isEditRecording2()) {
+      this.stopEditRecording2();
+    }
+    const currentUrl = this.editRecordingUrl2();
+    if (currentUrl) {
+      URL.revokeObjectURL(currentUrl);
+    }
+    this.showEditVoiceRecorder2.set(false);
+    this.editRecordingBlob2.set(null);
+    this.editRecordingUrl2.set(null);
+    this.editRecordingTime2.set(0);
+  }
+
+  private uploadVoiceNoteFile(file: File, slot: 1 | 2) {
+    const visitor = this.editingVisitor();
+    if (!visitor) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      this.showToast('Voice note size should not exceed 10MB.', 'error');
+      return;
+    }
+
+    if (slot === 1) {
+      this.isUpdatingVoiceNote.set(true);
+      this.visitorsService.updateVisitorVoiceNote(visitor.id, file).subscribe({
+        next: (response) => this.handleVoiceNoteUploadSuccess(visitor, response.voiceNoteUrl, 1),
+        error: (err) => this.handleVoiceNoteUploadError(err, 1)
+      });
+      return;
+    }
+
+    this.isUpdatingVoiceNote2.set(true);
+    this.visitorsService.updateVisitorVoiceNote2(visitor.id, file).subscribe({
+      next: (response) => this.handleVoiceNoteUploadSuccess(visitor, response.voiceNoteUrl2, 2),
+      error: (err) => this.handleVoiceNoteUploadError(err, 2)
+    });
+  }
+
+  private handleVoiceNoteUploadSuccess(visitor: Visitor, url: string | null, slot: 1 | 2) {
+    const patch = slot === 1 ? { voice_note_url: url } : { voice_note_url_2: url };
+    const updatedVisitor = { ...visitor, ...this.editFormData(), ...patch } as Visitor;
+    this.editingVisitor.set(updatedVisitor);
+    this.editFormData.set({ ...this.editFormData(), ...patch });
+    this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+    this.showToast(`Voice note${slot === 2 ? ' 2' : ''} updated successfully`, 'success');
+    if (slot === 1) {
+      this.isUpdatingVoiceNote.set(false);
+      this.clearEditVoiceRecording();
+    } else {
+      this.isUpdatingVoiceNote2.set(false);
+      this.clearEditVoiceRecording2();
+    }
+  }
+
+  private handleVoiceNoteUploadError(err: unknown, slot: 1 | 2) {
+    console.error(`Failed to update voice note${slot === 2 ? ' 2' : ''}`, err);
+    this.showToast(`Failed to update voice note${slot === 2 ? ' 2' : ''}`, 'error');
+    if (slot === 1) {
+      this.isUpdatingVoiceNote.set(false);
+    } else {
+      this.isUpdatingVoiceNote2.set(false);
+    }
+  }
+
+  private uploadEditVoiceNoteFromBlob(blob: Blob) {
+    const file = new File([blob], `voicenote-${Date.now()}.webm`, { type: 'audio/webm' });
+    this.uploadVoiceNoteFile(file, 1);
+  }
+
+  private uploadEditVoiceNoteFromBlob2(blob: Blob) {
+    const file = new File([blob], `voicenote-2-${Date.now()}.webm`, { type: 'audio/webm' });
+    this.uploadVoiceNoteFile(file, 2);
   }
 
   formatTime(seconds: number): string {
@@ -883,7 +1325,9 @@ export class VisitorsPage implements OnInit {
     formData.append('fullName', formValues.fullName);
     formData.append('email', formValues.email);
     formData.append('mobile', formValues.mobile);
+    if (formValues.alternateMobile) formData.append('alternateMobile', formValues.alternateMobile);
     if (formValues.officeNumber) formData.append('officeNumber', formValues.officeNumber);
+    if (formValues.details) formData.append('details', formValues.details);
     if (formValues.companyName) formData.append('companyName', formValues.companyName);
     if (formValues.jobTitle) formData.append('jobTitle', formValues.jobTitle);
     if (formValues.department) formData.append('department', formValues.department);
@@ -897,11 +1341,22 @@ export class VisitorsPage implements OnInit {
     if (file) {
       formData.append('visitingCard', file);
     }
+
+    const file2 = this.selectedFile2();
+    if (file2) {
+      formData.append('visitingCard2', file2);
+    }
     
     const voiceBlob = this.recordingBlob();
     if (voiceBlob) {
       const voiceFile = new File([voiceBlob], `voicenote-${Date.now()}.webm`, { type: 'audio/webm' });
       formData.append('voiceNote', voiceFile);
+    }
+
+    const voiceBlob2 = this.recordingBlob2();
+    if (voiceBlob2) {
+      const voiceFile2 = new File([voiceBlob2], `voicenote-2-${Date.now()}.webm`, { type: 'audio/webm' });
+      formData.append('voiceNote2', voiceFile2);
     }
 
     this.visitorsService.createVisitorMultipart(formData).subscribe({
@@ -914,11 +1369,15 @@ export class VisitorsPage implements OnInit {
           job_title: response.payload.jobTitle,
           email: response.payload.email,
           mobile: response.payload.mobile,
+          alternate_mobile: response.payload.alternateMobile,
           office_number: response.payload.officeNumber,
           department: response.payload.department,
           interests: response.payload.interests,
           visiting_card_url: response.payload.visitingCardUrl,
+          visiting_card_url_2: response.payload.visitingCardUrl2,
+          details: response.payload.details,
           voice_note_url: response.payload.voiceNoteUrl,
+          voice_note_url_2: response.payload.voiceNoteUrl2,
           remarks: response.payload.remarks,
           created_at: response.payload.createdAt,
           lead_category: response.payload.leadCategory
@@ -943,12 +1402,12 @@ export class VisitorsPage implements OnInit {
       return;
     }
 
-    const headers = ['Visitor Name', 'Company Name', 'Email', 'Mobile', 'Office Number', 'Department', 'Lead Category', 'Created Date'];
+    const headers = ['Visitor Name', 'Company Name', 'Email', 'Mobile', 'Alternate Mobile', 'Office Number', 'Department', 'Lead Category', 'Created Date'];
     
     const rows = data.map(v => {
       const name = (v.title ? v.title + ' ' : '') + v.full_name;
       const date = new Date(v.created_at).toLocaleDateString();
-      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.office_number || ''}","${v.department || ''}","${v.lead_category || 'Potential'}","${date}"`;
+      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.alternate_mobile || ''}","${v.office_number || ''}","${v.department || ''}","${v.lead_category || 'Potential'}","${date}"`;
     });
 
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
@@ -984,16 +1443,30 @@ export class VisitorsPage implements OnInit {
     }
   }
 
-  openReview(visitor: Visitor) {
-    this.selectedVisitor.set(visitor);
-    this.isUpdatingVisitorCard.set(false);
+    openReview(visitor: Visitor) {
+      this.selectedVisitor.set(visitor);
+      this.isUpdatingVisitorCard.set(false);
+      this.isUpdatingVoiceNote.set(false);
+    }
+
+  openCardViewer(visitor: Visitor, event: Event) {
+    event.stopPropagation();
+
+    // Ensure only card viewer opens, not Visitor Insights (record preview)
+    this.selectedVisitor.set(null);
+    this.editingVisitor.set(null);
+
+    this.selectedCardVisitor.set(visitor);
+    this.isImageViewerOpen.set(true);
+    this.zoomLevel.set(1);
   }
 
-  closeReview() {
-    this.stopAudio();
-    this.selectedVisitor.set(null);
-    this.isUpdatingVisitorCard.set(false);
-  }
+    closeReview() {
+      this.stopAudio();
+      this.selectedVisitor.set(null);
+      this.isUpdatingVisitorCard.set(false);
+      this.isUpdatingVoiceNote.set(false);
+    }
 
   isImageViewerOpen = signal<boolean>(false);
   zoomLevel = signal<number>(1);
@@ -1005,6 +1478,7 @@ export class VisitorsPage implements OnInit {
       next: (data) => {
         const initializedData = data.map(v => ({
           ...v,
+          alternate_mobile: v.alternate_mobile || null,
           office_number: v.office_number || null,
           lead_category: v.lead_category || 'Potential'
         }));
@@ -1072,8 +1546,14 @@ export class VisitorsPage implements OnInit {
         const updatedVisitor = { ...visitor, visiting_card_url: response.visitingCardUrl };
         this.selectedVisitor.set(updatedVisitor);
         this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
-        this.showToast('Visiting card updated successfully', 'success');
+        this.showToast('Visiting card 1 updated successfully', 'success');
         this.isUpdatingVisitorCard.set(false);
+        this.scanVisitingCardForDetails(file, (details) => {
+          const withDetails = { ...updatedVisitor, details };
+          this.selectedVisitor.set(withDetails);
+          this.visitors.update(vs => vs.map(v => v.id === visitor.id ? withDetails : v));
+          this.visitorsService.updateVisitor(visitor.id, { details }).subscribe();
+        });
       },
       error: (err) => {
         console.error('Failed to update visiting card', err);
@@ -1109,13 +1589,150 @@ export class VisitorsPage implements OnInit {
         this.editingVisitor.set(updatedVisitor);
         this.editFormData.set({ ...this.editFormData(), visiting_card_url: response.visitingCardUrl });
         this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
-        this.showToast('Visiting card updated successfully', 'success');
+        this.showToast('Visiting card 1 updated successfully', 'success');
         this.isUpdatingVisitorCard.set(false);
+        this.scanVisitingCardForDetails(file, (details) => {
+          this.editFormData.set({ ...this.editFormData(), details });
+        });
       },
       error: (err) => {
         console.error('Failed to update visiting card', err);
         this.showToast('Failed to update visiting card', 'error');
         this.isUpdatingVisitorCard.set(false);
+      }
+    });
+  }
+
+  onEditCardSelected2(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+      this.showToast('Only PNG and JPG images are allowed.', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('File size should not exceed 5MB.', 'error');
+      return;
+    }
+
+    const visitor = this.editingVisitor();
+    if (!visitor) return;
+
+    this.isUpdatingVisitorCard2.set(true);
+    this.visitorsService.updateVisitorCard2(visitor.id, file).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Visiting card 2 updated successfully', 'success');
+        this.isUpdatingVisitorCard2.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to update visiting card 2', err);
+        this.showToast('Failed to update visiting card 2', 'error');
+        this.isUpdatingVisitorCard2.set(false);
+      }
+    });
+  }
+
+  private async scanVisitingCardForDetails(file: File, onDetails: (details: string) => void) {
+    let worker: any;
+    try {
+      const { createWorker, PSM } = await import('tesseract.js');
+      worker = await createWorker('eng', 1);
+      await worker.setParameters({
+        tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+        preserve_interword_spaces: '1'
+      });
+      const result = await worker.recognize(file);
+      const details = (result.data.text || '').replace(/\s+/g, ' ').trim();
+      if (details) {
+        onDetails(details);
+      }
+    } catch (error) {
+      console.error('Visiting card details scan failed', error);
+    } finally {
+      if (worker) {
+        await worker.terminate();
+      }
+    }
+  }
+
+  onEditVoiceNoteSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/') && file.type !== 'video/webm') {
+      this.showToast('Only audio files are allowed.', 'error');
+      return;
+    }
+
+    this.uploadVoiceNoteFile(file, 1);
+  }
+
+  removeEditVoiceNote(event: Event) {
+    event.stopPropagation();
+    const visitor = this.editingVisitor();
+    if (!visitor || !this.editFormData().voice_note_url || this.isUpdatingVoiceNote()) return;
+
+    this.isUpdatingVoiceNote.set(true);
+    this.visitorsService.removeVisitorVoiceNote(visitor.id).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), voice_note_url: response.voiceNoteUrl } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), voice_note_url: response.voiceNoteUrl });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Voice note removed successfully', 'success');
+        this.isUpdatingVoiceNote.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to remove voice note', err);
+        this.showToast('Failed to remove voice note', 'error');
+        this.isUpdatingVoiceNote.set(false);
+      }
+    });
+  }
+
+  onEditVoiceNoteSelected2(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.startsWith('audio/') && file.type !== 'video/webm') {
+      this.showToast('Only audio files are allowed.', 'error');
+      return;
+    }
+
+    this.uploadVoiceNoteFile(file, 2);
+  }
+
+  removeEditVoiceNote2(event: Event) {
+    event.stopPropagation();
+    const visitor = this.editingVisitor();
+    if (!visitor || !this.editFormData().voice_note_url_2 || this.isUpdatingVoiceNote2()) return;
+
+    this.isUpdatingVoiceNote2.set(true);
+    this.visitorsService.removeVisitorVoiceNote2(visitor.id).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), voice_note_url_2: response.voiceNoteUrl2 } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), voice_note_url_2: response.voiceNoteUrl2 });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Voice note 2 removed successfully', 'success');
+        this.isUpdatingVoiceNote2.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to remove voice note 2', err);
+        this.showToast('Failed to remove voice note 2', 'error');
+        this.isUpdatingVoiceNote2.set(false);
       }
     });
   }
@@ -1133,13 +1750,37 @@ export class VisitorsPage implements OnInit {
         this.editingVisitor.set(updatedVisitor);
         this.editFormData.set({ ...this.editFormData(), visiting_card_url: response.visitingCardUrl });
         this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
-        this.showToast('Visiting card removed successfully', 'success');
+        this.showToast('Visiting card 1 removed successfully', 'success');
         this.isUpdatingVisitorCard.set(false);
       },
       error: (err) => {
         console.error('Failed to remove visiting card', err);
         this.showToast('Failed to remove visiting card', 'error');
         this.isUpdatingVisitorCard.set(false);
+      }
+    });
+  }
+
+  removeEditVisitorCard2(event: Event) {
+    event.stopPropagation();
+    const visitor = this.editingVisitor();
+    const currentCardUrl = this.editFormData().visiting_card_url_2;
+    if (!visitor || !currentCardUrl || this.isUpdatingVisitorCard2()) return;
+
+    this.isUpdatingVisitorCard2.set(true);
+    this.visitorsService.removeVisitorCard2(visitor.id).subscribe({
+      next: (response) => {
+        const updatedVisitor = { ...visitor, ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 } as Visitor;
+        this.editingVisitor.set(updatedVisitor);
+        this.editFormData.set({ ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 });
+        this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
+        this.showToast('Visiting card 2 removed successfully', 'success');
+        this.isUpdatingVisitorCard2.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to remove visiting card 2', err);
+        this.showToast('Failed to remove visiting card 2', 'error');
+        this.isUpdatingVisitorCard2.set(false);
       }
     });
   }

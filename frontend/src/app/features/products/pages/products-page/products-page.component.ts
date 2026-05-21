@@ -2,6 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Product, ProductsService } from '../../services/products.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { PRODUCT_MASTER_ROLES } from '../../../../auth/guards/role.guard';
 
 @Component({
   selector: 'app-products-page',
@@ -13,6 +15,7 @@ import { Product, ProductsService } from '../../services/products.service';
 export class ProductsPageComponent implements OnInit {
   private productsService = inject(ProductsService);
   private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
 
   products = signal<Product[]>([]);
   loading = signal<boolean>(true);
@@ -27,6 +30,7 @@ export class ProductsPageComponent implements OnInit {
   editingProduct = signal<Product | null>(null);
   productToDelete = signal<Product | null>(null);
   isSubmitting = signal<boolean>(false);
+  canManageProducts = computed(() => this.authService.hasRole(PRODUCT_MASTER_ROLES));
 
   private toastTimeout: any;
   form!: FormGroup;

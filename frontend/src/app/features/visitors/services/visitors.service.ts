@@ -11,11 +11,15 @@ export interface Visitor {
   job_title: string | null;
   email: string;
   mobile: string;
-  office_number: string | null;
+  alternate_mobile?: string | null;
+  office_number?: string | null;
   department: string | null;
   interests: string[];
   visiting_card_url: string | null;
+  visiting_card_url_2?: string | null;
+  details?: string | null;
   voice_note_url?: string | null;
+  voice_note_url_2?: string | null;
   venue_id?: string | null;
   remarks: string | null;
   created_at: string;
@@ -56,8 +60,38 @@ export class VisitorsService {
     return this.http.put<{ visitingCardUrl: string | null }>(`${this.apiUrl}/${id}/visiting-card`, formData);
   }
 
+  updateVisitorCard2(id: number, file: File): Observable<{ visitingCardUrl2: string | null }> {
+    const formData = new FormData();
+    formData.append('visitingCard2', file);
+    return this.http.put<{ visitingCardUrl2: string | null }>(`${this.apiUrl}/${id}/visiting-card-2`, formData);
+  }
+
+  updateVisitorVoiceNote(id: number, file: File): Observable<{ voiceNoteUrl: string | null }> {
+    const formData = new FormData();
+    formData.append('voiceNote', file);
+    return this.http.put<{ voiceNoteUrl: string | null }>(`${this.apiUrl}/${id}/voice-note`, formData);
+  }
+
+  updateVisitorVoiceNote2(id: number, file: File): Observable<{ voiceNoteUrl2: string | null }> {
+    const formData = new FormData();
+    formData.append('voiceNote2', file);
+    return this.http.put<{ voiceNoteUrl2: string | null }>(`${this.apiUrl}/${id}/voice-note-2`, formData);
+  }
+
   removeVisitorCard(id: number): Observable<{ visitingCardUrl: string | null }> {
     return this.http.delete<{ visitingCardUrl: string | null }>(`${this.apiUrl}/${id}/visiting-card`);
+  }
+
+  removeVisitorCard2(id: number): Observable<{ visitingCardUrl2: string | null }> {
+    return this.http.delete<{ visitingCardUrl2: string | null }>(`${this.apiUrl}/${id}/visiting-card-2`);
+  }
+
+  removeVisitorVoiceNote(id: number): Observable<{ voiceNoteUrl: string | null }> {
+    return this.http.delete<{ voiceNoteUrl: string | null }>(`${this.apiUrl}/${id}/voice-note`);
+  }
+
+  removeVisitorVoiceNote2(id: number): Observable<{ voiceNoteUrl2: string | null }> {
+    return this.http.delete<{ voiceNoteUrl2: string | null }>(`${this.apiUrl}/${id}/voice-note-2`);
   }
 
   deleteVisitor(id: number): Observable<any> {

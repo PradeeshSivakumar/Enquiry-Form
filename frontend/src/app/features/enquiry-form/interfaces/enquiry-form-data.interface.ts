@@ -5,10 +5,12 @@ export interface EnquiryFormData {
   jobTitle?: string;
   email: string;
   mobile: string;
+  alternateMobile?: string;
   officeNumber?: string;
   department?: string;
   interests: string[];
   visitingCard?: File | null;
+  visitingCard2?: File | null;
   voiceNote?: File | null;
   venueId?: string;
   remarks?: string;
@@ -21,10 +23,12 @@ export interface EnquiryPayload {
   jobTitle: string;
   email: string;
   mobile: string;
+  alternateMobile?: string;
   officeNumber: string;
   department: string;
   interests: string[];
   visitingCardUrl: string;
+  visitingCardUrl2?: string;
   voiceNoteUrl?: string;
   venueId?: string;
   remarks: string;

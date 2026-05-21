@@ -12,6 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 
 let officeNumberColumnExists;
+let voiceNote2ColumnsExist;
+let alternateMobileColumnExists;
+let visitingCard2ColumnsExist;
+let detailsColumnExists;
 
 async function hasOfficeNumberColumn() {
   if (officeNumberColumnExists !== undefined) {
@@ -28,6 +32,100 @@ async function hasOfficeNumberColumn() {
 
   officeNumberColumnExists = Number(rows[0]?.count || 0) > 0;
   return officeNumberColumnExists;
+}
+
+async function hasVoiceNote2Columns() {
+  if (voiceNote2ColumnsExist !== undefined) {
+    return voiceNote2ColumnsExist;
+  }
+
+  const [rows] = await pool.execute(
+    `SELECT COUNT(*) AS count
+     FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = 'enquiries'
+       AND COLUMN_NAME = 'voice_note_id_2'`
+  );
+
+  const exists = Number(rows[0]?.count || 0) > 0;
+  if (exists) {
+    voiceNote2ColumnsExist = true;
+  } else {
+    voiceNote2ColumnsExist = undefined;
+  }
+  return exists;
+}
+
+async function assertVoiceNote2Columns() {
+  voiceNote2ColumnsExist = undefined;
+  if (!(await hasVoiceNote2Columns())) {
+    const err = new Error('Voice note 2 is not available. Run the database migration.');
+    err.statusCode = 503;
+    throw err;
+  }
+}
+
+async function hasAlternateMobileColumn() {
+  if (alternateMobileColumnExists !== undefined) {
+    return alternateMobileColumnExists;
+  }
+
+  const [rows] = await pool.execute(
+    `SELECT COUNT(*) AS count
+     FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = 'enquiries'
+       AND COLUMN_NAME = 'alternate_mobile'`
+  );
+
+  const exists = Number(rows[0]?.count || 0) > 0;
+  alternateMobileColumnExists = exists ? true : undefined;
+  return exists;
+}
+
+async function hasVisitingCard2Columns() {
+  if (visitingCard2ColumnsExist !== undefined) {
+    return visitingCard2ColumnsExist;
+  }
+
+  const [rows] = await pool.execute(
+    `SELECT COUNT(*) AS count
+     FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = 'enquiries'
+       AND COLUMN_NAME = 'visiting_card_id_2'`
+  );
+
+  const exists = Number(rows[0]?.count || 0) > 0;
+  visitingCard2ColumnsExist = exists ? true : undefined;
+  return exists;
+}
+
+async function hasDetailsColumn() {
+  if (detailsColumnExists !== undefined) {
+    return detailsColumnExists;
+  }
+
+  const [rows] = await pool.execute(
+    `SELECT COUNT(*) AS count
+     FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME = 'enquiries'
+       AND COLUMN_NAME = 'details'`
+  );
+
+  const exists = Number(rows[0]?.count || 0) > 0;
+  detailsColumnExists = exists ? true : undefined;
+  return exists;
+}
+
+async function assertVisitingCard2Columns() {
+  visitingCard2ColumnsExist = undefined;
+  if (!(await hasVisitingCard2Columns())) {
+    const err = new Error('Visiting card 2 is not available. Run the database migration.');
+    err.statusCode = 503;
+    throw err;
+  }
 }
 
 async function uploadVisitingCard(file) {
@@ -49,13 +147,25 @@ async function uploadVisitingCard(file) {
 async function createEnquiry(payload, files = {}) {
   let visitingCardId = null;
   let visitingCardUrl = null;
+  let visitingCardId2 = null;
+  let visitingCardUrl2 = null;
   let voiceNoteId = null;
   let voiceNoteUrl = null;
+  let voiceNoteId2 = null;
+  let voiceNoteUrl2 = null;
 
   if (files.visitingCard && files.visitingCard[0]) {
     const card = await uploadVisitingCard(files.visitingCard[0]);
     visitingCardId = card.id;
     visitingCardUrl = card.url;
+  }
+
+  const hasVisitingCard2 = await hasVisitingCard2Columns();
+
+  if (files.visitingCard2 && files.visitingCard2[0] && hasVisitingCard2) {
+    const card = await uploadVisitingCard(files.visitingCard2[0]);
+    visitingCardId2 = card.id;
+    visitingCardUrl2 = card.url;
   }
 
   if (files.voiceNote && files.voiceNote[0]) {
@@ -84,7 +194,37 @@ async function createEnquiry(payload, files = {}) {
     voiceNoteId = result.insertId;
   }
 
+  const hasVoiceNote2 = await hasVoiceNote2Columns();
+
+  if (files.voiceNote2 && files.voiceNote2[0] && hasVoiceNote2) {
+    const file = files.voiceNote2[0];
+    voiceNoteUrl2 = `/uploads/voicenote/${file.filename}`;
+
+    const [result] = await pool.execute(
+      `INSERT INTO voice_notes
+      (
+        filename,
+        url,
+        file_size,
+        mime_type,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?)`,
+      [
+        file.filename,
+        voiceNoteUrl2,
+        file.size,
+        file.mimetype,
+        0
+      ]
+    );
+
+    voiceNoteId2 = result.insertId;
+  }
+
   const hasOfficeNumber = await hasOfficeNumberColumn();
+  const hasAlternateMobile = await hasAlternateMobileColumn();
+  const hasDetails = await hasDetailsColumn();
   const columns = [
     'title',
     'full_name',
@@ -92,15 +232,19 @@ async function createEnquiry(payload, files = {}) {
     'job_title',
     'email',
     'mobile',
+    ...(hasAlternateMobile ? ['alternate_mobile'] : []),
     ...(hasOfficeNumber ? ['office_number'] : []),
     'department',
     'interests',
     'visiting_card_id',
     'visiting_card_url',
+    ...(hasVisitingCard2 ? ['visiting_card_id_2', 'visiting_card_url_2'] : []),
     'voice_note_id',
     'voice_note_url',
+    ...(hasVoiceNote2 ? ['voice_note_id_2', 'voice_note_url_2'] : []),
     'venue_id',
     'remarks',
+    ...(hasDetails ? ['details'] : []),
     'lead_category'
   ];
   const values = [
@@ -110,15 +254,19 @@ async function createEnquiry(payload, files = {}) {
     payload.jobTitle,
     payload.email,
     payload.mobile,
+    ...(hasAlternateMobile ? [payload.alternateMobile] : []),
     ...(hasOfficeNumber ? [payload.officeNumber] : []),
     payload.department,
     JSON.stringify(payload.interests),
     visitingCardId,
     visitingCardUrl,
+    ...(hasVisitingCard2 ? [visitingCardId2, visitingCardUrl2] : []),
     voiceNoteId,
     voiceNoteUrl,
+    ...(hasVoiceNote2 ? [voiceNoteId2, voiceNoteUrl2] : []),
     payload.venueId,
     payload.remarks,
+    ...(hasDetails ? [payload.details] : []),
     payload.leadCategory || 'Potential'
   ];
   const placeholders = columns.map(column => column === 'interests' ? 'CAST(? AS JSON)' : '?').join(', ');
@@ -139,8 +287,14 @@ async function createEnquiry(payload, files = {}) {
       id: result.insertId,
       visitingCardId,
       visitingCardUrl,
+      visitingCardId2,
+      visitingCardUrl2,
+      alternateMobile: payload.alternateMobile,
+      details: payload.details,
       voiceNoteId,
       voiceNoteUrl,
+      voiceNoteId2,
+      voiceNoteUrl2,
       createdAt: new Date().toISOString()
     }
   };
@@ -148,8 +302,12 @@ async function createEnquiry(payload, files = {}) {
 
 async function getEnquiries() {
   const officeNumberSelect = await hasOfficeNumberColumn() ? 'office_number' : 'NULL AS office_number';
+  const alternateMobileSelect = await hasAlternateMobileColumn() ? 'alternate_mobile' : 'NULL AS alternate_mobile';
+  const visitingCard2Select = await hasVisitingCard2Columns() ? 'visiting_card_url_2' : 'NULL AS visiting_card_url_2';
+  const voiceNote2Select = await hasVoiceNote2Columns() ? 'voice_note_url_2' : 'NULL AS voice_note_url_2';
+  const detailsSelect = await hasDetailsColumn() ? 'details' : 'NULL AS details';
   const [enquiries] = await pool.execute(
-    `SELECT id, title, full_name, company_name, job_title, email, mobile, ${officeNumberSelect}, department, interests, visiting_card_url, voice_note_url, venue_id, remarks, created_at, lead_category
+    `SELECT id, title, full_name, company_name, job_title, email, mobile, ${alternateMobileSelect}, ${officeNumberSelect}, department, interests, visiting_card_url, ${visitingCard2Select}, voice_note_url, ${voiceNote2Select}, venue_id, remarks, ${detailsSelect}, created_at, lead_category
      FROM enquiries WHERE status = 0 ORDER BY created_at DESC`
   );
 
@@ -229,25 +387,243 @@ async function removeVisitingCard(id) {
   };
 }
 
+async function updateVisitingCard2(id, file) {
+  await assertVisitingCard2Columns();
+
+  const [existingRows] = await pool.execute(
+    `SELECT visiting_card_id_2 FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const card = await uploadVisitingCard(file);
+
+  await pool.execute(
+    `UPDATE enquiries SET visiting_card_id_2 = ?, visiting_card_url_2 = ? WHERE id = ?`,
+    [card.id, card.url, id]
+  );
+
+  const previousCardId = existingRows[0].visiting_card_id_2;
+  if (previousCardId) {
+    await pool.execute(
+      `UPDATE visiting_cards SET status = 1 WHERE id = ?`,
+      [previousCardId]
+    );
+  }
+
+  return {
+    message: 'Visiting card 2 updated successfully.',
+    visitingCardUrl2: card.url
+  };
+}
+
+async function removeVisitingCard2(id) {
+  await assertVisitingCard2Columns();
+
+  const [existingRows] = await pool.execute(
+    `SELECT visiting_card_id_2 FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await pool.execute(
+    `UPDATE enquiries SET visiting_card_id_2 = NULL, visiting_card_url_2 = NULL WHERE id = ?`,
+    [id]
+  );
+
+  const previousCardId = existingRows[0].visiting_card_id_2;
+  if (previousCardId) {
+    await pool.execute(
+      `UPDATE visiting_cards SET status = 1 WHERE id = ?`,
+      [previousCardId]
+    );
+  }
+
+  return {
+    message: 'Visiting card 2 removed successfully.',
+    visitingCardUrl2: null
+  };
+}
+
+async function updateVoiceNote(id, file) {
+  const [existingRows] = await pool.execute(
+    `SELECT voice_note_id FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const voiceNoteUrl = `/uploads/voicenote/${file.filename}`;
+  const [result] = await pool.execute(
+    `INSERT INTO voice_notes (filename, url, file_size, mime_type, status)
+     VALUES (?, ?, ?, ?, ?)`,
+    [file.filename, voiceNoteUrl, file.size, file.mimetype, 0]
+  );
+
+  await pool.execute(
+    `UPDATE enquiries SET voice_note_id = ?, voice_note_url = ? WHERE id = ?`,
+    [result.insertId, voiceNoteUrl, id]
+  );
+
+  const previousVoiceNoteId = existingRows[0].voice_note_id;
+  if (previousVoiceNoteId) {
+    await pool.execute(
+      `UPDATE voice_notes SET status = 1 WHERE id = ?`,
+      [previousVoiceNoteId]
+    );
+  }
+
+  return {
+    message: 'Voice note updated successfully.',
+    voiceNoteUrl
+  };
+}
+
+async function removeVoiceNote(id) {
+  const [existingRows] = await pool.execute(
+    `SELECT voice_note_id FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await pool.execute(
+    `UPDATE enquiries SET voice_note_id = NULL, voice_note_url = NULL WHERE id = ?`,
+    [id]
+  );
+
+  const previousVoiceNoteId = existingRows[0].voice_note_id;
+  if (previousVoiceNoteId) {
+    await pool.execute(
+      `UPDATE voice_notes SET status = 1 WHERE id = ?`,
+      [previousVoiceNoteId]
+    );
+  }
+
+  return {
+    message: 'Voice note removed successfully.',
+    voiceNoteUrl: null
+  };
+}
+
+async function updateVoiceNote2(id, file) {
+  await assertVoiceNote2Columns();
+
+  const [existingRows] = await pool.execute(
+    `SELECT voice_note_id_2 FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const voiceNoteUrl2 = `/uploads/voicenote/${file.filename}`;
+  const [result] = await pool.execute(
+    `INSERT INTO voice_notes (filename, url, file_size, mime_type, status)
+     VALUES (?, ?, ?, ?, ?)`,
+    [file.filename, voiceNoteUrl2, file.size, file.mimetype, 0]
+  );
+
+  await pool.execute(
+    `UPDATE enquiries SET voice_note_id_2 = ?, voice_note_url_2 = ? WHERE id = ?`,
+    [result.insertId, voiceNoteUrl2, id]
+  );
+
+  const previousVoiceNoteId2 = existingRows[0].voice_note_id_2;
+  if (previousVoiceNoteId2) {
+    await pool.execute(
+      `UPDATE voice_notes SET status = 1 WHERE id = ?`,
+      [previousVoiceNoteId2]
+    );
+  }
+
+  return {
+    message: 'Voice note 2 updated successfully.',
+    voiceNoteUrl2
+  };
+}
+
+async function removeVoiceNote2(id) {
+  await assertVoiceNote2Columns();
+
+  const [existingRows] = await pool.execute(
+    `SELECT voice_note_id_2 FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+
+  if (existingRows.length === 0) {
+    const err = new Error('Visitor not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await pool.execute(
+    `UPDATE enquiries SET voice_note_id_2 = NULL, voice_note_url_2 = NULL WHERE id = ?`,
+    [id]
+  );
+
+  const previousVoiceNoteId2 = existingRows[0].voice_note_id_2;
+  if (previousVoiceNoteId2) {
+    await pool.execute(
+      `UPDATE voice_notes SET status = 1 WHERE id = ?`,
+      [previousVoiceNoteId2]
+    );
+  }
+
+  return {
+    message: 'Voice note 2 removed successfully.',
+    voiceNoteUrl2: null
+  };
+}
+
 async function updateEnquiry(id, enquiry) {
   const hasOfficeNumber = await hasOfficeNumberColumn();
+  const hasAlternateMobile = await hasAlternateMobileColumn();
+  const hasDetails = await hasDetailsColumn();
   const officeNumberSet = hasOfficeNumber ? 'office_number = ?, ' : '';
+  const alternateMobileSet = hasAlternateMobile ? 'alternate_mobile = ?, ' : '';
+  const detailsSet = hasDetails ? 'details = ?, remarks = ?' : 'remarks = ?';
   const officeNumberValue = hasOfficeNumber ? [enquiry.office_number || null] : [];
+  const alternateMobileValue = hasAlternateMobile ? [enquiry.alternate_mobile || null] : [];
+  const detailsValue = hasDetails ? [enquiry.details || null, enquiry.remarks || null] : [enquiry.remarks || null];
 
   await pool.execute(
     `UPDATE enquiries
-     SET full_name = ?, company_name = ?, email = ?, mobile = ?, ${officeNumberSet}department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?
+     SET full_name = ?, company_name = ?, email = ?, mobile = ?, ${alternateMobileSet}${officeNumberSet}department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?, ${detailsSet}
      WHERE id = ?`,
     [
       enquiry.full_name,
       enquiry.company_name || null,
       enquiry.email,
       enquiry.mobile,
+      ...alternateMobileValue,
       ...officeNumberValue,
       enquiry.department || null,
       JSON.stringify(enquiry.interests),
       enquiry.lead_category || 'Potential',
       enquiry.venue_id || null,
+      ...detailsValue,
       id
     ]
   );
@@ -287,6 +663,12 @@ module.exports = {
   updateLeadCategory,
   updateVisitingCard,
   removeVisitingCard,
+  updateVisitingCard2,
+  removeVisitingCard2,
+  updateVoiceNote,
+  removeVoiceNote,
+  updateVoiceNote2,
+  removeVoiceNote2,
   updateEnquiry,
   deleteEnquiry
 };

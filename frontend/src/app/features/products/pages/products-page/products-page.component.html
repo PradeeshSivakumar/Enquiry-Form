@@ -30,7 +30,7 @@
         <input type="text" placeholder="Search products..." (input)="onSearch($event)"
                class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
       </div>
-      <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
+      <button *ngIf="canManageProducts()" (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
         + Add Product
       </button>
     </div>
@@ -98,7 +98,7 @@
             </td>
             <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ product.category || '-' }}</td>
             <td class="px-6 py-6 text-right">
-              <div class="flex items-center justify-end gap-2">
+              <div class="flex items-center justify-end gap-2" *ngIf="canManageProducts(); else productViewOnly">
                 <button (click)="openEditModal(product)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Edit">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -110,6 +110,9 @@
                   </svg>
                 </button>
               </div>
+              <ng-template #productViewOnly>
+                <span class="text-xs text-gray-400">View only</span>
+              </ng-template>
             </td>
           </tr>
         </tbody>
