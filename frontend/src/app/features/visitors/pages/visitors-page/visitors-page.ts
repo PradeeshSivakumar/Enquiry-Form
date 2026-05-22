@@ -2,14 +2,17 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
 import { Visitor, VisitorsService } from '../../services/visitors.service';
 import { Venue, VenueService } from '../../../venue/services/venue.service';
 import { ProductsService } from '../../../products/services/products.service';
+import { DepartmentService } from '../../../department/services/department.service';
+import { LeadCategoryService } from '../../../lead-category/services/lead-category.service';
 import { INTEREST_OPTIONS } from '../../../../core/constants/form-options';
 import { environment } from '../../../../../environments/environment';
 import { VisitingCardUploadComponent } from '../../../enquiry-form/components/visiting-card-upload.component';
 
-export type LeadCategory = 'Potential' | 'Non Potential' | 'Others';
+export type LeadCategory = string;
 
 type ExtractedVisitingCardData = Partial<{
   title: string;
@@ -33,6 +36,8 @@ export class VisitorsPage implements OnInit {
   private visitorsService = inject(VisitorsService);
   private venueService = inject(VenueService);
   private productsService = inject(ProductsService);
+  private departmentService = inject(DepartmentService);
+  private leadCategoryService = inject(LeadCategoryService);
   private fb = inject(FormBuilder);
 
   visitors = signal<Visitor[]>([]);
@@ -71,6 +76,10 @@ export class VisitorsPage implements OnInit {
   isUpdatingVisitorCard2 = signal<boolean>(false);
   isUpdatingVoiceNote = signal<boolean>(false);
   isUpdatingVoiceNote2 = signal<boolean>(false);
+
+  cameraModalSlot = signal<1 | 2 | null>(null);
+  cameraStream = signal<MediaStream | null>(null);
+  capturedCardPreview = signal<string | null>(null);
   
   // Voice Note Recording
   isRecording = signal<boolean>(false);
@@ -115,11 +124,13 @@ export class VisitorsPage implements OnInit {
   });
   
   expandedAudioId = signal<number | null>(null);
+  expandedAudioSlot = signal<1 | 2 | null>(null);
   
   // Voice Note Custom Player State
   activeAudio = signal<HTMLAudioElement | null>(null);
   audioState = signal<{
     id: number | null,
+    slot: 1 | 2 | null,
     isPlaying: boolean,
     progress: number,
     currentTime: number,
@@ -128,6 +139,7 @@ export class VisitorsPage implements OnInit {
     hasError: boolean
   }>({
     id: null,
+    slot: null,
     isPlaying: false,
     progress: 0,
     currentTime: 0,
@@ -150,16 +162,14 @@ export class VisitorsPage implements OnInit {
   activeCategory = signal<string>('All');
   activeDepartment = signal<string>('');
   
-  leadCategories = [
-    'Potential', 'Non Potential', 'Others'
-  ];
+  leadCategories = signal<string[]>([]);
+  departments = signal<string[]>([]);
 
   titles = ['Mr', 'Ms', 'Mrs', 'Dr'];
   jobTitles = ['CEO', 'CTO', 'Manager', 'Engineer', 'Developer', 'Sales Executive', 'Consultant', 'Other'];
-  departments = ['Engineering', 'Sales', 'Marketing', 'Operations', 'Management', 'HR', 'IT', 'Finance', 'Others'];
   productInterests = INTEREST_OPTIONS.map(option => option.value);
 
-  filterTabs = ['All', 'Potential', 'Non Potential', 'Others'];
+  filterTabs = computed(() => ['All', ...this.leadCategories()]);
 
   // Pagination
   pageSize = signal<number>(5);
@@ -202,9 +212,17 @@ export class VisitorsPage implements OnInit {
 
   // Analytics Metrics
   totalVisitors = computed(() => this.visitors().length);
-  potentialLeads = computed(() => this.visitors().filter(v => v.lead_category === 'Potential').length);
-  nonPotentialLeads = computed(() => this.visitors().filter(v => v.lead_category === 'Non Potential').length);
-  otherLeads = computed(() => this.visitors().filter(v => v.lead_category === 'Others').length);
+readonly leadCategoryStats = computed(() => {
+  const stats: Record<string, number> = {};
+
+  this.leadCategories().forEach(category => {
+    stats[category] = this.visitors().filter(
+      v => v.lead_category === category
+    ).length;
+  });
+
+  return stats;
+});
 
   sortedVisitors = computed(() => this.sortRows(this.filteredVisitors(), this.getVisitorSortValue.bind(this)));
 
@@ -388,12 +406,12 @@ export class VisitorsPage implements OnInit {
       alternateMobile: ['', [Validators.pattern(/^\d{10}$/)]],
       officeNumber: ['', [Validators.pattern(/^\d{0,15}$/)]],
       department: [''],
-      leadCategory: ['Potential'],
+      leadCategory: [''],
       venueId: ['', Validators.required],
       remarks: ['', Validators.maxLength(500)],
       details: ['']
     });
-  }
+  } 
 
   openAddModal() {
     this.initForm();
@@ -1168,11 +1186,11 @@ export class VisitorsPage implements OnInit {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
-  playAudio(visitor: Visitor, event: Event) {
+  playAudio(visitor: Visitor, slot: 1 | 2, event: Event) {
     event.stopPropagation();
-    
-    // If clicking the same one that is already expanded
-    if (this.audioState().id === visitor.id) {
+
+    // If same visitor and same slot, toggle play/pause
+    if (this.audioState().id === visitor.id && this.audioState().slot === slot) {
       if (this.audioState().isPlaying) {
         this.pauseAudio();
       } else {
@@ -1186,15 +1204,15 @@ export class VisitorsPage implements OnInit {
 
     // Expand new one
     this.expandedAudioId.set(visitor.id);
-    
-    // If missing URL
-    if (!visitor.voice_note_url) {
-      this.audioState.set({ ...this.audioState(), id: visitor.id, hasError: true });
+    this.expandedAudioSlot.set(slot);
+
+    const sourceUrl = slot === 1 ? visitor.voice_note_url : visitor.voice_note_url_2;
+    if (!sourceUrl) {
+      this.audioState.set({ ...this.audioState(), id: visitor.id, slot, hasError: true });
       return;
     }
 
-    // Create new audio element
-    const url = this.getImageUrl(visitor.voice_note_url);
+    const url = this.getImageUrl(sourceUrl);
     const audio = new Audio(url);
     
     this.audioState.update(s => ({ ...s, id: visitor.id, isLoading: true, hasError: false, isPlaying: false, progress: 0, currentTime: 0, duration: 0 }));
@@ -1269,6 +1287,7 @@ export class VisitorsPage implements OnInit {
     this.activeAudio.set(null);
     this.audioState.set({
       id: null,
+      slot: null,
       isPlaying: false,
       progress: 0,
       currentTime: 0,
@@ -1277,6 +1296,7 @@ export class VisitorsPage implements OnInit {
       hasError: false
     });
     this.expandedAudioId.set(null);
+    this.expandedAudioSlot.set(null);
   }
 
   seekAudio(event: MouseEvent) {
@@ -1292,15 +1312,14 @@ export class VisitorsPage implements OnInit {
     audio.currentTime = percentage * audio.duration;
   }
 
-  toggleAudioPlayback(id: number, event: Event) {
+  toggleAudioPlayback(id: number, slot: 1 | 2 = 1, event: Event) {
     event.stopPropagation();
-    if (this.expandedAudioId() === id) {
+    if (this.expandedAudioId() === id && this.expandedAudioSlot() === slot) {
       this.stopAudio();
     } else {
-      // Find the visitor
       const visitor = this.visitors().find(v => v.id === id);
       if (visitor) {
-        this.playAudio(visitor, event);
+        this.playAudio(visitor, slot, event);
       }
     }
   }
@@ -1407,7 +1426,7 @@ export class VisitorsPage implements OnInit {
     const rows = data.map(v => {
       const name = (v.title ? v.title + ' ' : '') + v.full_name;
       const date = new Date(v.created_at).toLocaleDateString();
-      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.alternate_mobile || ''}","${v.office_number || ''}","${v.department || ''}","${v.lead_category || 'Potential'}","${date}"`;
+      return `"${name}","${v.company_name || ''}","${v.email}","${v.mobile}","${v.alternate_mobile || ''}","${v.office_number || ''}","${v.department || ''}","${v.lead_category || ''}","${date}"`;
     });
 
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
@@ -1480,7 +1499,7 @@ export class VisitorsPage implements OnInit {
           ...v,
           alternate_mobile: v.alternate_mobile || null,
           office_number: v.office_number || null,
-          lead_category: v.lead_category || 'Potential'
+          lead_category: v.lead_category || null
         }));
         this.visitors.set(initializedData);
         this.loading.set(false);
@@ -1495,6 +1514,42 @@ export class VisitorsPage implements OnInit {
     this.venueService.getVenues().subscribe({
       next: (data: Venue[]) => this.venues.set(this.uniqueVenues(data)),
       error: (err: any) => console.error('Error fetching venues', err)
+    });
+
+    this.loadLeadCategories();
+    this.loadDepartments();
+  }
+
+  private loadLeadCategories() {
+    this.leadCategoryService.getActiveLeadCategories().subscribe({
+      next: (items) => {
+        const categories = items.map(item => item.name);
+        this.leadCategories.set(categories);
+
+        // Only set default category if categories exist and form is pristine
+        if (categories.length > 0 && this.addVisitorForm.get('leadCategory')?.pristine) {
+          this.addVisitorForm.patchValue({
+            leadCategory: categories[0]
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading lead categories', err);
+        this.leadCategories.set([]);
+        // Don't set a default category on error - let it remain empty
+      }
+    });
+  }
+
+  private loadDepartments() {
+    this.departmentService.getActiveDepartments().subscribe({
+      next: (items) => {
+        this.departments.set(items.map(item => item.name));
+      },
+      error: (err) => {
+        console.error('Error loading departments', err);
+        this.departments.set([]);
+      }
     });
   }
 
@@ -1619,23 +1674,112 @@ export class VisitorsPage implements OnInit {
       return;
     }
 
+    this.uploadCapturedVisitingCard(file, 2);
+  }
+
+  async openVisitingCardCamera(slot: 1 | 2) {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.showToast('Camera access is not supported in this browser.', 'error');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      this.cameraStream.set(stream);
+      this.cameraModalSlot.set(slot);
+      this.capturedCardPreview.set(null);
+    } catch (error) {
+      console.error('Unable to access camera', error);
+      this.showToast('Unable to access webcam. Please check camera permissions.', 'error');
+      this.closeVisitingCardCamera();
+    }
+  }
+
+  closeVisitingCardCamera() {
+    this.cameraModalSlot.set(null);
+    this.capturedCardPreview.set(null);
+    this.stopVisitingCardCamera();
+  }
+
+  private stopVisitingCardCamera() {
+    const stream = this.cameraStream();
+    if (!stream) return;
+    stream.getTracks().forEach(track => track.stop());
+    this.cameraStream.set(null);
+  }
+
+  captureVisitingCardFromCamera(video: HTMLVideoElement) {
+    if (!video.videoWidth || !video.videoHeight) {
+      this.showToast('Camera stream is not ready yet.', 'error');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      this.showToast('Unable to capture image from camera.', 'error');
+      return;
+    }
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        this.showToast('Unable to capture image from camera.', 'error');
+        return;
+      }
+
+      const file = new File([blob], `visiting-card-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      const slot = this.cameraModalSlot();
+      if (slot) {
+        this.uploadCapturedVisitingCard(file, slot);
+      }
+      this.closeVisitingCardCamera();
+    }, 'image/jpeg', 0.92);
+  }
+
+  private uploadCapturedVisitingCard(file: File, slot: 1 | 2) {
+    if (!file.type.match(/image\/(png|jpeg|jpg)/)) {
+      this.showToast('Only PNG and JPG images are allowed.', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('File size should not exceed 5MB.', 'error');
+      return;
+    }
+
     const visitor = this.editingVisitor();
     if (!visitor) return;
 
-    this.isUpdatingVisitorCard2.set(true);
-    this.visitorsService.updateVisitorCard2(visitor.id, file).subscribe({
+    const updateMethod: Observable<{ visitingCardUrl: string | null } | { visitingCardUrl2: string | null }> =
+      slot === 1 ? this.visitorsService.updateVisitorCard(visitor.id, file) : this.visitorsService.updateVisitorCard2(visitor.id, file);
+    const updatingSignal = slot === 1 ? this.isUpdatingVisitorCard : this.isUpdatingVisitorCard2;
+    updatingSignal.set(true);
+
+    updateMethod.subscribe({
       next: (response) => {
-        const updatedVisitor = { ...visitor, ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 } as Visitor;
+        const patch = slot === 1
+          ? { visiting_card_url: (response as { visitingCardUrl: string | null }).visitingCardUrl }
+          : { visiting_card_url_2: (response as { visitingCardUrl2: string | null }).visitingCardUrl2 };
+        const updatedVisitor = { ...visitor, ...this.editFormData(), ...patch } as Visitor;
         this.editingVisitor.set(updatedVisitor);
-        this.editFormData.set({ ...this.editFormData(), visiting_card_url_2: response.visitingCardUrl2 });
+        this.editFormData.set({ ...this.editFormData(), ...patch });
         this.visitors.update(vs => vs.map(v => v.id === visitor.id ? updatedVisitor : v));
-        this.showToast('Visiting card 2 updated successfully', 'success');
-        this.isUpdatingVisitorCard2.set(false);
+        this.showToast(`Visiting card ${slot} updated successfully`, 'success');
+        updatingSignal.set(false);
+
+        if (slot === 1) {
+          this.scanVisitingCardForDetails(file, (details) => {
+            this.editFormData.set({ ...this.editFormData(), details });
+          });
+        }
       },
-      error: (err) => {
-        console.error('Failed to update visiting card 2', err);
-        this.showToast('Failed to update visiting card 2', 'error');
-        this.isUpdatingVisitorCard2.set(false);
+      error: (err: unknown) => {
+        console.error(`Failed to update visiting card ${slot}`, err);
+        this.showToast(`Failed to update visiting card ${slot}`, 'error');
+        updatingSignal.set(false);
       }
     });
   }

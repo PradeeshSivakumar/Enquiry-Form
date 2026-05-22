@@ -10,6 +10,8 @@ const productsRoutes = require('./routes/products.routes');
 const venueRoutes = require('./routes/venue.routes');
 const employeeRoutes = require('./routes/employee.routes');
 const enquiryRoutes = require('./routes/enquiry.routes');
+const departmentRoutes = require('./routes/department.routes');
+const leadCategoryRoutes = require('./routes/lead-category.routes');
 const authRoutes = require('./routes/auth.routes');
 const errorMiddleware = require('./middleware/error.middleware');
 
@@ -41,6 +43,8 @@ app.use('/api/visiting-cards', visitorsRoutes);
 app.use('/api/venues', venueRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/lead-categories', leadCategoryRoutes);
 app.use('/api/auth', authRoutes);
 
 const frontendDistPath = path.join(__dirname, '..', 'dist', 'niraltek-enquiry', 'browser');

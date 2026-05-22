@@ -267,7 +267,7 @@ async function createEnquiry(payload, files = {}) {
     payload.venueId,
     payload.remarks,
     ...(hasDetails ? [payload.details] : []),
-    payload.leadCategory || 'Potential'
+    payload.leadCategory || null
   ];
   const placeholders = columns.map(column => column === 'interests' ? 'CAST(? AS JSON)' : '?').join(', ');
 
@@ -621,7 +621,7 @@ async function updateEnquiry(id, enquiry) {
       ...officeNumberValue,
       enquiry.department || null,
       JSON.stringify(enquiry.interests),
-      enquiry.lead_category || 'Potential',
+      enquiry.lead_category || null,
       enquiry.venue_id || null,
       ...detailsValue,
       id

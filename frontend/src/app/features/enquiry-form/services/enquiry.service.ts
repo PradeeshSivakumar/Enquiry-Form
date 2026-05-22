@@ -36,7 +36,10 @@ export class EnquiryService {
     if (data.voiceNote) {
       formData.append('voiceNote', data.voiceNote);
     }
-
+    
+    if (data.voiceNote2) {
+      formData.append('voiceNote2', data.voiceNote2);
+    }
     return this.http.post<{ success: boolean; payload: EnquiryPayload }>(this.apiUrl, formData);
   }
 

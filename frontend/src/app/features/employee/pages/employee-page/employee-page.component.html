@@ -49,14 +49,15 @@
                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
           </div>
           <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
-            + Add
+            <span class="text-[18px] leading-none font-extrabold">+</span>
+<span>Add</span>
           </button>
         </div>
       </div>
 
       <!-- Main Content Card -->
-      <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
-
+      <!-- <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10"> -->
+         <div class="relative z-10">
         <div class="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between sm:justify-end gap-3 bg-white relative z-20">
           <div class="relative w-full sm:w-[220px] group">
             <select
@@ -113,8 +114,8 @@
         </div>
 
         <!-- TABLE VIEW -->
-        <div *ngIf="!loading() && !error() && filteredEmployees().length > 0" class="overflow-x-auto min-h-[350px]">
-          <table class="min-w-full text-left text-sm whitespace-nowrap">
+        <div *ngIf="!loading() && !error() && filteredEmployees().length > 0" class="overflow-x-auto min-h-[350px] data-table-card">
+          <table class="min-w-full text-left text-sm whitespace-nowrap data-table">
             <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
               <tr>
                 <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>

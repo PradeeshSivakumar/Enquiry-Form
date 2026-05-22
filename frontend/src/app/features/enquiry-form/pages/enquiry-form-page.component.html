@@ -124,7 +124,7 @@
               </div>
             </div>
             <div class="mt-6">
-              <app-custom-select label="Department" inputId="department" [control]="form.controls.department" placeholder="Choose Department" [options]="departmentOptions" [showSuccess]="showSuccess('department')" />
+              <app-custom-select label="Department" inputId="department" [control]="form.controls.department" placeholder="Choose Department" [options]="departmentOptions()" [showSuccess]="showSuccess('department')" />
             </div>
           </app-form-section>
 
@@ -138,7 +138,7 @@
             />
           </app-form-section>
 
-          <app-form-section title="Attachment & Remarks" icon="attachment">
+          <app-form-section title="Attachment & Description" icon="attachment">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label class="mb-2 block text-[0.95rem] font-semibold text-slate-800">Visiting Card Image 1</label>
@@ -152,7 +152,7 @@
             <div class="mt-6 grid grid-cols-1 gap-4">
               <div class="flex flex-col gap-4">
                 <app-textarea
-                  label="Remarks"
+                  label="Description"
                   inputId="remarks"
                   [control]="form.controls.remarks"
                   [rows]="3"
@@ -212,7 +212,7 @@
                       <!-- Right side: Audio Player & Delete -->
                       @if (recordingUrl()) {
                         <div class="flex items-center gap-3 animate-in fade-in duration-300">
-                          <audio [src]="safeRecordingUrl()" controls class="h-8 w-36 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+                         <audio [src]="safeRecordingUrl()" controls class="h-8 w-36 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
                           
                           <button type="button" (click)="clearVoiceNote()" class="p-2 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-lg transition-all" title="Delete Recording">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -234,6 +234,149 @@
                         </div>
                       }
 
+                   </div>
+                  </div>
+                </div>
+
+                <!-- Voice Note 2 -->
+                <div>
+                  <label class="mb-2 block text-[0.95rem] font-semibold text-slate-800">
+                    Voice Note (Additonal)
+                  </label>
+
+                  <div class="bg-gray-900 p-4 rounded-[16px] border border-gray-800 shadow-sm relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+
+                    <!-- Recording Controls -->
+                    <div class="flex items-center justify-between bg-black/50 backdrop-blur-sm border border-gray-800/80 p-3 rounded-xl relative z-10 hover:border-gray-700 transition-all duration-300">
+
+                      <!-- Left side -->
+                      <div class="flex items-center gap-3">
+
+                        <button
+                          type="button"
+                          (click)="toggleRecording2()"
+                          class="relative w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none"
+                          [class.bg-red-500]="isRecording2()"
+                          [class.hover:bg-red-600]="isRecording2()"
+                          [class.bg-white]="!isRecording2() && !recordingUrl2()"
+                          [class.hover:bg-gray-200]="!isRecording2() && !recordingUrl2()"
+                          [class.bg-gray-800]="!isRecording2() && recordingUrl2()"
+                          [class.hover:bg-gray-700]="!isRecording2() && recordingUrl2()">
+
+                          @if (isRecording2()) {
+
+                            <div class="absolute inset-0 rounded-full border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40"></div>
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-white"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+
+                              <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+
+                              <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+
+                            </svg>
+
+                          } @else if (recordingUrl2()) {
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-white"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+
+                              <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+
+                            </svg>
+
+                          } @else {
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-5 w-5 text-black"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+
+                              <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+
+                            </svg>
+
+                          }
+
+                        </button>
+
+                        <div class="flex flex-col">
+
+                          <div class="flex items-center gap-1.5">
+
+                            @if (isRecording2()) {
+                              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                            }
+
+                            <span class="text-xs font-bold tracking-wider"
+                                  [class.text-red-400]="isRecording2()"
+                                  [class.text-gray-300]="!isRecording2()">
+
+                              {{ isRecording2() ? 'REC' : (recordingUrl2() ? 'DONE' : 'READY') }}
+
+                            </span>
+
+                          </div>
+
+                          <span class="text-xl font-mono font-light text-white tracking-widest mt-0.5">
+                            {{ formatTime(recordingTime2()) }}
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                      <!-- Right side -->
+                      @if (recordingUrl2()) {
+
+                        <div class="flex items-center gap-3 animate-in fade-in duration-300">
+
+                          <audio  [src]="safeRecordingUrl2()" controls class="h-8 w-36 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200">
+                          </audio>
+
+                          <button
+                            type="button"
+                            (click)="clearVoiceNote2()"
+                            class="p-2 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-lg transition-all">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-4 w-4"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+
+                              <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+
+                            </svg>
+
+                          </button>
+
+                        </div>
+                      }
+
                     </div>
                   </div>
                 </div>
@@ -241,17 +384,20 @@
               </div>
             </div>
           </app-form-section>
-
-
-
-          @if (submitState() === 'error') {
-            <p class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-[#ef4444]">Submission failed. Please try again.</p>
+                  @if (submitState() === 'error') {
+            <p class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-[#ef4444]">
+              Submission failed. Please try again.
+            </p>
           }
 
           <div class="flex justify-end">
-            <app-primary-button [loading]="isSubmitting()" [disabled]="isSubmitting()" />
+            <app-primary-button
+              [loading]="isSubmitting()"
+              [disabled]="isSubmitting()" />
           </div>
+
         </form>
         }
+
       </div>
     </section>

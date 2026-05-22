@@ -7,7 +7,7 @@ export const PRODUCT_MASTER_ROLES = ['Admin', 'Super Admin', 'Sales Manager'];
 export const roleGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService);
-  const allowedRoles = route.data?.['roles'] as string[] | undefined;
+  const allowedRoles = route.data?.['roles'] as string[] | undefined || route.data?.['expectedRoles'] as string[] | undefined;
 
   if (!authService.isLoggedIn()) {
     return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });

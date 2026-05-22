@@ -5,7 +5,8 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, ReactiveFormsModu
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { finalize } from 'rxjs';
 import { RouterLink } from '@angular/router';
-import { DEPARTMENT_OPTIONS, INTEREST_OPTIONS, JOB_TITLE_OPTIONS, OptionItem, TITLE_OPTIONS } from '../../../core/constants/form-options';
+import { INTEREST_OPTIONS, JOB_TITLE_OPTIONS, OptionItem, TITLE_OPTIONS } from '../../../core/constants/form-options';
+import { Department, DepartmentService } from '../../department/services/department.service';
 import { SidebarBrandComponent } from '../../../layout/sidebar/sidebar-brand.component';
 import { CheckboxCardGroupComponent } from '../components/checkbox-card-group.component';
 import { CustomInputComponent } from '../components/custom-input.component';
@@ -45,6 +46,7 @@ export class EnquiryFormPageComponent {
   private readonly enquiryService = inject(EnquiryService);
   private readonly venueService = inject(VenueService);
   private readonly productsService = inject(ProductsService);
+  private readonly departmentService = inject(DepartmentService);
   private readonly sanitizer = inject(DomSanitizer);
 
   readonly isSubmitting = signal(false);
@@ -56,7 +58,8 @@ export class EnquiryFormPageComponent {
 
   readonly titleOptions = TITLE_OPTIONS;
   readonly jobTitleOptions = JOB_TITLE_OPTIONS;
-  readonly departmentOptions = DEPARTMENT_OPTIONS;
+  readonly departments = signal<Department[]>([]);
+  readonly departmentOptions = signal<OptionItem[]>([]);
   interestOptions: OptionItem[] = [...INTEREST_OPTIONS];
 
   venues = signal<Venue[]>([]);
@@ -67,13 +70,31 @@ export class EnquiryFormPageComponent {
   recordingTime = signal<number>(0);
   recordingBlob = signal<Blob | null>(null);
   recordingUrl = signal<string | null>(null);
+  
+  isRecording2 = signal<boolean>(false);
+  recordingTime2 = signal<number>(0);
+  recordingBlob2 = signal<Blob | null>(null);
+  recordingUrl2 = signal<string | null>(null);
   safeRecordingUrl = computed(() => {
     const url = this.recordingUrl();
     return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
   });
+
+  safeRecordingUrl2 = computed(() => {
+    const url = this.recordingUrl2();
+    return url ? this.sanitizer.bypassSecurityTrustUrl(url) : null;
+  });
   private mediaRecorder: MediaRecorder | null = null;
+  private mediaRecorder2: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
+  private audioChunks2: Blob[] = [];
   private recordingInterval: any;
+  private recordingInterval2: any;
+
+  // Tracks whether we are currently auto-playing a freshly recorded audio preview.
+  // Prevents multiple play() calls while Angular/template updates.
+  private pendingAutoPlay = false;
+
 
   readonly form = this.fb.group({
     venueId: ['', Validators.required],
@@ -109,7 +130,21 @@ export class EnquiryFormPageComponent {
 
     this.updateCompletion();
     this.loadVenues();
+    this.loadDepartments();
     this.loadProductInterests();
+  }
+
+  loadDepartments() {
+    this.departmentService.getActiveDepartments().subscribe({
+      next: (data) => {
+        this.departments.set(data);
+        this.departmentOptions.set(data.map(dep => ({ label: dep.name, value: dep.name })));
+      },
+      error: (err) => {
+        console.error('Failed to load departments', err);
+        this.departmentOptions.set([]);
+      }
+    });
   }
 
   loadVenues() {
@@ -274,12 +309,29 @@ export class EnquiryFormPageComponent {
     this.isSubmitting.set(true);
     this.submitState.set('idle');
 
-    const rawValue = this.form.getRawValue();
-    const voiceBlob = this.recordingBlob();
-    let voiceNoteData: File | undefined = undefined;
-    if (voiceBlob) {
-      voiceNoteData = new File([voiceBlob], `voicenote-${Date.now()}.webm`, { type: 'audio/webm' });
-    }
+const rawValue = this.form.getRawValue();
+
+const voiceBlob = this.recordingBlob();
+let voiceNoteData: File | undefined = undefined;
+
+if (voiceBlob) {
+  voiceNoteData = new File(
+    [voiceBlob],
+    `voicenote-${Date.now()}.webm`,
+    { type: 'audio/webm' }
+  );
+}
+
+const voiceBlob2 = this.recordingBlob2();
+let voiceNoteData2: File | undefined = undefined;
+
+if (voiceBlob2) {
+  voiceNoteData2 = new File(
+    [voiceBlob2],
+    `voicenote-2-${Date.now()}.webm`,
+    { type: 'audio/webm' }
+  );
+}
 
     const data = {
       title: rawValue.title ?? undefined,
@@ -295,6 +347,7 @@ export class EnquiryFormPageComponent {
       visitingCard: rawValue.visitingCard,
       visitingCard2: rawValue.visitingCard2,
       voiceNote: voiceNoteData,
+      voiceNote2: voiceNoteData2,
       venueId: rawValue.venueId ?? undefined,
       remarks: rawValue.remarks ?? undefined,
     };
@@ -394,21 +447,26 @@ export class EnquiryFormPageComponent {
         }
       };
 
-      this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-        this.recordingBlob.set(audioBlob);
-        this.recordingUrl.set(URL.createObjectURL(audioBlob));
+     
+this.mediaRecorder.onstop = () => {
+  const audioBlob = new Blob(this.audioChunks, {
+    type: 'audio/webm'
+  });
 
-        stream.getTracks().forEach(track => track.stop());
-      };
+    this.recordingBlob.set(audioBlob);
+  const audioUrl = URL.createObjectURL(audioBlob);
+  this.recordingUrl.set(audioUrl);
 
+  // Ensure audio element can play immediately after URL becomes available.
+  // (Audio auto-play is intentionally NOT forced; native browser policies may block it.)
+};
       this.mediaRecorder.start();
       this.isRecording.set(true);
       this.recordingTime.set(0);
 
       this.recordingInterval = setInterval(() => {
-        this.recordingTime.update(t => t + 1);
-      }, 1000);
+  this.recordingTime.update(t => t + 1);
+}, 1000);
 
     } catch (err) {
       console.error('Error accessing microphone:', err);
@@ -419,43 +477,130 @@ export class EnquiryFormPageComponent {
     if (this.mediaRecorder && this.isRecording()) {
       this.mediaRecorder.stop();
       this.isRecording.set(false);
-      clearInterval(this.recordingInterval);
+      if (this.recordingInterval) {
+              clearInterval(this.recordingInterval);
+            this.recordingInterval = null;
+}
     }
   }
 
-  clearVoiceNote() {
-    if (this.isRecording()) {
-      this.stopRecording();
-    }
-    const currentUrl = this.recordingUrl();
-    if (currentUrl) {
-      URL.revokeObjectURL(currentUrl);
-    }
-    this.recordingBlob.set(null);
-    this.recordingUrl.set(null);
-    this.recordingTime.set(0);
+clearVoiceNote() {
+  if (this.isRecording()) {
+    this.stopRecording();
   }
 
-  formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const currentUrl = this.recordingUrl();
+
+  if (currentUrl) {
+    URL.revokeObjectURL(currentUrl);
   }
 
-  private uniqueVenues(venues: Venue[]): Venue[] {
-    const seen = new Set<string>();
-    return venues.filter(venue => {
-      const key = String(venue.venue || '')
-        .split('-')
-        .map(part => part.trim().replace(/\s+/g, ' '))
-        .join('-')
-        .toLowerCase();
+  this.recordingBlob.set(null);
+  this.recordingUrl.set(null);
+  this.recordingTime.set(0);
+}
 
-      if (seen.has(key)) {
-        return false;
+async toggleRecording2() {
+  if (this.isRecording2()) {
+    this.stopRecording2();
+  } else {
+    await this.startRecording2();
+  }
+}
+
+async startRecording2() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    this.mediaRecorder2 = new MediaRecorder(stream);
+    this.audioChunks2 = [];
+
+    this.mediaRecorder2.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        this.audioChunks2.push(event.data);
       }
-      seen.add(key);
-      return true;
-    });
+    };
+
+this.mediaRecorder2.onstop = () => {
+  const audioBlob = new Blob(this.audioChunks2, {
+    type: 'audio/webm'
+  });
+
+this.recordingBlob2.set(audioBlob);
+
+  const audioUrl = URL.createObjectURL(audioBlob);
+
+  this.recordingUrl2.set(audioUrl);
+  // pendingAutoPlay removed (kept for backward compatibility)
+  this.pendingAutoPlay = false;
+};
+
+    this.mediaRecorder2.start();
+
+    this.isRecording2.set(true);
+    this.recordingTime2.set(0);
+
+    this.recordingInterval2 = setInterval(() => {
+      this.recordingTime2.update(t => t + 1);
+    }, 1000);
+
+  } catch (err) {
+    console.error('Error accessing microphone:', err);
   }
+}
+
+stopRecording2() {
+  if (this.mediaRecorder2 && this.isRecording2()) {
+     this.mediaRecorder2.stop();
+
+    this.isRecording2.set(false);
+
+if (this.recordingInterval2) {
+   clearInterval(this.recordingInterval2);
+   this.recordingInterval2 = null;
+}
+  }
+}
+
+clearVoiceNote2() {
+  if (this.isRecording2()) {
+    this.stopRecording2();
+  }
+
+  const currentUrl = this.recordingUrl2();
+
+  if (currentUrl) {
+    URL.revokeObjectURL(currentUrl);
+  }
+
+  this.recordingBlob2.set(null);
+  this.recordingUrl2.set(null);
+  this.recordingTime2.set(0);
+}
+
+formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+private uniqueVenues(venues: Venue[]): Venue[] {
+  const seen = new Set<string>();
+
+  return venues.filter(venue => {
+    const key = String(venue.venue || '')
+      .split('-')
+      .map(part => part.trim().replace(/\s+/g, ' '))
+      .join('-')
+      .toLowerCase();
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+
+    return true;
+  });
+}
 }

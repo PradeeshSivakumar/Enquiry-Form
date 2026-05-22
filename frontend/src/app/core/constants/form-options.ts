@@ -20,16 +20,7 @@ export const JOB_TITLE_OPTIONS: OptionItem[] = [
   { label: 'Others', value: 'Others' },
 ];
 
-export const DEPARTMENT_OPTIONS: OptionItem[] = [
-  { label: 'Engineering', value: 'Engineering' },
-  { label: 'Sales', value: 'Sales' },
-  { label: 'Marketing', value: 'Marketing' },
-  { label: 'Operations', value: 'Operations' },
-  { label: 'Management', value: 'Management' },
-  { label: 'HR', value: 'HR' },
-  { label: 'IT', value: 'IT' },
-  { label: 'Others', value: 'Others' },
-];
+// DEPARTMENT_OPTIONS removed - Departments are now loaded dynamically from Department Master
 
 export const INTEREST_OPTIONS: OptionItem[] = [
   { label: 'Andon System', value: 'Andon System' },

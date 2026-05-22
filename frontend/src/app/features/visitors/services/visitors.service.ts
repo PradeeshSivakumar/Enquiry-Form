@@ -23,7 +23,7 @@ export interface Visitor {
   venue_id?: string | null;
   remarks: string | null;
   created_at: string;
-  lead_category?: string;
+  lead_category: string | null;
 }
 
 @Injectable({

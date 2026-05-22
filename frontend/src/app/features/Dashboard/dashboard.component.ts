@@ -18,11 +18,15 @@ import { environment } from '../../../environments/environment';
 
 Chart.register(...registerables);
 
+interface CategoryDistribution {
+  category: string;
+  count: number;
+}
+
 interface DashboardStats {
   totalEnquiries: number;
-  potentialLeads: number;
-  nonPotentialLeads: number;
   totalProducts: number;
+  categoryDistribution: CategoryDistribution[];
 }
 
 interface RecentEnquiry {
@@ -65,7 +69,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.baseUrl}/api/dashboard`;
   private counterTimer: ReturnType<typeof setInterval> | null = null;
-  private readonly counterKeys: StatKey[] = ['totalEnquiries', 'potentialLeads', 'nonPotentialLeads', 'totalProducts'];
+  private readonly counterKeys: StatKey[] = ['totalEnquiries', 'totalProducts'];
   private trendChart: Chart<'line'> | null = null;
   private productChart: Chart<'doughnut'> | null = null;
 
@@ -78,16 +82,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   stats = signal<DashboardStats>({
     totalEnquiries: 0,
-    potentialLeads: 0,
-    nonPotentialLeads: 0,
-    totalProducts: 0
+    totalProducts: 0,
+    categoryDistribution: []
   });
 
   displayedStats = signal<DashboardStats>({
     totalEnquiries: 0,
-    potentialLeads: 0,
-    nonPotentialLeads: 0,
-    totalProducts: 0
+    totalProducts: 0,
+    categoryDistribution: []
   });
 
   recentEnquiries = signal<RecentEnquiry[]>([]);
@@ -99,32 +101,34 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   hasProductDistribution = computed(() => this.productDistribution().some((item) => item.count > 0));
   maxVenueCount = computed(() => Math.max(1, ...this.venueAnalytics().map((item) => item.count)));
 
-  statCards = computed(() => [
-    {
-      label: 'TOTAL ENQUIRIES',
-      value: this.displayedStats().totalEnquiries,
-      accent: 'navy',
-      icon: 'M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11Zm4 1.75h8M8 12h8M8 15.75h5'
-    },
-    {
-      label: 'POTENTIAL LEADS',
-      value: this.displayedStats().potentialLeads,
-      accent: 'green',
-      icon: 'M20 7 9 18l-5-5 1.75-1.75L9 14.5 18.25 5.25 20 7Z'
-    },
-    {
-      label: 'NON-POTENTIAL LEADS',
-      value: this.displayedStats().nonPotentialLeads,
-      accent: 'amber',
-      icon: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-1 5h2v6h-2V8Zm0 8h2v2h-2v-2Z'
-    },
-    {
-      label: 'TOTAL PRODUCTS',
-      value: this.displayedStats().totalProducts,
-      accent: 'blue',
-      icon: 'M12 2 3.5 6.75v10.5L12 22l8.5-4.75V6.75L12 2Zm0 2.3 4.25 2.38L12 9.05 7.75 6.68 12 4.3Zm-6.5 4.1 5.5 3.08v7.88l-5.5-3.08V8.4Zm13 7.88-5.5 3.08v-7.88l5.5-3.08v7.88Z'
-    }
-  ]);
+  statCards = computed(() => {
+    const baseCards = [
+      {
+        label: 'TOTAL ENQUIRIES',
+        value: this.displayedStats().totalEnquiries,
+        accent: 'navy',
+        icon: 'M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11Zm4 1.75h8M8 12h8M8 15.75h5'
+      },
+      {
+        label: 'TOTAL PRODUCTS',
+        value: this.displayedStats().totalProducts,
+        accent: 'blue',
+        icon: 'M12 2 3.5 6.75v10.5L12 22l8.5-4.75V6.75L12 2Zm0 2.3 4.25 2.38L12 9.05 7.75 6.68 12 4.3Zm-6.5 4.1 5.5 3.08v7.88l-5.5-3.08V8.4Zm13 7.88-5.5 3.08v-7.88l5.5-3.08v7.88Z'
+      }
+    ];
+
+    // Add dynamic category cards (top 3 categories by count)
+    const categoryCards = this.displayedStats().categoryDistribution
+      .slice(0, 3)
+      .map((cat, index) => ({
+        label: cat.category.toUpperCase(),
+        value: cat.count,
+        accent: index === 0 ? 'green' : index === 1 ? 'amber' : 'purple',
+        icon: 'M20 7 9 18l-5-5 1.75-1.75L9 14.5 18.25 5.25 20 7Z'
+      }));
+
+    return [...baseCards, ...categoryCards];
+  });
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -200,9 +204,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private normalizeStats(stats: DashboardStats): DashboardStats {
     return {
       totalEnquiries: Number(stats.totalEnquiries || 0),
-      potentialLeads: Number(stats.potentialLeads || 0),
-      nonPotentialLeads: Number(stats.nonPotentialLeads || 0),
-      totalProducts: Number(stats.totalProducts || 0)
+      totalProducts: Number(stats.totalProducts || 0),
+      categoryDistribution: stats.categoryDistribution || []
     };
   }
 
@@ -218,11 +221,13 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.counterTimer = setInterval(() => {
       const progress = Math.min(1, (performance.now() - start) / duration);
       const eased = 1 - Math.pow(1 - progress, 3);
-      const next = { ...this.displayedStats() };
 
-      this.counterKeys.forEach((key) => {
-        next[key] = Math.round(target[key] * eased);
-      });
+      // Only animate numeric fields
+      const next: DashboardStats = {
+        totalEnquiries: Math.round(target.totalEnquiries * eased),
+        totalProducts: Math.round(target.totalProducts * eased),
+        categoryDistribution: target.categoryDistribution
+      };
 
       this.displayedStats.set(next);
 

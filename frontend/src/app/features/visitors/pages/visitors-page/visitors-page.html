@@ -72,7 +72,7 @@
 
 
   <!-- Main Content Card -->
-  <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10">
+ <div class="relative z-10">
 
     <!-- Filter Tabs & Toolbar Container -->
     <div
@@ -85,7 +85,7 @@
     (change)="onCategoryChange($any($event.target).value)"
     class="appearance-none w-full bg-white border border-gray-200 text-gray-800 py-3 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer shadow-sm">
 
-    <option *ngFor="let tab of filterTabs" [value]="tab">
+    <option *ngFor="let tab of filterTabs()" [value]="tab">
       {{ tab }}
     </option>
 
@@ -105,15 +105,15 @@
       <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
 
         <!-- Department Dropdown -->
-        <!-- <div class="relative hidden sm:block">
+        <div class="relative hidden sm:block">
           <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-gray-200 text-gray-800 py-2.5 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer">
-            <option value="">Department</option>
-            <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
+            <option value="">All Departments</option>
+            <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
-        </div> -->
+        </div>
 
         <!-- Entries Dropdown -->
         <div class="relative hidden sm:block">
@@ -191,7 +191,7 @@
     <!--      TABLE VIEW     -->
     <!-- =================== -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'table'"
-      class="overflow-x-auto min-h-[350px] print-area">
+      class="overflow-x-auto min-h-[350px] print-area data-table-card">
 
       <!-- Print Header (Only visible when printing) -->
       <div class="hidden print-header p-5 bg-white border-b border-gray-200">
@@ -200,12 +200,12 @@
           filteredVisitors().length }} records.</p>
       </div>
 
-      <table class="min-w-full text-left text-sm whitespace-nowrap">
+      <table class="min-w-full text-left text-sm whitespace-nowrap data-table">
         <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
           <tr>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-widest">Visitor Name <span>{{ sortIndicator('name') }}</span></button>
+              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-widest">Visitor<span>{{ sortIndicator('name') }}</span></button>
             </th>
             <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
               <button type="button" (click)="sortBy('company')" class="flex items-center gap-1 uppercase tracking-widest">Company <span>{{ sortIndicator('company') }}</span></button>
@@ -274,7 +274,7 @@
 
               <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
                 <div *ngIf="visitor.voice_note_url" class="flex items-center justify-center">
-                  <button (click)="toggleAudioPlayback(visitor.id, $event)"
+                  <button (click)="toggleAudioPlayback(visitor.id, 1, $event)"
                     [ngClass]="{'bg-black border-black text-white shadow-md': expandedAudioId() === visitor.id && audioState().isPlaying, 'bg-white border-gray-200 text-black hover:border-black hover:bg-black hover:text-white hover:shadow-md': expandedAudioId() !== visitor.id || !audioState().isPlaying}"
                     class="w-9 h-9 border-2 rounded-full flex items-center justify-center transition-all duration-300 group/play">
                     <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying"
@@ -449,7 +449,7 @@
 
               <div class="flex items-center gap-2">
                 <div *ngIf="visitor.voice_note_url" class="relative">
-                  <button (click)="toggleAudioPlayback(visitor.id, $event)"
+                  <button (click)="toggleAudioPlayback(visitor.id, 1, $event)"
                     [ngClass]="{'bg-black text-white shadow-sm': expandedAudioId() === visitor.id, 'hover:bg-gray-100 text-gray-400 hover:text-black': expandedAudioId() !== visitor.id}"
                     class="p-1.5 rounded-full transition-colors group flex items-center justify-center">
                     <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying" class="h-4 w-4 ml-0.5"
@@ -632,7 +632,7 @@
                 Category</label>
               <select [(ngModel)]="editFormData().lead_category"
                 class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
-                <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
+                <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
               </select>
             </div>
           </div>
@@ -690,7 +690,7 @@
                   class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Upload
                 </button>
-                <button type="button" (click)="editCardCamera.click()" [disabled]="isUpdatingVisitorCard()"
+                <button type="button" (click)="openVisitingCardCamera(1)" [disabled]="isUpdatingVisitorCard()"
                   class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Camera
                 </button>
@@ -739,7 +739,7 @@
                   class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Upload
                 </button>
-                <button type="button" (click)="editCardCamera2.click()" [disabled]="isUpdatingVisitorCard2()"
+                <button type="button" (click)="openVisitingCardCamera(2)" [disabled]="isUpdatingVisitorCard2()"
                   class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Camera
                 </button>
@@ -1022,73 +1022,110 @@
               <div class="col-span-2 text-sm text-gray-700 whitespace-pre-wrap">{{ selectedVisitor()?.details || 'No details extracted.' }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4" *ngIf="selectedVisitor()?.voice_note_url">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center">Voice Note
-              </div>
-              <div class="col-span-2">
-                <div *ngIf="expandedAudioId() !== selectedVisitor()?.id" class="w-full max-w-[320px]">
-                  <button (click)="toggleAudioPlayback(selectedVisitor()!.id, $event)"
-                    class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
-                        <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
+            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4" *ngIf="selectedVisitor()?.voice_note_url || selectedVisitor()?.voice_note_url_2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Voice Notes</div>
+              <div class="col-span-2 space-y-4">
+                <div *ngIf="selectedVisitor()?.voice_note_url" class="space-y-3">
+                  <div class="text-sm font-semibold text-gray-900">Voice Note 1</div>
+                  <div *ngIf="expandedAudioId() !== selectedVisitor()?.id || expandedAudioSlot() !== 1" class="w-full max-w-[320px]">
+                    <button (click)="toggleAudioPlayback(selectedVisitor()!.id, 1, $event)"
+                      class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
+                          <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                        <span>Play Recording</span>
                       </div>
-                      <span>Play Recording</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div *ngIf="expandedAudioId() === selectedVisitor()?.id && expandedAudioSlot() === 1"
+                    class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
+                    <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
+                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                      </svg>
+                    </button>
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
+                      Unavailable
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none"
-                      viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
+                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{ formatTime(audioState().currentTime) }}</span>
+                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress" (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100" [style.width.%]="audioState().progress"></div>
+                        <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
+                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                        </div>
+                      </div>
+                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                    </div>
+                    <button (click)="stopAudio($event)"
+                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-
-                <div *ngIf="expandedAudioId() === selectedVisitor()?.id"
-                  class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
-                  <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
-                    class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
-                    <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor"
-                      viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor"
-                      viewBox="0 0 24 24">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                    </svg>
-                  </button>
-
-                  <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
-                    Unavailable
-                  </div>
-
-                  <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
-                    <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{
-                      formatTime(audioState().currentTime) }}</span>
-                    <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress"
-                      (click)="seekAudio($event)">
-                      <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
-                        [style.width.%]="audioState().progress"></div>
-                      <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
-                        <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                <div *ngIf="selectedVisitor()?.voice_note_url_2" class="space-y-3">
+                  <div class="text-sm font-semibold text-gray-900">Voice Note 2</div>
+                  <div *ngIf="expandedAudioId() !== selectedVisitor()?.id || expandedAudioSlot() !== 2" class="w-full max-w-[320px]">
+                    <button (click)="toggleAudioPlayback(selectedVisitor()!.id, 2, $event)"
+                      class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
+                          <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                        <span>Play Recording</span>
                       </div>
-                    </div>
-                    <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button>
                   </div>
-
-                  <button (click)="stopAudio($event)"
-                    class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
-                    <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none"
-                      viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                        d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                  <div *ngIf="expandedAudioId() === selectedVisitor()?.id && expandedAudioSlot() === 2"
+                    class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
+                    <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
+                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                      </svg>
+                    </button>
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
+                      Unavailable
+                    </div>
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
+                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{ formatTime(audioState().currentTime) }}</span>
+                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress" (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100" [style.width.%]="audioState().progress"></div>
+                        <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
+                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                        </div>
+                      </div>
+                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                    </div>
+                    <button (click)="stopAudio($event)"
+                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1217,6 +1254,53 @@
 
         [class.cursor-zoom-in]="zoomLevel() < 3" [class.cursor-default]="zoomLevel() >= 3"
         (click)="$event.stopPropagation(); zoomIn()" alt="Visiting Card Full View" />
+    </div>
+  </div>
+
+  <div *ngIf="cameraModalSlot() !== null"
+    class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="w-full max-w-3xl bg-white rounded-[28px] shadow-2xl overflow-hidden border border-gray-200">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+        <div>
+          <div class="text-sm font-bold text-gray-900">Capture Visiting Card {{ cameraModalSlot() === 1 ? '1' : '2' }}</div>
+          <div class="text-xs text-gray-500">Use your webcam to capture the visiting card image.</div>
+        </div>
+        <button type="button" (click)="closeVisitingCardCamera()"
+          class="h-10 w-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-5">
+        <div *ngIf="cameraStream(); else cameraLoading" class="space-y-4">
+          <div class="relative overflow-hidden rounded-3xl bg-black aspect-[4/3]">
+            <video #cameraVideo autoplay muted playsinline [srcObject]="cameraStream()"
+              class="w-full h-full object-cover"></video>
+          </div>
+          <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+            <div class="text-sm text-gray-500">Point the visiting card into view and press Capture.</div>
+            <div class="flex items-center gap-3">
+              <button type="button" (click)="captureVisitingCardFromCamera(cameraVideo)"
+                class="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-bold text-white hover:bg-gray-900 transition-colors">
+                Capture
+              </button>
+              <button type="button" (click)="closeVisitingCardCamera()"
+                class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #cameraLoading>
+          <div class="min-h-[240px] flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300 bg-gray-50 text-center p-6">
+            <div class="h-10 w-10 rounded-full border-2 border-gray-300 border-t-black animate-spin"></div>
+            <p class="mt-4 text-sm font-medium text-gray-700">Starting camera… allow access if prompted.</p>
+            <p class="mt-2 text-xs text-gray-500">If your browser blocks the camera, check permissions or try a different browser.</p>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </div>
 
@@ -1413,7 +1497,7 @@
                   <select formControlName="department"
                     class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
                     <option value="">Select department</option>
-                    <option *ngFor="let dep of departments" [value]="dep">{{ dep }}</option>
+                    <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -1430,7 +1514,7 @@
                 <div class="relative">
                   <select formControlName="leadCategory"
                     class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
-                    <option *ngFor="let cat of leadCategories" [value]="cat">{{ cat }}</option>
+                    <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"

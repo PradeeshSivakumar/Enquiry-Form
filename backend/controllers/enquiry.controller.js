@@ -1,5 +1,6 @@
 const enquiryService = require('../services/enquiry.service');
-const { LEAD_CATEGORIES } = require('../utils/constants');
+const departmentService = require('../services/department.service');
+const leadCategoryService = require('../services/lead-category.service');
 
 async function uploadVisitingCard(req, res, next) {
   try {
@@ -16,7 +17,7 @@ async function uploadVisitingCard(req, res, next) {
 async function createEnquiry(req, res) {
   try {
     const payload = normalizePayload(req.body);
-    validatePayload(payload);
+    await validatePayload(payload);
 
     // helpful logs for debugging multipart mapping issues
     console.log('[createEnquiry] req.body keys:', Object.keys(req.body || {}));
@@ -44,7 +45,7 @@ async function updateLeadCategory(req, res, next) {
   try {
     const { category } = req.body;
 
-    if (!LEAD_CATEGORIES.includes(category)) {
+    if (!category || !(await leadCategoryService.existsByName(category))) {
       return res.status(400).json({ message: 'Invalid lead category.' });
     }
 
@@ -137,15 +138,22 @@ async function removeVoiceNote2(req, res, next) {
 async function updateEnquiry(req, res, next) {
   try {
     const interests = parseInterests(req.body.interests);
+    const enquiry = { ...req.body, interests };
 
     if (!interests.length) {
       return res.status(400).json({ message: 'At least one product interest is required.' });
     }
 
-    res.json(await enquiryService.updateEnquiry(req.params.id, {
-      ...req.body,
-      interests
-    }));
+    await validatePayload({
+      fullName: enquiry.full_name || enquiry.fullName,
+      email: enquiry.email,
+      mobile: enquiry.mobile,
+      interests,
+      department: enquiry.department,
+      leadCategory: enquiry.lead_category || enquiry.leadCategory
+    });
+
+    res.json(await enquiryService.updateEnquiry(req.params.id, enquiry));
   } catch (error) {
     next(error);
   }
@@ -178,7 +186,7 @@ function normalizePayload(body) {
   };
 }
 
-function validatePayload(payload) {
+async function validatePayload(payload) {
   if (!payload.fullName) {
     throw new Error('Full name is required.');
   }
@@ -190,6 +198,14 @@ function validatePayload(payload) {
   }
   if (!payload.interests.length) {
     throw new Error('At least one product interest is required.');
+  }
+
+  if (payload.department && !(await departmentService.existsByName(payload.department))) {
+    throw new Error('Invalid department.');
+  }
+
+  if (payload.leadCategory && !(await leadCategoryService.existsByName(payload.leadCategory))) {
+    throw new Error('Invalid lead category.');
   }
 }
 

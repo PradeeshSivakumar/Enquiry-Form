@@ -12,10 +12,7 @@ const PRODUCT_MASTER_ROLES = [
   ROLES.SALES_MANAGER
 ];
 
-const LEAD_CATEGORIES = ['Potential', 'Non Potential', 'Others'];
-
 module.exports = {
   ROLES,
-  PRODUCT_MASTER_ROLES,
-  LEAD_CATEGORIES
+  PRODUCT_MASTER_ROLES
 };

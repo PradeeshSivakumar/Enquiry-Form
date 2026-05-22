@@ -12,6 +12,7 @@ export interface EnquiryFormData {
   visitingCard?: File | null;
   visitingCard2?: File | null;
   voiceNote?: File | null;
+  voiceNote2?: File | null;
   venueId?: string;
   remarks?: string;
 }
@@ -30,6 +31,7 @@ export interface EnquiryPayload {
   visitingCardUrl: string;
   visitingCardUrl2?: string;
   voiceNoteUrl?: string;
+  voiceNoteUrl2?: string;
   venueId?: string;
   remarks: string;
   createdAt: string;

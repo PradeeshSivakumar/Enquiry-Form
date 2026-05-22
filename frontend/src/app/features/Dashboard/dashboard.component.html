@@ -109,8 +109,8 @@
             <td>{{ enquiry.company_name || '-' }}</td>
             <td>{{ enquiry.venue || '-' }}</td>
             <td>
-              <span class="category-pill" [class.non-potential]="enquiry.lead_category === 'Non Potential'">
-                {{ enquiry.lead_category || 'Potential' }}
+              <span class="category-pill">
+                {{ enquiry.lead_category || '-' }}
               </span>
             </td>
             <td class="products-cell">{{ formatProducts(enquiry.interests) }}</td>

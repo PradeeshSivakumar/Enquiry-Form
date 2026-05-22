@@ -1,19 +1,34 @@
 const { pool } = require('../config/db');
 
 async function getStats() {
-  const [rows] = await pool.execute(
-    `SELECT
-      (SELECT COUNT(*) FROM enquiries WHERE status = 0) AS totalEnquiries,
-      (SELECT COUNT(*) FROM enquiries WHERE status = 0 AND lead_category = 'Potential') AS potentialLeads,
-      (SELECT COUNT(*) FROM enquiries WHERE status = 0 AND lead_category = 'Non Potential') AS nonPotentialLeads,
-      (SELECT COUNT(*) FROM product_master WHERE is_deleted = 0) AS totalProducts`
+  const [totalRows] = await pool.execute(
+    `SELECT COUNT(*) AS totalEnquiries FROM enquiries WHERE status = 0`
   );
 
+  const [productRows] = await pool.execute(
+    `SELECT COUNT(*) AS totalProducts FROM product_master WHERE is_deleted = 0`
+  );
+
+  // Get dynamic lead category distribution
+  const [categoryRows] = await pool.execute(
+    `SELECT 
+      COALESCE(lead_category, 'Uncategorized') AS category,
+      COUNT(*) AS count
+     FROM enquiries
+     WHERE status = 0
+     GROUP BY COALESCE(lead_category, 'Uncategorized')
+     ORDER BY count DESC`
+  );
+
+  const categoryDistribution = categoryRows.map(row => ({
+    category: row.category,
+    count: Number(row.count || 0)
+  }));
+
   return {
-    totalEnquiries: Number(rows[0] && rows[0].totalEnquiries || 0),
-    potentialLeads: Number(rows[0] && rows[0].potentialLeads || 0),
-    nonPotentialLeads: Number(rows[0] && rows[0].nonPotentialLeads || 0),
-    totalProducts: Number(rows[0] && rows[0].totalProducts || 0)
+    totalEnquiries: Number(totalRows[0] && totalRows[0].totalEnquiries || 0),
+    totalProducts: Number(productRows[0] && productRows[0].totalProducts || 0),
+    categoryDistribution
   };
 }
 
