@@ -1,11 +1,20 @@
+<div class="flex h-screen w-full bg-[#f8fafc] font-sans text-gray-900 overflow-hidden">
+  
+  <!-- Sidebar Navigation -->
+  
+  <!-- Main Content Wrapper -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Top Navbar -->
 
-    <section class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-gray-900 animate-in fade-in duration-700 bg-white min-h-screen">
-      
+    <!-- Page Content -->
+    <main class="flex-1 overflow-auto px-6 py-5 lg:px-8 relative bg-white">
+
       <!-- Toast Notification -->
       <div *ngIf="toastMessage()" 
-           class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg border animate-in slide-in-from-bottom-5 fade-in duration-300"
+           class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-md shadow-md border animate-in slide-in-from-bottom-5 fade-in duration-300"
            [ngClass]="{
-             'bg-gray-900 border-gray-800 text-white': toastMessage()?.type === 'success',
+             'bg-[#0f172a] border-gray-800 text-white': toastMessage()?.type === 'success',
              'bg-red-50 border-red-200 text-red-800': toastMessage()?.type === 'error'
            }">
         <svg *ngIf="toastMessage()?.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -14,232 +23,219 @@
         <svg *ngIf="toastMessage()?.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>
-        <span class="text-sm font-semibold tracking-wide">{{ toastMessage()?.text }}</span>
+        <span class="text-sm font-medium tracking-wide">{{ toastMessage()?.text }}</span>
       </div>
 
-      <!-- Header Section -->
-      <div class="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-4">
-            <div class="flex flex-col">
-              <div class="flex items-center gap-4 mb-1">
-
-                <h1 class="text-[2.2rem] lg:text-[2.5rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">Venue</h1>
-              </div>
-              <p class="text-sm text-gray-500 font-medium mt-1">Manage and review all venue master records.</p>
-            </div>
-          </div>
+      <!-- Page Header -->
+      <div class="mb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+        <div>
+          <h1 class="text-[2.8rem] lg:text-[3.2rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">
+  Venue
+</h1>
+          <p class="text-sm text-gray-500 font-medium mt-1">Manage and review all venue master records.</p>
         </div>
-        <div class="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-          <div class="relative w-full sm:w-[240px] group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+        <div class="flex items-center gap-3 w-full lg:w-auto">
+          <div class="relative w-full lg:w-[260px]">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
               <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
               </svg>
             </div>
             <input type="text" placeholder="Search venue..." (input)="onSearch($event)" 
-                   class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
+                   class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] placeholder-gray-400" />
           </div>
-          <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-[24px] text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
-            <span class="text-[18px] leading-none font-extrabold">+</span>
-<span>Add</span>
+          <button (click)="openAddModal()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#0f172a] hover:bg-black text-white rounded-[6px] text-sm font-medium transition-colors">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add
           </button>
         </div>
       </div>
 
-      <!-- Main Content Card -->
-      <!-- <div class="bg-white rounded-[24px] border border-gray-200 shadow-sm overflow-hidden flex flex-col relative z-10"></div> -->
-      <div class="relative z-10">
-        <div class="px-6 py-5 border-b border-gray-100 flex justify-end bg-white relative z-20">
-          <div class="relative w-full sm:w-auto group">
-            <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-200 text-gray-800 py-3 pl-5 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer shadow-sm">
-              <option value="5">5 rows</option>
-              <option value="10" selected>10 rows</option>
-              <option value="25">25 rows</option>
-              <option value="50">50 rows</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
-              <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Loading State -->
-        <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
-
-        <!-- Error State -->
-        <div *ngIf="error()" class="bg-gray-50 text-gray-800 p-4 m-4 rounded-xl border border-gray-200 flex items-center shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <span class="text-sm font-medium">{{ error() }}</span>
-        </div>
-
-        <!-- Empty State -->
-        <div *ngIf="!loading() && !error() && filteredVenues().length === 0" class="bg-white text-center py-20">
-          <div class="w-14 h-14 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      <!-- Toolbar -->
+      <div class="flex justify-end mb-4">
+        <div class="relative">
+          <select (change)="onPageSizeChange($event)" class="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer">
+            <option value="5" [selected]="pageSize() === 5">5 rows</option>
+            <option value="10" [selected]="pageSize() === 10">10 rows</option>
+            <option value="25" [selected]="pageSize() === 25">25 rows</option>
+            <option value="50" [selected]="pageSize() === 50">50 rows</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+            <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-gray-900 mb-1">No venues found</h3>
-          <p class="text-gray-500 text-xs">There are currently no records matching your criteria.</p>
         </div>
-
-        <!-- TABLE VIEW -->
-        <div *ngIf="!loading() && !error() && filteredVenues().length > 0" class="overflow-x-auto min-h-[350px] data-table-card">
-          <table class="min-w-full text-left text-sm whitespace-nowrap data-table">
-            <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
-              <tr>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-                  <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-widest">Venue <span>{{ sortIndicator('venue') }}</span></button>
-                </th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">City</th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-                  <button type="button" (click)="sortBy('year')" class="flex items-center gap-1 uppercase tracking-widest">Year <span>{{ sortIndicator('year') }}</span></button>
-                </th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Booth Number</th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-                  <button type="button" (click)="sortBy('date')" class="flex items-center gap-1 uppercase tracking-widest">Date <span>{{ sortIndicator('date') }}</span></button>
-                </th>
-                <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 bg-white">
-              <tr *ngFor="let ven of paginatedVenues(); let i = index" class="transition-colors duration-200 hover:bg-gray-50/50 group">
-                <td class="px-6 py-6 text-gray-500 font-bold text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
-                <td class="px-6 py-6 text-black font-semibold text-sm">{{ getVenueParts(ven.venue).venueName }}</td>
-                <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ getVenueParts(ven.venue).city }}</td>
-                <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ getVenueParts(ven.venue).year }}</td>
-                <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ ven.booth_number || '-' }}</td>
-                <td class="px-6 py-6 text-gray-700 text-sm font-medium">{{ formatDate(ven.venue_date) }}</td>
-                <td class="px-6 py-6 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button (click)="openEditModal(ven)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Edit">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                    </button>
-                    <button (click)="openDeleteConfirmation(ven)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Delete">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="px-5 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4" *ngIf="filteredVenues().length > 0">
-          <div class="text-xs font-medium text-gray-500">
-            Showing <span class="text-gray-900 font-bold">{{ filteredVenues().length === 0 ? 0 : (currentPage() - 1) * pageSize() + 1 }}</span> to 
-            <span class="text-gray-900 font-bold">{{ (currentPage() * pageSize()) > filteredVenues().length ? filteredVenues().length : (currentPage() * pageSize()) }}</span> of 
-            <span class="text-gray-900 font-bold">{{ filteredVenues().length }}</span> entries
-          </div>
-          <nav class="flex items-center space-x-1.5 bg-gray-50/80 p-1 border border-gray-200 rounded-lg">
-            <button (click)="prevPage()" [disabled]="currentPage() === 1" [class.opacity-40]="currentPage() === 1" [class.cursor-not-allowed]="currentPage() === 1" class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div class="flex items-center justify-center px-2.5 min-w-[2rem] h-7 rounded-md bg-white border border-gray-200 text-xs font-bold text-gray-900 shadow-sm">
-              {{ currentPage() }}
-            </div>
-            <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()" [class.opacity-40]="currentPage() >= totalPages()" [class.cursor-not-allowed]="currentPage() >= totalPages()" class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </nav>
-        </div>
-
       </div>
-    </section>
 
-    <!-- Add/Edit Venue Modal -->
-    <div *ngIf="isModalOpen()" class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
-      <div class="bg-white rounded-[20px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-300 border border-white/20">
-        <div class="flex justify-between items-center px-6 py-5 border-b border-gray-100 bg-white">
+      <!-- Loading State -->
+      <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border border-gray-200 rounded-[6px]">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 mb-4 rounded-[6px] border border-red-200 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span class="text-sm font-medium">{{ error() }}</span>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading() && !error() && filteredVenues().length === 0" class="bg-white border border-gray-200 rounded-[6px] text-center py-16">
+        <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mx-auto mb-3 border border-gray-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900 mb-1">No venues found</h3>
+        <p class="text-gray-500 text-xs">There are currently no records matching your criteria.</p>
+      </div>
+
+      <!-- Data Table -->
+      <div *ngIf="!loading() && !error() && filteredVenues().length > 0" class="bg-white border border-gray-300 rounded-[6px] shadow-sm overflow-x-auto">
+        <table class="min-w-full text-left text-sm border-collapse">
+          <thead class="bg-[#0f172a] text-white">
+            <tr>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12">#</th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
+                <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Venue <span>{{ sortIndicator('venue') }}</span></button>
+              </th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">City</th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
+                <button type="button" (click)="sortBy('year')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Year <span>{{ sortIndicator('year') }}</span></button>
+              </th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Booth Number</th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
+                <button type="button" (click)="sortBy('date')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Date <span>{{ sortIndicator('date') }}</span></button>
+              </th>
+              <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let ven of paginatedVenues(); let i = index" class="hover:bg-[#f8fafc] transition-colors">
+              <td class="px-4 py-2.5 text-gray-500 font-medium">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
+              <td class="px-4 py-2.5 text-gray-900 font-medium">{{ getVenueParts(ven.venue).venueName }}</td>
+              <td class="px-4 py-2.5 text-gray-700">{{ getVenueParts(ven.venue).city }}</td>
+              <td class="px-4 py-2.5 text-gray-700">{{ getVenueParts(ven.venue).year }}</td>
+              <td class="px-4 py-2.5 text-gray-700">{{ ven.booth_number || '-' }}</td>
+              <td class="px-4 py-2.5 text-gray-700">{{ formatDate(ven.venue_date) }}</td>
+              <td class="px-4 py-2.5 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                  <button (click)="openEditModal(ven)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  <button (click)="openDeleteConfirmation(ven)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm" *ngIf="filteredVenues().length > 0">
+        <div class="text-gray-600">
+          Showing <span class="font-medium text-gray-900">{{ filteredVenues().length === 0 ? 0 : (currentPage() - 1) * pageSize() + 1 }}</span> to 
+          <span class="font-medium text-gray-900">{{ (currentPage() * pageSize()) > filteredVenues().length ? filteredVenues().length : (currentPage() * pageSize()) }}</span> of 
+          <span class="font-medium text-gray-900">{{ filteredVenues().length }}</span> entries
+        </div>
+        <nav class="flex items-center gap-1.5">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Previous</button>
+          <div class="px-3 py-1.5 border border-[#0f172a] bg-[#0f172a] text-white rounded-[6px] font-medium">{{ currentPage() }}</div>
+          <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Next</button>
+        </nav>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Add/Edit Venue Modal -->
+  <div *ngIf="isModalOpen()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6">
+    <div class="bg-white rounded-[8px] shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-300">
+      <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 bg-gray-50">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">{{ editingVenue() ? 'Edit Venue' : 'Add Venue' }}</h2>
+          <p class="text-xs text-gray-500 mt-0.5">{{ editingVenue() ? 'Update existing venue details' : 'Create new venue master record' }}</p>
+        </div>
+        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 p-1.5 rounded focus:outline-none transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="saveVenue()" class="flex flex-col">
+        <div class="p-5 space-y-4">
           <div>
-            <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">{{ editingVenue() ? 'Edit Venue' : 'Add Venue' }}</h2>
-            <p class="text-xs text-gray-500 font-medium mt-0.5">{{ editingVenue() ? 'Update existing venue details' : 'Create new venue master record' }}</p>
+            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Venue</label>
+            <input type="text" formControlName="venuePart" placeholder="e.g. Expo Center" maxlength="80" (input)="onVenueInput($event)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('venuePart')" />
+            <span *ngIf="showError('venuePart')" class="text-[10px] text-red-500 font-medium mt-1 block">Use letters, numbers, spaces, &, periods, commas, and brackets only</span>
           </div>
-          <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none border border-gray-200/60">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <form [formGroup]="form" (ngSubmit)="saveVenue()" class="flex flex-col">
-          <div class="p-6 bg-gray-50/50 space-y-4">
+          <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Venue</label>
-              <input type="text" formControlName="venuePart" placeholder="e.g. Expo Center" maxlength="80" (input)="onVenueInput($event)" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('venuePart')" />
-              <span *ngIf="showError('venuePart')" class="text-[10px] text-red-500 font-bold mt-1 block">Use letters, numbers, spaces, &, periods, commas, and brackets only</span>
+              <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">City</label>
+              <input type="text" formControlName="cityPart" placeholder="e.g. Pune" maxlength="50" (input)="onCityInput($event)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('cityPart')" />
+              <span *ngIf="showError('cityPart')" class="text-[10px] text-red-500 font-medium mt-1 block">Use letters, spaces, and periods only</span>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">City</label>
-                <input type="text" formControlName="cityPart" placeholder="e.g. Pune" maxlength="50" (input)="onCityInput($event)" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('cityPart')" />
-                <span *ngIf="showError('cityPart')" class="text-[10px] text-red-500 font-bold mt-1 block">Use letters, spaces, and periods only</span>
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Year</label>
-                <input type="text" formControlName="yearPart" placeholder="e.g. 2026" maxlength="4" (input)="onYearInput($event)" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('yearPart')" />
-                <span *ngIf="showError('yearPart')" class="text-[10px] text-red-500 font-bold mt-1 block">{{ yearErrorMessage() }}</span>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Booth Number</label>
-                <input type="text" formControlName="boothNumber" placeholder="e.g. B-12" maxlength="30" (input)="onBoothNumberInput($event)" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('boothNumber')" />
-                <span *ngIf="showError('boothNumber')" class="text-[10px] text-red-500 font-bold mt-1 block">{{ boothErrorMessage() }}</span>
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Date</label>
-                <input type="date" formControlName="venueDate" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" [class.border-red-400]="showError('venueDate')" />
-                <span *ngIf="showError('venueDate')" class="text-[10px] text-red-500 font-bold mt-1 block">{{ dateErrorMessage() }}</span>
-              </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Year</label>
+              <input type="text" formControlName="yearPart" placeholder="e.g. 2026" maxlength="4" (input)="onYearInput($event)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('yearPart')" />
+              <span *ngIf="showError('yearPart')" class="text-[10px] text-red-500 font-medium mt-1 block">{{ yearErrorMessage() }}</span>
             </div>
           </div>
-          <div class="px-6 py-4 border-t border-gray-100 bg-white flex justify-end gap-3">
-            <button type="button" (click)="closeModal()" class="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-all">
-              Cancel
-            </button>
-            <button type="submit" [disabled]="isSubmitting()" class="px-5 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-lg shadow-md transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50">
-              {{ isSubmitting() ? 'Saving...' : 'Save' }}
-            </button>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Booth Number</label>
+              <input type="text" formControlName="boothNumber" placeholder="e.g. B-12" maxlength="30" (input)="onBoothNumberInput($event)" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('boothNumber')" />
+              <span *ngIf="showError('boothNumber')" class="text-[10px] text-red-500 font-medium mt-1 block">{{ boothErrorMessage() }}</span>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Date</label>
+              <input type="date" formControlName="venueDate" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('venueDate')" />
+              <span *ngIf="showError('venueDate')" class="text-[10px] text-red-500 font-medium mt-1 block">{{ dateErrorMessage() }}</span>
+            </div>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div *ngIf="venueToDelete()" class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
-      <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-sm overflow-hidden p-6 text-center animate-in zoom-in-95 duration-300">
-        <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Venue?</h3>
-        <p class="text-sm text-gray-500 mb-6 font-medium">This action cannot be undone. Are you sure you want to remove <span class="font-bold text-gray-900">{{ venueToDelete()?.venue }}</span>?</p>
-        <div class="flex gap-3">
-          <button (click)="venueToDelete.set(null)" class="flex-1 py-3 text-sm font-bold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all">
+        <div class="px-5 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+          <button type="button" (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">
             Cancel
           </button>
-          <button (click)="deleteVenue()" class="flex-1 py-3 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-md shadow-red-600/20 transition-all">
-            Delete
+          <button type="submit" [disabled]="isSubmitting()" class="px-4 py-2 text-sm font-medium text-white bg-[#0f172a] hover:bg-black rounded-[6px] transition-colors disabled:opacity-50 focus:outline-none">
+            {{ isSubmitting() ? 'Saving...' : 'Save' }}
           </button>
         </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="venueToDelete()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-md shadow-xl w-full max-w-sm overflow-hidden p-6 border border-gray-300 text-center">
+      <div class="w-12 h-12 border border-red-200 bg-red-50 rounded flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Venue?</h3>
+      <p class="text-sm text-gray-500 mb-6">This action cannot be undone. Are you sure you want to remove <span class="font-bold text-gray-900">{{ venueToDelete()?.venue }}</span>?</p>
+      <div class="flex gap-3">
+        <button (click)="venueToDelete.set(null)" class="flex-1 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">
+          Cancel
+        </button>
+        <button (click)="deleteVenue()" class="flex-1 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-[6px] transition-colors focus:outline-none">
+          Delete
+        </button>
       </div>
     </div>
+  </div>
+
+</div>

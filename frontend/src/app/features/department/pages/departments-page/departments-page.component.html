@@ -1,70 +1,78 @@
-<section class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-gray-900 animate-in fade-in duration-700 bg-white min-h-screen">
-  <div class="mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
+<section class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700 bg-white min-h-screen">
+  
+  <!-- Header -->
+  <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
-      <h1 class="text-[2.2rem] lg:text-[2.5rem] font-[800] text-black tracking-tight">Department </h1>
-     <p class="mt-2 text-sm font-medium text-gray-600">
-  Manage department lookup values across enquiry and visitor workflows.
-</p>
+      <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight font-sans">Department</h1>
+      <p class="mt-1 text-sm font-medium text-slate-500">
+        Manage department lookup values across enquiry and visitor workflows.
+      </p>
     </div>
     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-      <div class="relative w-full sm:w-[240px]">
+      
+      <!-- Search -->
+      <div class="relative w-full sm:w-[260px]">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
         <input type="text" placeholder="Search departments..." (input)="onSearch($event)"
-          class="w-full bg-white border border-gray-200 rounded-full px-4 py-3 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-black/5 transition-shadow shadow-sm" />
+          class="w-full bg-white border border-slate-300 rounded-md pl-9 pr-4 py-2 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors" />
       </div>
-     <button (click)="openAddModal()"
-  class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-black text-white rounded-full text-[14px] font-bold transition-all hover:bg-gray-900 shadow-sm">
 
-  <span class="text-[18px] font-extrabold leading-none">+</span>
-
-  <span>Add</span>
-</button>
+      <!-- Add Button -->
+      <button (click)="openAddModal()"
+        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-semibold transition-colors hover:bg-slate-800 shadow-sm border border-transparent">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span>Add</span>
+      </button>
     </div>
   </div>
 
   <div class="relative z-10">
-    <div class="flex flex-col gap-4 p-5 border-b border-gray-100 sm:flex-row sm:items-center sm:justify-between">
-      <div class="text-sm text-gray-500">Showing {{ sortedDepartments().length }} departments</div>
-      <div class="flex items-center gap-3">
+    
+    <!-- Toolbar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between pb-3 gap-4">
+      <div class="text-xs font-medium text-slate-500">Showing {{ sortedDepartments().length }} departments</div>
+      <div class="flex items-center justify-end">
         <div class="relative">
           <select (change)="onPageSizeChange($event)"
-            class="appearance-none bg-white border border-gray-200 rounded-full px-7 py-2 text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-black/5 transition-shadow shadow-sm">
+            class="appearance-none bg-white border border-slate-300 rounded-md pl-3 pr-8 py-1.5 text-sm font-medium text-slate-700 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer">
             <option value="5" [selected]="pageSize() === 5">5 rows</option>
             <option value="10" [selected]="pageSize() === 10">10 rows</option>
             <option value="25" [selected]="pageSize() === 25">25 rows</option>
           </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
           </div>
         </div>
       </div>
     </div>
 
-   <div class="overflow-x-auto rounded-[32px] border border-gray-200 bg-white overflow-hidden">
-  <table class="min-w-full text-left text-sm text-gray-700">
-
-    <thead class="bg-black text-white uppercase text-[11px] tracking-widest">
-      <tr>
-        <th class="px-6 py-4 rounded-tl-[28px]">Department</th>
-        <th class="px-6 py-4">Description</th>
-        <th class="px-6 py-4 text-right">Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
+    <!-- Table -->
+    <div class="rounded-md border border-slate-200 bg-white overflow-x-auto shadow-sm">
+      <table class="min-w-full text-left text-sm text-slate-700 whitespace-nowrap">
+        <thead class="bg-slate-900 text-white uppercase text-[11px] tracking-wider font-semibold">
+          <tr>
+            <th class="px-4 py-3 border-b border-slate-800 w-1/3">Department</th>
+            <th class="px-4 py-3 border-b border-slate-800">Description</th>
+            <th class="px-4 py-3 border-b border-slate-800 text-right w-32">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
           <tr *ngFor="let department of paginatedDepartments(); trackBy: trackByDepartmentId"
-            class="border-t border-gray-100 hover:bg-gray-50 transition-colors duration-150">
-            <td class="px-6 py-5 font-semibold text-gray-900">{{ department.name }}</td>
-            <td class="px-6 py-5 text-gray-600">{{ department.description || 'No description' }}</td>
-            <td class="px-6 py-5 text-right">
+            class="hover:bg-slate-50 transition-colors duration-150">
+            <td class="px-4 py-3 font-semibold text-slate-900">{{ department.name }}</td>
+            <td class="px-4 py-3 text-slate-600">{{ department.description || 'No description' }}</td>
+            <td class="px-4 py-3 text-right">
               <div class="flex items-center justify-end gap-2">
-                <button (click)="openEditModal(department)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Edit">
+                <button (click)="openEditModal(department)" class="p-1.5 text-slate-500 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 rounded-md transition-colors shadow-sm" title="Edit">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </button>
-                <button (click)="openDeleteConfirmation(department)" class="p-2.5 hover:bg-gray-100 text-black rounded-full transition-all duration-200 group-hover:bg-white border border-transparent hover:border-gray-200" title="Delete">
+                <button (click)="openDeleteConfirmation(department)" class="p-1.5 text-slate-500 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 hover:bg-red-50 rounded-md transition-colors shadow-sm" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
@@ -73,134 +81,87 @@
             </td>
           </tr>
           <tr *ngIf="!loading() && sortedDepartments().length === 0">
-            <td colspan="3" class="px-6 py-10 text-center text-gray-500">No departments found.</td>
+            <td colspan="3" class="px-4 py-8 text-center text-slate-500 font-medium">No departments found.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- <div *ngIf="sortedDepartments().length > 0" class="px-5 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div class="text-xs text-gray-500">Page {{ currentPage() }} of {{ totalPages() }}</div>
-      <div class="flex items-center gap-2">
-        <button type="button" (click)="prevPage()" [disabled]="currentPage() === 1"
-          class="px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">Previous</button>
-        <button type="button" (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-          class="px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">Next</button>
+    <!-- Pagination -->
+    <div *ngIf="sortedDepartments().length > 0" class="px-4 py-3 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md border-x border-b shadow-sm -mt-px relative z-0">
+      <div class="text-xs font-medium text-slate-500">
+        Showing <span class="text-slate-900 font-semibold">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
+        <span class="text-slate-900 font-semibold">{{ (currentPage() * pageSize()) > sortedDepartments().length ? sortedDepartments().length : (currentPage() * pageSize()) }}</span> of
+        <span class="text-slate-900 font-semibold">{{ sortedDepartments().length }}</span> entries
       </div>
-    </div> -->
-    <div *ngIf="sortedDepartments().length > 0"
-  class="px-5 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4">
-
-  <div class="text-xs font-medium text-gray-500">
-    Showing
-    <span class="text-gray-900 font-bold">
-      {{ (currentPage() - 1) * pageSize() + 1 }}
-    </span>
-    to
-    <span class="text-gray-900 font-bold">
-      {{ (currentPage() * pageSize()) > sortedDepartments().length
-        ? sortedDepartments().length
-        : (currentPage() * pageSize()) }}
-    </span>
-    of
-    <span class="text-gray-900 font-bold">
-      {{ sortedDepartments().length }}
-    </span>
-    entries
-  </div>
-
-  <nav class="flex items-center space-x-1.5 bg-gray-50/80 p-1 border border-gray-200 rounded-lg">
-
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage() === 1"
-      [class.opacity-40]="currentPage() === 1"
-      [class.cursor-not-allowed]="currentPage() === 1"
-      class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-
-      <svg xmlns="http://www.w3.org/2000/svg"
-        class="h-3.5 w-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor">
-
-        <path stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2.5"
-          d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-
-    <div
-      class="flex items-center justify-center px-2.5 min-w-[2rem] h-7 rounded-md bg-white border border-gray-200 text-xs font-bold text-gray-900 shadow-sm">
-      {{ currentPage() }}
+      <nav class="flex items-center gap-1">
+        <button (click)="prevPage()" [disabled]="currentPage() === 1"
+          class="flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <div class="flex items-center justify-center min-w-[2rem] h-8 rounded-md bg-slate-900 border border-slate-900 text-xs font-semibold text-white shadow-sm">
+          {{ currentPage() }}
+        </div>
+        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+          class="flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7-7" /></svg>
+        </button>
+      </nav>
     </div>
-
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage() === totalPages()"
-      [class.opacity-40]="currentPage() === totalPages()"
-      [class.cursor-not-allowed]="currentPage() === totalPages()"
-      class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-
-      <svg xmlns="http://www.w3.org/2000/svg"
-        class="h-3.5 w-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor">
-
-        <path stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2.5"
-          d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
-
-  </nav>
-</div>
   </div>
 
-  <div *ngIf="isModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40">
-    <div class="w-full max-w-xl rounded-[24px] bg-white p-6 shadow-2xl">
-      <div class="flex items-center justify-between gap-4 mb-6">
+  <!-- Add/Edit Modal -->
+  <div *ngIf="isModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div class="w-full max-w-xl rounded-lg bg-white p-6 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
         <div>
-          <h2 class="text-xl font-bold text-gray-900">{{ editingDepartment() ? 'Edit Department' : 'Add Department' }}</h2>
-          <p class="text-sm text-gray-500">Use this form to manage department values.</p>
+          <h2 class="text-lg font-bold text-slate-900 tracking-tight">{{ editingDepartment() ? 'Edit Department' : 'Add Department' }}</h2>
+          <p class="text-sm text-slate-500 mt-1">Use this form to manage department values.</p>
         </div>
-        <button type="button" (click)="closeModal()" class="text-gray-500 hover:text-gray-900">Close</button>
+        <button type="button" (click)="closeModal()" class="text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 p-2 rounded-md transition-colors border border-slate-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
       </div>
-      <form [formGroup]="form" (ngSubmit)="saveDepartment()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="saveDepartment()" class="space-y-5">
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Department Name</label>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Department Name</label>
           <input type="text" formControlName="name" maxlength="150" placeholder="Enter department name"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none focus:border-black focus:ring-black/10" />
-          <div *ngIf="hasError('name')" class="mt-2 text-xs text-red-600">Name is required and must be under 150 characters.</div>
+            class="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors" />
+          <div *ngIf="hasError('name')" class="mt-1.5 text-xs font-semibold text-red-600">Name is required and must be under 150 characters.</div>
         </div>
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Description</label>
           <textarea formControlName="description" rows="4" maxlength="500" placeholder="Enter description (optional)"
-            class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none focus:border-black focus:ring-black/10"></textarea>
-          <div *ngIf="hasError('description')" class="mt-2 text-xs text-red-600">Description must be under 500 characters.</div>
+            class="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors resize-none"></textarea>
+          <div *ngIf="hasError('description')" class="mt-1.5 text-xs font-semibold text-red-600">Description must be under 500 characters.</div>
         </div>
-        <div class="flex flex-wrap items-center gap-3 justify-end">
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <button type="button" (click)="closeModal()"
-            class="px-5 py-3 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
+            class="px-4 py-2 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">Cancel</button>
           <button type="submit" [disabled]="isSubmitting()"
-            class="px-5 py-3 rounded-full bg-black text-white text-sm font-semibold hover:bg-gray-900 disabled:opacity-70">{{ editingDepartment() ? 'Update' : 'Add' }}</button>
+            class="px-4 py-2 rounded-md bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 disabled:opacity-70 transition-colors shadow-sm">
+            {{ editingDepartment() ? 'Update' : 'Add' }}
+          </button>
         </div>
       </form>
     </div>
   </div>
 
-  <div *ngIf="departmentToDelete()" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50">
-    <div class="w-full max-w-lg rounded-[24px] bg-white p-6 shadow-2xl">
-      <h3 class="text-lg font-bold text-gray-900">Delete department?</h3>
-      <p class="mt-3 text-sm text-gray-600">This will remove the selected department from the active master list. Existing records will keep their saved department name.</p>
-      <div class="mt-6 flex flex-wrap gap-3 justify-end">
+  <!-- Delete Modal -->
+  <div *ngIf="departmentToDelete()" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-lg bg-white p-6 shadow-xl border border-slate-200">
+      <div class="flex items-center justify-center w-12 h-12 rounded-md bg-red-50 border border-red-100 mb-4 mx-auto">
+        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 text-center">Delete Department</h3>
+      <p class="mt-2 text-sm text-slate-500 text-center">Are you sure you want to delete this department? This action cannot be undone.</p>
+      <div class="mt-6 flex items-center gap-3">
         <button type="button" (click)="departmentToDelete.set(null)"
-          class="px-4 py-2 rounded-full border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
+          class="flex-1 px-4 py-2 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">Cancel</button>
         <button type="button" (click)="deleteDepartment()"
-          class="px-4 py-2 rounded-full bg-red-600 text-sm font-semibold text-white hover:bg-red-700">Delete</button>
+          class="flex-1 px-4 py-2 rounded-md bg-red-600 text-sm font-semibold text-white hover:bg-red-700 transition-colors shadow-sm">Delete</button>
       </div>
     </div>
   </div>
