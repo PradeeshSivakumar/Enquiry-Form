@@ -200,9 +200,20 @@ async function validatePayload(payload) {
     throw new Error('At least one product interest is required.');
   }
 
-  if (payload.department && !(await departmentService.existsByName(payload.department))) {
+if (payload.department) {
+
+  const normalizedDepartment = payload.department
+    ?.toString()
+    .trim()
+    .toLowerCase();
+
+  const exists = await departmentService.existsByName(normalizedDepartment);
+
+  if (!exists) {
     throw new Error('Invalid department.');
   }
+
+}
 
   if (payload.leadCategory && !(await leadCategoryService.existsByName(payload.leadCategory))) {
     throw new Error('Invalid lead category.');

@@ -1,6 +1,5 @@
 <section class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700 bg-white min-h-screen">
   
-  <!-- Header -->
   <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
     <div>
       <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight font-sans">Department</h1>
@@ -10,7 +9,6 @@
     </div>
     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
       
-      <!-- Search -->
       <div class="relative w-full sm:w-[260px]">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,7 +19,6 @@
           class="w-full bg-white border border-slate-300 rounded-md pl-9 pr-4 py-2 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors" />
       </div>
 
-      <!-- Add Button -->
       <button (click)="openAddModal()"
         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-semibold transition-colors hover:bg-slate-800 shadow-sm border border-transparent">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -32,7 +29,6 @@
 
   <div class="relative z-10">
     
-    <!-- Toolbar -->
     <div class="flex flex-col sm:flex-row items-center justify-between pb-3 gap-4">
       <div class="text-xs font-medium text-slate-500">Showing {{ sortedDepartments().length }} departments</div>
       <div class="flex items-center justify-end">
@@ -50,7 +46,6 @@
       </div>
     </div>
 
-    <!-- Table -->
     <div class="rounded-md border border-slate-200 bg-white overflow-x-auto shadow-sm">
       <table class="min-w-full text-left text-sm text-slate-700 whitespace-nowrap">
         <thead class="bg-slate-900 text-white uppercase text-[11px] tracking-wider font-semibold">
@@ -87,7 +82,6 @@
       </table>
     </div>
 
-    <!-- Pagination -->
     <div *ngIf="sortedDepartments().length > 0" class="px-4 py-3 border-t border-slate-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md border-x border-b shadow-sm -mt-px relative z-0">
       <div class="text-xs font-medium text-slate-500">
         Showing <span class="text-slate-900 font-semibold">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
@@ -104,13 +98,12 @@
         </div>
         <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
           class="flex items-center justify-center w-8 h-8 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7-7" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
         </button>
       </nav>
     </div>
   </div>
 
-  <!-- Add/Edit Modal -->
   <div *ngIf="isModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
     <div class="w-full max-w-xl rounded-lg bg-white p-6 shadow-xl border border-slate-200">
       <div class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
@@ -147,7 +140,6 @@
     </div>
   </div>
 
-  <!-- Delete Modal -->
   <div *ngIf="departmentToDelete()" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
     <div class="w-full max-w-sm rounded-lg bg-white p-6 shadow-xl border border-slate-200">
       <div class="flex items-center justify-center w-12 h-12 rounded-md bg-red-50 border border-red-100 mb-4 mx-auto">

@@ -1,154 +1,213 @@
-<section class="dashboard-shell">
-  <header class="dashboard-header">
+<section class="min-h-screen bg-[#f8fafc] p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700">
+  
+  <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
     <div>
-      <p class="eyebrow">Enterprise CRM</p>
-      <h1>Dashboard</h1>
-      <p>Enterprise Enquiry Analytics Overview</p>
+      <h1 class="text-[28px] font-bold text-slate-900 tracking-tight leading-none">Dashboard</h1>
+      <p class="text-sm font-medium text-slate-500 mt-2">Home &bull; Dashboard</p>
     </div>
 
-    <button type="button" class="refresh-button" (click)="loadDashboard()" [disabled]="loading()">
-      <svg class="refresh-icon" [class.is-spinning]="loading()" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.76-4.24L13 11h8V3l-3.3 3.3Z"></path>
+    <button type="button" (click)="loadDashboard()" [disabled]="loading()"
+      class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-black-600 rounded-md text-sm font-semibold transition-colors hover:bg-slate-50 shadow-sm disabled:opacity-50">
+      <svg class="w-4 h-4" [class.animate-spin]="loading()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+        <path d="M21 3v5h-5"></path>
       </svg>
       Refresh
     </button>
   </header>
 
-  <div *ngIf="error()" class="error-banner">
-    <span>{{ error() }}</span>
-    <button type="button" (click)="loadDashboard()">Retry</button>
+  <div *ngIf="error()" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between gap-4">
+    <span class="text-sm font-semibold text-red-800">{{ error() }}</span>
+    <button type="button" (click)="loadDashboard()" class="px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded-md hover:bg-red-700 transition-colors shadow-sm">Retry</button>
   </div>
 
-  <div class="stats-grid" aria-label="Dashboard summary">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     <ng-container *ngIf="!loading(); else statsSkeleton">
-      <article *ngFor="let card of statCards()" class="stat-card" [attr.data-accent]="card.accent">
-        <div class="stat-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path [attr.d]="card.icon"></path>
-          </svg>
+      <article *ngFor="let card of statCards(); let i = index" class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-col justify-between">
+        <div class="flex items-start gap-4">
+          
+          <div class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+               [ngClass]="{
+                 'bg-blue-50 border border-blue-100 text-blue-600': i % 5 === 0,
+                 'bg-emerald-50 border border-emerald-100 text-emerald-600': i % 5 === 1,
+                 'bg-amber-50 border border-amber-100 text-amber-600': i % 5 === 2,
+                 'bg-purple-50 border border-purple-100 text-purple-600': i % 5 === 3,
+                 'bg-slate-100 border border-slate-200 text-slate-600': i % 5 === 4
+               }">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+              <path [attr.d]="card.icon"></path>
+            </svg>
+          </div>
+
+          <div>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{{ card.label }}</p>
+            <strong class="text-3xl font-extrabold text-slate-900 mt-1 block leading-none">{{ card.value | number }}</strong>
+          </div>
         </div>
-        <div>
-          <p>{{ card.label }}</p>
-          <strong>{{ card.value | number }}</strong>
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <p class="text-[11px] font-medium text-slate-500">All time metrics</p>
         </div>
       </article>
     </ng-container>
 
     <ng-template #statsSkeleton>
-      <article class="stat-card skeleton-card" *ngFor="let item of [1, 2, 3, 4]">
-        <span class="skeleton icon"></span>
-        <span class="skeleton line"></span>
-        <span class="skeleton value"></span>
+      <article *ngFor="let item of [1, 2, 3, 4, 5]" class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 animate-pulse h-[120px]">
+        <div class="flex gap-4">
+          <div class="w-12 h-12 bg-slate-100 rounded-lg"></div>
+          <div class="flex-1">
+            <div class="h-3 w-20 bg-slate-200 rounded mb-2"></div>
+            <div class="h-8 w-12 bg-slate-200 rounded"></div>
+          </div>
+        </div>
       </article>
     </ng-template>
   </div>
 
-  <div class="analytics-grid">
-    <article class="panel trend-panel">
-      <div class="panel-header">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    
+    <article class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 lg:p-7 flex flex-col min-h-[420px]">
+      <div class="flex justify-between items-start mb-8">
         <div>
-          <h2>Daily Enquiry Trends</h2>
-          <p>Enquiry volume by date</p>
+          <h2 class="text-xl font-bold text-slate-900 tracking-tight">Daily Enquiry Trends</h2>
+          <p class="text-sm text-slate-500 mt-1 font-medium">Enquiry volume by date</p>
+        </div>
+        <div class="relative">
+          <select class="appearance-none bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-lg pl-4 pr-10 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-slate-50 cursor-pointer transition-colors">
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </div>
         </div>
       </div>
-
-      <div class="chart-frame" [class.is-loading]="loading()">
-        <div *ngIf="loading()" class="chart-skeleton"></div>
-        <canvas #trendCanvas aria-label="Monthly enquiry trends chart"></canvas>
+      
+      <div class="relative flex-1 w-full min-h-[280px]">
+        <div *ngIf="loading()" class="absolute inset-0 bg-slate-50 rounded-xl animate-pulse z-10"></div>
+        <canvas #trendCanvas class="absolute inset-0 w-full h-full transition-opacity duration-300" [class.opacity-0]="loading()"></canvas>
       </div>
     </article>
 
-    <article class="panel product-panel">
-      <div class="panel-header">
-        <div>
-          <h2>Product Interest Distribution</h2>
-          <p>Dynamic split from product master and enquiries</p>
+    <article class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 lg:p-7 flex flex-col min-h-[420px]">
+      <div class="mb-8">
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Product Interest Distribution</h2>
+        <p class="text-sm text-slate-500 mt-1 font-medium">Dynamic split from product master and enquiries</p>
+      </div>
+      
+      <div class="relative flex-1 w-full min-h-[280px]">
+        <div *ngIf="loading()" class="absolute inset-0 bg-slate-50 rounded-xl animate-pulse z-10"></div>
+        <canvas #productCanvas class="absolute inset-0 w-full h-full transition-opacity duration-300" [class.opacity-0]="loading()"></canvas>
+        
+        <div *ngIf="!loading() && !hasProductDistribution()" class="absolute inset-0 z-20 flex items-center justify-center p-6 text-sm font-medium text-slate-500 bg-white/95 backdrop-blur-sm rounded-xl text-center border-2 border-dashed border-slate-200">
+          No product interests have been captured yet.
         </div>
       </div>
-
-      <div class="chart-frame" [class.is-loading]="loading()">
-        <div *ngIf="loading()" class="chart-skeleton"></div>
-        <canvas #productCanvas aria-label="Product interest distribution chart"></canvas>
-      </div>
-
-      <div *ngIf="!loading() && !hasProductDistribution()" class="empty-note">
-        No product interests have been captured yet.
-      </div>
     </article>
+
   </div>
 
-  <article class="panel table-panel">
-    <div class="panel-header">
+  <article class="bg-white border border-slate-200 rounded-2xl shadow-sm mb-8 flex flex-col overflow-hidden">
+    
+    <div class="p-6 flex justify-between items-center border-b border-slate-100">
       <div>
-        <h2>Recent Enquiries</h2>
-        <p>Latest 10 visitor enquiries from the directory</p>
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Recent Enquiries</h2>
+        <p class="text-sm text-slate-500 mt-1 font-medium">Latest 10 visitor enquiries from the directory</p>
       </div>
     </div>
 
-    <div *ngIf="loading()" class="table-loading">
-      <span class="skeleton row" *ngFor="let item of [1, 2, 3, 4, 5]"></span>
+    <div *ngIf="loading()" class="p-6 space-y-4">
+      <div *ngFor="let item of [1, 2, 3, 4, 5]" class="h-10 w-full bg-slate-50 rounded-lg animate-pulse"></div>
     </div>
 
-    <div *ngIf="!loading() && hasRecentEnquiries()" class="table-wrap">
-      <table>
-        <thead>
+    <div *ngIf="!loading() && hasRecentEnquiries()" class="w-full">
+      <table class="w-full text-left text-sm text-slate-700 table-fixed">
+        <thead class="bg-white text-slate-500 uppercase text-[11px] tracking-wider font-extrabold border-b border-slate-100">
           <tr>
-            <th>Visitor Name</th>
-            <th>Company</th>
-            <th>Venue</th>
-            <th>Lead Category</th>
-            <th>Products Interested</th>
-            <th>Date</th>
+            <th class="px-6 py-4 w-[20%]">Visitor Name</th>
+            <th class="px-6 py-4 w-[15%]">Company</th>
+            <th class="px-6 py-4 w-[20%]">Venue</th>
+            <th class="px-6 py-4 w-[15%]">Lead Category</th>
+            <th class="px-6 py-4 w-[20%]">Products Interested</th>
+            <th class="px-6 py-4 w-[10%]">Date</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let enquiry of recentEnquiries(); trackBy: trackById">
-            <td>
-              <strong>{{ enquiry.full_name }}</strong>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let enquiry of recentEnquiries(); trackBy: trackById" class="hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 font-bold text-slate-900 truncate" [title]="enquiry.full_name">
+              {{ enquiry.full_name }}
             </td>
-            <td>{{ enquiry.company_name || '-' }}</td>
-            <td>{{ enquiry.venue || '-' }}</td>
-            <td>
-              <span class="category-pill">
+            <td class="px-6 py-4 text-slate-600 truncate" [title]="enquiry.company_name || '-'">
+              {{ enquiry.company_name || '-' }}
+            </td>
+            <td class="px-6 py-4 text-slate-600 truncate" [title]="enquiry.venue || '-'">
+              {{ enquiry.venue || '-' }}
+            </td>
+            <td class="px-6 py-4 truncate">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-50 text-slate-600 text-[11px] font-bold border border-slate-200 truncate max-w-full" [title]="enquiry.lead_category || '-'">
                 {{ enquiry.lead_category || '-' }}
               </span>
             </td>
-            <td class="products-cell">{{ formatProducts(enquiry.interests) }}</td>
-            <td>{{ enquiry.created_at | date: 'dd MMM yyyy' }}</td>
+            <td class="px-6 py-4 text-slate-600 truncate" [title]="formatProducts(enquiry.interests)">
+              {{ formatProducts(enquiry.interests) }}
+            </td>
+            <td class="px-6 py-4 text-slate-500 font-medium whitespace-nowrap">
+              {{ enquiry.created_at | date: 'dd MMM yyyy' }}
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div *ngIf="!loading() && !hasRecentEnquiries()" class="empty-state">
-      <strong>No enquiries found</strong>
-      <span>New enquiry submissions will appear here automatically.</span>
+    <div *ngIf="!loading() && !hasRecentEnquiries()" class="p-12 text-center text-slate-500">
+      <strong class="block text-slate-900 mb-1 text-lg">No enquiries found</strong>
+      <span class="text-sm">New enquiry submissions will appear here automatically.</span>
     </div>
   </article>
 
-  <article class="panel venue-panel">
-    <div class="panel-header">
+  <article class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 mb-8">
+    <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
       <div>
-        <h2>Venue Analytics</h2>
-        <p>Venue-wise enquiry count across Chennai, Bangalore, Coimbatore, and Hyderabad</p>
+        <h2 class="text-lg font-bold text-slate-900">Venue Analytics</h2>
+        <p class="text-xs text-slate-500 mt-1 font-medium">Venue-wise enquiry count across Chennai, Bangalore, Coimbatore, and Hyderabad</p>
+      </div>
+      <div class="relative">
+        <select class="appearance-none bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-lg pl-4 pr-10 py-2 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-slate-50 cursor-pointer transition-colors">
+          <option>This Year</option>
+          <option>All Time</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
       </div>
     </div>
 
-    <div *ngIf="loading()" class="venue-loading">
-      <span class="skeleton venue-row" *ngFor="let item of [1, 2, 3, 4]"></span>
+    <div *ngIf="loading()" class="space-y-6">
+      <div *ngFor="let item of [1, 2, 3, 4]" class="animate-pulse">
+        <div class="h-4 w-32 bg-slate-200 rounded mb-3"></div>
+        <div class="h-2 w-full bg-slate-100 rounded-full"></div>
+      </div>
     </div>
 
-    <div *ngIf="!loading()" class="venue-list">
-      <div class="venue-row-item" *ngFor="let item of venueAnalytics(); trackBy: trackByVenue">
-        <div class="venue-meta">
-          <strong>{{ item.city }}</strong>
-          <span>{{ item.venue }}</span>
+    <div *ngIf="!loading()" class="space-y-6">
+      <div *ngFor="let item of venueAnalytics(); trackBy: trackByVenue" class="flex flex-col gap-2">
+        <div class="flex justify-between items-end">
+          <div>
+            <strong class="block text-sm font-bold text-slate-900">{{ item.city }}</strong>
+            <span class="text-[11px] font-medium text-slate-500">{{ item.venue }}</span>
+          </div>
+          <strong class="text-sm font-bold text-slate-900">{{ item.count | number }}</strong>
         </div>
-        <div class="venue-meter" aria-hidden="true">
-          <span [style.width]="venueWidth(item.count)"></span>
+        
+        <div class="w-full bg-slate-100 rounded-r-full h-2 overflow-hidden flex items-center">
+          <div class="bg-blue-600 h-full rounded-r-full transition-all duration-1000 ease-out" [style.width]="venueWidth(item.count)"></div>
         </div>
-        <strong class="venue-count">{{ item.count | number }}</strong>
       </div>
     </div>
   </article>
+
+  <footer class="flex justify-between items-center text-xs font-medium text-slate-500 pb-4">
+    <p>&copy; 2026 Niraltek Enquiry Form. All rights reserved.</p>
+    <p>Version 1.0.0</p>
+  </footer>
+
 </section>

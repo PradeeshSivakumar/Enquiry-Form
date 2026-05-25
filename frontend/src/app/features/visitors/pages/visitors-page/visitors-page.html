@@ -1,11 +1,11 @@
 <section
-  class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-gray-900 animate-in fade-in duration-700 bg-white min-h-screen">
+  class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700 bg-white min-h-screen">
 
   <!-- Toast Notification -->
   <div *ngIf="toastMessage()"
-    class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg border animate-in slide-in-from-bottom-5 fade-in duration-300"
+    class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-md shadow-sm border animate-in slide-in-from-bottom-5 fade-in duration-300"
     [ngClass]="{
-         'bg-gray-900 border-gray-800 text-white': toastMessage()?.type === 'success',
+         'bg-slate-900 border-slate-800 text-white': toastMessage()?.type === 'success',
          'bg-red-50 border-red-200 text-red-800': toastMessage()?.type === 'error'
        }">
     <svg *ngIf="toastMessage()?.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400"
@@ -24,18 +24,18 @@
   </div>
 
   <!-- Header Section -->
-  <div class="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+  <div class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
     <div class="flex items-center gap-4">
       <div class="flex flex-col">
-        <div class="flex items-center gap-4 mb-1">
+        <div class="flex items-center gap-3 mb-1">
           <h1
-            class="text-[2.2rem] lg:text-[2.5rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">
+            class="text-[2rem] lg:text-[2.2rem] font-bold text-slate-900 leading-none tracking-tight font-['Inter',sans-serif]">
             Visitors Directory</h1>
           <button (click)="downloadFilteredData()"
-            class="flex items-center justify-center p-1.5 border-[1.5px] border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 rounded-[8px] transition-all group"
+            class="flex items-center justify-center p-1.5 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-600 rounded-md transition-all group shadow-sm"
             title="Export CSV">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
               <polyline points="14 2 14 8 20 8" />
               <line x1="16" y1="13" x2="8" y2="13" />
@@ -44,12 +44,12 @@
             </svg>
           </button>
         </div>
-        <p class="text-sm text-gray-500 font-medium mt-1">Manage and review enterprise visitor entries and leads.</p>
+        <p class="text-sm text-slate-500 font-medium mt-1">Manage and review enterprise visitor entries and leads.</p>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
-      <div class="relative w-full sm:w-[240px] group">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+    <div class="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+      <div class="relative w-full sm:w-[260px] group">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
               d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -57,10 +57,10 @@
           </svg>
         </div>
         <input type="text" placeholder="Search directory..." (input)="onSearch($event)"
-          class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-[13px] font-semibold text-black outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder-gray-400 shadow-sm" />
+          class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400 shadow-sm" />
       </div>
       <button (click)="openAddModal()"
-        class="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-black hover:bg-gray-800 text-white rounded-full text-[14px] font-bold transition-all shadow-md whitespace-nowrap">
+        class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
         </svg>
@@ -72,45 +72,40 @@
 
 
   <!-- Main Content Card -->
- <div class="relative z-10">
+  <div class="relative z-10">
 
     <!-- Filter Tabs & Toolbar Container -->
     <div
-      class="px-6 py-5 border-b border-gray-100 flex flex-col xl:flex-row justify-between items-center gap-4 bg-white relative z-20">
+      class="px-5 py-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-center gap-4 bg-white relative z-20 rounded-t-md border-x border-t">
 
-<!-- Category Dropdown -->
-<div class="relative w-full sm:w-[220px]">
-  <select
-    [value]="activeCategory()"
-    (change)="onCategoryChange($any($event.target).value)"
-    class="appearance-none w-full bg-white border border-gray-200 text-gray-800 py-3 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer shadow-sm">
+      <!-- Category Dropdown -->
+      <div class="relative w-full sm:w-[220px]">
+        <select
+          [value]="activeCategory()"
+          (change)="onCategoryChange($any($event.target).value)"
+          class="appearance-none w-full bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
+          <option *ngFor="let tab of filterTabs()" [value]="tab">
+            {{ tab }}
+          </option>
+        </select>
+        <!-- Dropdown Arrow -->
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+          </svg>
+        </div>
+      </div>
 
-    <option *ngFor="let tab of filterTabs()" [value]="tab">
-      {{ tab }}
-    </option>
-
-  </select>
-
-  <!-- Dropdown Arrow -->
-  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
-    <svg
-      class="fill-current h-4 w-4"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20">
-      <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-    </svg>
-  </div>
-</div>
       <!-- Controls -->
       <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
 
         <!-- Department Dropdown -->
         <div class="relative hidden sm:block">
-          <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-gray-200 text-gray-800 py-2.5 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer">
+          <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
             <option value="">All Departments</option>
             <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
           </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
         </div>
@@ -118,12 +113,12 @@
         <!-- Entries Dropdown -->
         <div class="relative hidden sm:block">
           <select (change)="onPageSizeChange($event)"
-            class="appearance-none bg-white border border-gray-200 text-gray-800 py-2.5 pl-4 pr-10 rounded-full text-[13px] font-bold outline-none focus:border-black transition-all cursor-pointer">
+            class="appearance-none bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
             <option value="5" [selected]="pageSize() === 5">5 rows</option>
             <option value="10" [selected]="pageSize() === 10">10 rows</option>
             <option value="25" [selected]="pageSize() === 25">25 rows</option>
           </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
               <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
             </svg>
@@ -131,21 +126,21 @@
         </div>
 
         <!-- View Toggle -->
-        <div class="flex items-center p-1 bg-white border border-gray-200 rounded-full" *ngIf="visitors().length > 0">
-          <button (click)="viewMode.set('table')" [class.bg-gray-100]="viewMode() === 'table'"
-            [class.text-black]="viewMode() === 'table'" [class.text-gray-400]="viewMode() !== 'table'"
-            [class.hover:bg-gray-50]="viewMode() !== 'table'" [class.hover:text-gray-900]="viewMode() !== 'table'"
-            class="p-2 rounded-full transition-all duration-200 flex items-center justify-center">
+        <div class="flex items-center p-0.5 bg-slate-50 border border-slate-300 rounded-md shadow-sm" *ngIf="visitors().length > 0">
+          <button (click)="viewMode.set('table')" [class.bg-white]="viewMode() === 'table'"
+            [class.text-slate-900]="viewMode() === 'table'" [class.shadow-sm]="viewMode() === 'table'" [class.text-slate-500]="viewMode() !== 'table'"
+            [class.hover:bg-slate-100]="viewMode() !== 'table'" [class.hover:text-slate-900]="viewMode() !== 'table'"
+            class="p-1.5 rounded transition-all duration-200 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                 d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
           </button>
-          <button (click)="viewMode.set('grid')" [class.bg-gray-100]="viewMode() === 'grid'"
-            [class.text-black]="viewMode() === 'grid'" [class.text-gray-400]="viewMode() !== 'grid'"
-            [class.hover:bg-gray-50]="viewMode() !== 'grid'" [class.hover:text-gray-900]="viewMode() !== 'grid'"
-            class="p-2 rounded-full transition-all duration-200 flex items-center justify-center">
+          <button (click)="viewMode.set('grid')" [class.bg-white]="viewMode() === 'grid'"
+            [class.text-slate-900]="viewMode() === 'grid'" [class.shadow-sm]="viewMode() === 'grid'" [class.text-slate-500]="viewMode() !== 'grid'"
+            [class.hover:bg-slate-100]="viewMode() !== 'grid'" [class.hover:text-slate-900]="viewMode() !== 'grid'"
+            class="p-1.5 rounded transition-all duration-200 flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -158,14 +153,14 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border-x border-b border-slate-200 rounded-b-md">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
     </div>
 
     <!-- Error State -->
     <div *ngIf="error()"
-      class="bg-gray-50 text-gray-800 p-4 m-4 rounded-xl border border-gray-200 flex items-center shadow-sm">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24"
+      class="bg-red-50 text-red-800 p-4 rounded-b-md border-x border-b border-red-200 flex items-center shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-red-500" fill="none" viewBox="0 0 24 24"
         stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -174,127 +169,129 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading() && !error() && filteredVisitors().length === 0" class="bg-white text-center py-20">
+    <div *ngIf="!loading() && !error() && filteredVisitors().length === 0" class="bg-white text-center py-20 border-x border-b border-slate-200 rounded-b-md">
       <div
-        class="w-14 h-14 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mx-auto mb-3 shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
+        class="w-12 h-12 bg-slate-50 rounded-md border border-slate-200 flex items-center justify-center mx-auto mb-3 shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       </div>
-      <h3 class="text-sm font-semibold text-gray-900 mb-1">No visitors found</h3>
-      <p class="text-gray-500 text-xs">There are currently no enquiries matching your criteria.</p>
+      <h3 class="text-sm font-semibold text-slate-900 mb-1">No visitors found</h3>
+      <p class="text-slate-500 text-xs">There are currently no enquiries matching your criteria.</p>
     </div>
 
     <!-- =================== -->
-    <!--      TABLE VIEW     -->
+    <!--     TABLE VIEW      -->
     <!-- =================== -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'table'"
-      class="overflow-x-auto min-h-[350px] print-area data-table-card">
+      class="overflow-x-auto min-h-[350px] print-area border-x border-b border-slate-200 bg-white">
 
-      <!-- Print Header (Only visible when printing) -->
-      <div class="hidden print-header p-5 bg-white border-b border-gray-200">
-        <h2 class="text-2xl font-black text-black">Visitors Directory - PDF Summary</h2>
-        <p class="text-sm text-gray-500 font-medium mt-1">Generated on {{ activeCategory() }} segment. Total: {{
+      <!-- Print Header -->
+      <div class="hidden print-header p-5 bg-white border-b border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-900">Visitors Directory - PDF Summary</h2>
+        <p class="text-sm text-slate-500 font-medium mt-1">Generated on {{ activeCategory() }} segment. Total: {{
           filteredVisitors().length }} records.</p>
       </div>
 
       <table class="min-w-full text-left text-sm whitespace-nowrap data-table">
-        <thead class="bg-gray-900 text-white sticky top-0 z-10 border-b-2 border-gray-100">
-          <tr>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">#</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-widest">Visitor<span>{{ sortIndicator('name') }}</span></button>
+        <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800 rounded-none">
+         <tr class="border-b border-slate-700">
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase rounded-none !rounded-tl-none">#</th>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">
+              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-wider">Visitor<span>{{ sortIndicator('name') }}</span></button>
             </th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-              <button type="button" (click)="sortBy('company')" class="flex items-center gap-1 uppercase tracking-widest">Company <span>{{ sortIndicator('company') }}</span></button>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">
+              <button type="button" (click)="sortBy('company')" class="flex items-center gap-1 uppercase tracking-wider">Company <span>{{ sortIndicator('company') }}</span></button>
             </th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">
-              <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-widest">Venue & City <span>{{ sortIndicator('venue') }}</span></button>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">
+              <button type="button" (click)="sortBy('venue')" class="flex items-center gap-1 uppercase tracking-wider">Venue & City <span>{{ sortIndicator('venue') }}</span></button>
             </th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Contact</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Lead Category</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase">Department</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Visiting Card</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-center">Voice Note</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-widest text-[11px] uppercase text-right no-print">
-              Actions</th>
-          </tr>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">Contact</th>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">Lead Category</th>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase">Department</th>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase text-center">Visiting Card</th>
+            <th scope="col" class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase text-center">Voice Note</th>
+            <th
+  scope="col"
+  class="px-4 py-3 font-semibold tracking-wider text-[11px] uppercase text-right no-print rounded-none !rounded-tr-none border-l border-slate-700">
+  Actions
+</th>
         </thead>
-        <tbody class="divide-y divide-gray-100 bg-white">
+        <tbody class="divide-y divide-slate-200 bg-white">
           <ng-container *ngFor="let visitor of paginatedVisitors(); let i = index">
-            <tr class="transition-colors duration-200 hover:bg-gray-50/50 relative group cursor-pointer"
+            <tr class="transition-colors duration-150 hover:bg-slate-50 relative group cursor-pointer"
               (click)="openReview(visitor)">
 
-              <td class="px-6 py-6 text-gray-500 font-bold text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
+              <td class="px-4 py-3 text-slate-500 font-medium text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
 
-              <td class="px-6 py-6">
+              <td class="px-4 py-3">
                 <div class="flex flex-col">
-                  <span class="font-bold text-black text-sm">{{ visitor.title ? visitor.title + ' ' : '' }}{{
+                  <span class="font-semibold text-slate-900 text-sm">{{ visitor.title ? visitor.title + ' ' : '' }}{{
                     visitor.full_name }}</span>
-                  <span class="text-[11px] text-gray-500 font-medium mt-0.5">{{ visitor.job_title || 'No Title'
+                  <span class="text-[11px] text-slate-500 mt-0.5">{{ visitor.job_title || 'No Title'
                     }}</span>
                 </div>
               </td>
 
-              <td class="px-6 py-6 text-gray-700 font-medium text-xs">{{ visitor.company_name || '-' }}</td>
+              <td class="px-4 py-3 text-slate-700 text-sm">{{ visitor.company_name || '-' }}</td>
 
-              <td class="px-6 py-6">
+              <td class="px-4 py-3">
                 <div class="flex flex-col gap-0.5" *ngIf="visitor.venue_id">
-                  <span class="text-black font-semibold text-xs">{{ getVenueDetails(visitor.venue_id).venue }}</span>
-                  <span class="text-gray-500 text-[11px]">{{ getVenueDetails(visitor.venue_id).city }} • {{
+                  <span class="text-slate-900 font-medium text-sm">{{ getVenueDetails(visitor.venue_id).venue }}</span>
+                  <span class="text-slate-500 text-[11px]">{{ getVenueDetails(visitor.venue_id).city }} • {{
                     getVenueDetails(visitor.venue_id).year }}</span>
                 </div>
-                <div *ngIf="!visitor.venue_id" class="text-gray-400 text-xs font-medium">-</div>
+                <div *ngIf="!visitor.venue_id" class="text-slate-400 text-sm">-</div>
               </td>
 
-              <td class="px-6 py-6">
+              <td class="px-4 py-3">
                 <div class="flex flex-col gap-0.5">
-                  <span class="text-black font-semibold text-xs">{{ visitor.email }}</span>
-                  <span class="text-gray-500 text-[11px]">{{ visitor.mobile }}</span>
+                  <span class="text-slate-900 font-medium text-sm">{{ visitor.email }}</span>
+                  <span class="text-slate-500 text-[11px]">{{ visitor.mobile }}</span>
                 </div>
               </td>
 
-              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.lead_category || '-' }}</td>
+              <td class="px-4 py-3 text-slate-700 text-sm">{{ visitor.lead_category || '-' }}</td>
 
-              <td class="px-6 py-6 text-gray-600 font-medium text-xs">{{ visitor.department || '-' }}</td>
+              <td class="px-4 py-3 text-slate-700 text-sm">{{ visitor.department || '-' }}</td>
 
-              <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
+              <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
                 <div *ngIf="visitor.visiting_card_url" class="flex items-center justify-center">
                  <button
                         type="button"
                         (click)="$event.stopPropagation(); openCardViewer(visitor, $event)"
-                        class="px-3 py-1 bg-gray-900 text-white text-[11px] font-semibold rounded-full hover:bg-black transition-all">
-                         View Card
+                        class="px-2 py-1 bg-white border border-slate-300 text-slate-700 text-[11px] font-semibold rounded hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm">
+                          View Card
                 </button>
                 </div>
-                <span *ngIf="!visitor.visiting_card_url" class="text-gray-300">-</span>
+                <span *ngIf="!visitor.visiting_card_url" class="text-slate-300">-</span>
               </td>
 
-              <td class="px-6 py-6 text-center" (click)="$event.stopPropagation()">
+              <td class="px-4 py-3 text-center" (click)="$event.stopPropagation()">
                 <div *ngIf="visitor.voice_note_url" class="flex items-center justify-center">
                   <button (click)="toggleAudioPlayback(visitor.id, 1, $event)"
-                    [ngClass]="{'bg-black border-black text-white shadow-md': expandedAudioId() === visitor.id && audioState().isPlaying, 'bg-white border-gray-200 text-black hover:border-black hover:bg-black hover:text-white hover:shadow-md': expandedAudioId() !== visitor.id || !audioState().isPlaying}"
-                    class="w-9 h-9 border-2 rounded-full flex items-center justify-center transition-all duration-300 group/play">
+                    [ngClass]="{'bg-slate-900 border-slate-900 text-white shadow-sm': expandedAudioId() === visitor.id && audioState().isPlaying, 'bg-white border-slate-300 text-slate-700 hover:border-slate-900 hover:bg-slate-900 hover:text-white shadow-sm': expandedAudioId() !== visitor.id || !audioState().isPlaying}"
+                    class="w-7 h-7 border rounded flex items-center justify-center transition-all duration-200 group/play">
                     <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying"
-                      class="h-4 w-4 ml-0.5 transition-transform group-hover/play:scale-110" fill="currentColor"
+                      class="h-3 w-3 ml-0.5 transition-transform group-hover/play:scale-110" fill="currentColor"
                       viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                     <svg *ngIf="expandedAudioId() === visitor.id && audioState().isPlaying"
-                      class="h-4 w-4 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      class="h-3 w-3 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                     </svg>
                   </button>
                 </div>
-                <span *ngIf="!visitor.voice_note_url" class="text-gray-300">-</span>
+                <span *ngIf="!visitor.voice_note_url" class="text-slate-300">-</span>
               </td>
 
-              <td class="px-6 py-6 text-right no-print" (click)="$event.stopPropagation()">
-                <div class="flex items-center justify-end gap-3">
+              <td class="px-4 py-3 text-right no-print" (click)="$event.stopPropagation()">
+                <div class="flex items-center justify-end gap-2">
                   <button (click)="openEdit(visitor, $event)"
-                    class="p-2.5 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 hover:text-black rounded-full transition-all duration-200 group"
+                    class="p-1.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-50 rounded transition-all duration-200 group shadow-sm"
                     title="Edit">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:scale-110"
                       fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -303,7 +300,7 @@
                     </svg>
                   </button>
                   <button (click)="openDeleteConfirmation(visitor, $event)"
-                    class="p-2.5 bg-white hover:bg-red-50 hover:border-red-200 border border-gray-300 text-gray-700 hover:text-red-600 rounded-full transition-all duration-200 group"
+                    class="p-1.5 bg-white border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50 rounded transition-all duration-200 group shadow-sm"
                     title="Delete">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:scale-110"
                       fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -316,48 +313,48 @@
             </tr>
 
             <!-- Accordion Audio Player Row -->
-            <tr *ngIf="expandedAudioId() === visitor.id" class="bg-gray-50/80 border-b border-gray-100">
+            <tr *ngIf="expandedAudioId() === visitor.id" class="bg-slate-50 border-b border-slate-200">
               <td colspan="11" class="p-0">
-                <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-6 py-4 flex justify-center">
-                  <div class="bg-black rounded-full px-5 py-2.5 flex items-center gap-4 shadow-xl w-full max-w-[400px]">
+                <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-4 py-3 flex justify-center">
+                  <div class="bg-slate-900 rounded-md px-4 py-2 flex items-center gap-4 shadow-sm border border-slate-800 w-full max-w-[400px]">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
-                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor"
+                      class="w-7 h-7 rounded border border-slate-600 hover:border-slate-400 bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-3 w-3 text-white ml-0.5" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
-                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor"
+                      <svg *ngIf="audioState().isPlaying" class="h-3 w-3 text-white" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                       </svg>
                     </button>
 
-                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[13px] font-bold text-center">
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-semibold text-center">
                       Voice Note Unavailable
                     </div>
 
                     <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
-                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{
+                      <span class="text-[11px] font-medium text-slate-400 w-8 text-right">{{
                         formatTime(audioState().currentTime) }}</span>
 
-                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress"
+                      <div class="relative h-1.5 flex-1 bg-slate-700 rounded-sm cursor-pointer group/progress"
                         (click)="seekAudio($event)">
-                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-sm transition-all duration-100"
                           [style.width.%]="audioState().progress"></div>
                         <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
-                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                          <div class="h-0.5 w-1/3 bg-white/50 rounded-sm animate-[pulse_1s_ease-in-out_infinite]"></div>
                         </div>
                       </div>
 
-                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration)
+                      <span class="text-[11px] font-medium text-slate-400 w-8">{{ formatTime(audioState().duration)
                         }}</span>
                     </div>
 
                     <button (click)="stopAudio($event)"
-                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none"
+                      class="w-6 h-6 rounded hover:bg-slate-700 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-4 w-4 text-slate-400 hover:text-white transition-colors" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
@@ -371,20 +368,20 @@
     </div>
 
     <!-- =================== -->
-    <!--      GRID VIEW      -->
+    <!--     GRID VIEW       -->
     <!-- =================== -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'grid'"
-      class="p-5 bg-gray-50/30">
+      class="p-5 border-x border-b border-slate-200 bg-slate-50/50">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         <div *ngFor="let visitor of paginatedVisitors()"
-          class="bg-white rounded-[16px] border border-gray-200/80 overflow-hidden hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all duration-300 group flex flex-col">
+          class="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm hover:shadow transition-all duration-200 group flex flex-col">
           <!-- Grid Card Image -->
           <div
-            class="w-full h-40 bg-gray-50 flex items-center justify-center border-b border-gray-100 relative overflow-hidden">
+            class="w-full h-36 bg-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
             <img *ngIf="visitor.visiting_card_url" [src]="getImageUrl(visitor.visiting_card_url)" alt="Visiting Card"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            <div *ngIf="!visitor.visiting_card_url" class="text-gray-300 flex flex-col items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-2 opacity-50" fill="none" viewBox="0 0 24 24"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div *ngIf="!visitor.visiting_card_url" class="text-slate-300 flex flex-col items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1 opacity-50" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -395,7 +392,7 @@
             <div
               class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button (click)="openEdit(visitor, $event)"
-                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                class="bg-white/95 backdrop-blur p-1.5 rounded text-slate-700 shadow-sm border border-slate-200 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                 title="Edit">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
@@ -404,7 +401,7 @@
                 </svg>
               </button>
               <button (click)="openDeleteConfirmation(visitor, $event)"
-                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                class="bg-white/95 backdrop-blur p-1.5 rounded text-slate-700 shadow-sm border border-slate-200 hover:text-red-600 hover:bg-red-50 transition-colors"
                 title="Delete">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
@@ -413,7 +410,7 @@
                 </svg>
               </button>
               <button (click)="openReview(visitor)"
-                class="bg-white/90 backdrop-blur-sm p-1.5 rounded-xl text-gray-900 shadow-sm border border-gray-200/50 hover:bg-white transition-colors"
+                class="bg-white/95 backdrop-blur p-1.5 rounded text-slate-700 shadow-sm border border-slate-200 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                 title="View Details">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -428,76 +425,72 @@
           <!-- Grid Card Details -->
           <div class="p-4 flex-1 flex flex-col">
             <div class="flex justify-between items-start mb-1">
-              <h3 class="text-base font-bold text-gray-900 truncate tracking-tight pr-2">
+              <h3 class="text-sm font-semibold text-slate-900 truncate tracking-tight pr-2">
                 {{ visitor.title ? visitor.title + ' ' : '' }}{{ visitor.full_name }}
               </h3>
             </div>
-            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3 truncate">
+            <p class="text-[11px] font-medium text-slate-500 mb-3 truncate">
               {{ visitor.job_title || 'No Title' }} <span *ngIf="visitor.company_name"
-                class="lowercase normal-case font-medium text-gray-400">at</span> <span class="text-gray-700">{{
+                class="text-slate-400">at</span> <span class="text-slate-700">{{
                 visitor.company_name }}</span>
             </p>
 
-            <div class="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
-              <div class="flex items-center gap-2 text-xs font-medium text-gray-500">
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mt-auto pt-3 border-t border-slate-100 flex justify-between items-center">
+              <div class="flex items-center gap-2 text-xs text-slate-600">
+                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span class="truncate max-w-[100px]">{{ visitor.email }}</span>
+                <span class="truncate max-w-[120px]">{{ visitor.email }}</span>
               </div>
 
               <div class="flex items-center gap-2">
                 <div *ngIf="visitor.voice_note_url" class="relative">
                   <button (click)="toggleAudioPlayback(visitor.id, 1, $event)"
-                    [ngClass]="{'bg-black text-white shadow-sm': expandedAudioId() === visitor.id, 'hover:bg-gray-100 text-gray-400 hover:text-black': expandedAudioId() !== visitor.id}"
-                    class="p-1.5 rounded-full transition-colors group flex items-center justify-center">
-                    <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying" class="h-4 w-4 ml-0.5"
+                    [ngClass]="{'bg-slate-900 text-white shadow-sm': expandedAudioId() === visitor.id, 'hover:bg-slate-100 text-slate-400 hover:text-slate-900': expandedAudioId() !== visitor.id}"
+                    class="p-1 rounded transition-colors group flex items-center justify-center">
+                    <svg *ngIf="expandedAudioId() !== visitor.id || !audioState().isPlaying" class="h-3.5 w-3.5 ml-0.5"
                       fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    <svg *ngIf="expandedAudioId() === visitor.id && audioState().isPlaying" class="h-4 w-4"
+                    <svg *ngIf="expandedAudioId() === visitor.id && audioState().isPlaying" class="h-3.5 w-3.5"
                       fill="currentColor" viewBox="0 0 24 24">
                       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                     </svg>
                   </button>
 
                   <div *ngIf="expandedAudioId() === visitor.id" (click)="$event.stopPropagation()"
-                    class="absolute bottom-[130%] right-0 bg-black rounded-[16px] px-4 py-2.5 shadow-[0_10px_30px_rgba(0,0,0,0.2)] z-30 flex items-center gap-3 border border-white/10 w-[240px] animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
+                    class="absolute bottom-[130%] right-0 bg-slate-900 rounded-md px-3 py-2 shadow-lg z-30 flex items-center gap-3 border border-slate-700 w-[200px] animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-200">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
-                      class="w-7 h-7 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg *ngIf="!audioState().isPlaying" class="h-3 w-3 text-white ml-0.5" fill="currentColor"
+                      class="w-6 h-6 rounded border border-slate-600 hover:border-slate-400 bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-2.5 w-2.5 text-white ml-0.5" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
-                      <svg *ngIf="audioState().isPlaying" class="h-3 w-3 text-white" fill="currentColor"
+                      <svg *ngIf="audioState().isPlaying" class="h-2.5 w-2.5 text-white" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                       </svg>
                     </button>
 
-                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[11px] font-bold text-center">
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[10px] font-semibold text-center">
                       Unavailable
                     </div>
 
                     <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-2">
-                      <div class="relative h-1.5 flex-1 bg-white/20 rounded-full cursor-pointer"
+                      <div class="relative h-1 flex-1 bg-slate-700 rounded-sm cursor-pointer"
                         (click)="seekAudio($event)">
-                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100"
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-sm transition-all duration-100"
                           [style.width.%]="audioState().progress"></div>
-                        <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
-                          <div class="h-full w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]">
-                          </div>
-                        </div>
                       </div>
-                      <span class="text-[9px] font-bold text-gray-400 tracking-wider">{{
+                      <span class="text-[9px] font-medium text-slate-400 tracking-wider">{{
                         formatTime(audioState().currentTime) }}</span>
                     </div>
                   </div>
                 </div>
 
                 <span
-                  class="bg-white text-black border border-gray-300 font-bold px-2.5 py-1 text-[9px] uppercase tracking-wider rounded-[6px]">
+                  class="bg-slate-100 text-slate-700 border border-slate-200 font-semibold px-2 py-0.5 text-[9px] uppercase tracking-wider rounded">
                   {{ visitor.lead_category }}
                 </span>
               </div>
@@ -509,36 +502,35 @@
 
     <!-- Footer / Pagination -->
     <div
-      class="px-5 py-4 border-t border-gray-100 bg-white flex flex-col sm:flex-row justify-between items-center gap-4"
+      class="px-4 py-3 border border-t-0 border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md"
       *ngIf="filteredVisitors().length > 0">
-      <div class="text-xs font-medium text-gray-500">
-        Showing <span class="text-gray-900 font-bold">{{ filteredVisitors().length === 0 ? 0 : (currentPage() - 1) *
+      <div class="text-xs text-slate-500">
+        Showing <span class="text-slate-900 font-semibold">{{ filteredVisitors().length === 0 ? 0 : (currentPage() - 1) *
           pageSize() + 1 }}</span> to
-        <span class="text-gray-900 font-bold">{{ (currentPage() * pageSize()) > filteredVisitors().length ?
+        <span class="text-slate-900 font-semibold">{{ (currentPage() * pageSize()) > filteredVisitors().length ?
           filteredVisitors().length : (currentPage() * pageSize()) }}</span> of
-        <span class="text-gray-900 font-bold">{{ filteredVisitors().length }}</span> entries
+        <span class="text-slate-900 font-semibold">{{ filteredVisitors().length }}</span> entries
       </div>
 
-      <nav class="flex items-center space-x-1.5 bg-gray-50/80 p-1 border border-gray-200 rounded-lg"
-        aria-label="Pagination">
+      <nav class="flex items-center space-x-1" aria-label="Pagination">
         <button (click)="prevPage()" [disabled]="currentPage() === 1" [class.opacity-40]="currentPage() === 1"
           [class.cursor-not-allowed]="currentPage() === 1"
-          class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+          class="flex items-center justify-center w-7 h-7 rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all focus:outline-none shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
         <div
-          class="flex items-center justify-center px-2.5 min-w-[2rem] h-7 rounded-md bg-white border border-gray-200 text-xs font-bold text-gray-900 shadow-sm">
+          class="flex items-center justify-center px-2 min-w-[1.75rem] h-7 rounded border border-slate-900 bg-slate-900 text-xs font-semibold text-white shadow-sm">
           {{ currentPage() }}
         </div>
 
         <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()"
           [class.opacity-40]="currentPage() >= totalPages()" [class.cursor-not-allowed]="currentPage() >= totalPages()"
-          class="flex items-center justify-center w-7 h-7 rounded-md text-gray-700 hover:bg-white hover:shadow-sm transition-all focus:outline-none">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+          class="flex items-center justify-center w-7 h-7 rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all focus:outline-none shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
           </svg>
@@ -549,73 +541,72 @@
 
   <!-- Edit Visitor Modal -->
   <div *ngIf="editingVisitor()"
-    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
-      class="bg-white rounded-[20px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/20">
+      class="bg-white rounded-md shadow-lg w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
       <!-- Edit Header -->
-      <div class="flex justify-between items-center px-6 py-5 border-b border-gray-100 bg-white">
+      <div class="flex justify-between items-center px-5 py-4 border-b border-slate-200 bg-white">
         <div>
-          <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">Edit Visitor</h2>
-          <p class="text-xs text-gray-500 font-medium mt-0.5">Update enterprise record details</p>
+          <h2 class="text-lg font-bold text-slate-900 tracking-tight">Edit Visitor</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Update enterprise record details</p>
         </div>
         <button (click)="closeEdit()"
-          class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+          class="text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 p-1.5 rounded transition-colors focus:outline-none border border-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <!-- Edit Body -->
-      <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+      <div class="p-5 overflow-y-auto flex-1 bg-slate-50/50">
         <div class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Full Name</label>
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Full Name</label>
               <input type="text" [(ngModel)]="editFormData().full_name"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Company
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Company
                 Name</label>
               <input type="text" [(ngModel)]="editFormData().company_name"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Email
                 Address</label>
               <input type="email" [(ngModel)]="editFormData().email"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Mobile
                 Number</label>
               <input type="tel" [ngModel]="editFormData().mobile" (ngModelChange)="editFormData.set({ ...editFormData(), mobile: $event })"
                 maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
                 (input)="sanitizeEditPhoneField('mobile', $event, 10)"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="10-digit number" />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alternate Mobile
-                Number</label>
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Alternate Mobile</label>
               <input type="tel" [ngModel]="editFormData().alternate_mobile" (ngModelChange)="editFormData.set({ ...editFormData(), alternate_mobile: $event })"
                 maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
                 (input)="sanitizeEditPhoneField('alternate_mobile', $event, 10)"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="10-digit number" />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Office
                 Number</label>
               <input type="tel" [ngModel]="editFormData().office_number" (ngModelChange)="editFormData.set({ ...editFormData(), office_number: $event })"
                 maxlength="15" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 15)"
                 (input)="sanitizeEditPhoneField('office_number', $event, 15)"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="Digits only, up to 15" />
             </div>
           </div>
@@ -623,24 +614,24 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label
-                class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Department</label>
+                class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Department</label>
               <input type="text" [(ngModel)]="editFormData().department"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Lead
+              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Lead
                 Category</label>
               <select [(ngModel)]="editFormData().lead_category"
-                class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                 <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Venue</label>
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Venue</label>
             <select [(ngModel)]="editFormData().venue_id"
-              class="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+              class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
               <option [ngValue]="null">Select Venue</option>
               <option *ngFor="let v of venues()" [ngValue]="v.venue_id">
                 {{ v.venue }}
@@ -648,32 +639,32 @@
             </select>
           </div>
 
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-3">Product Interests</div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-3">Product Interests</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <label *ngFor="let interest of productInterests"
-                class="flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200"
-                [ngClass]="editFormData().interests?.includes(interest) ? 'bg-gray-900 border-gray-900 text-white shadow-sm' : 'bg-white border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700'">
+                class="flex items-center p-2.5 border rounded-md cursor-pointer transition-all duration-150"
+                [ngClass]="editFormData().interests?.includes(interest) ? 'bg-slate-900 border-slate-900 text-white shadow-sm' : 'bg-white border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700'">
                 <div
-                  class="relative flex items-center justify-center w-4 h-4 mr-3 border-2 rounded flex-shrink-0 transition-colors"
-                  [ngClass]="editFormData().interests?.includes(interest) ? 'border-white bg-white' : 'border-gray-300'">
-                  <svg *ngIf="editFormData().interests?.includes(interest)" class="w-3 h-3 text-gray-900 absolute"
+                  class="relative flex items-center justify-center w-3.5 h-3.5 mr-2 border-2 rounded-sm flex-shrink-0 transition-colors"
+                  [ngClass]="editFormData().interests?.includes(interest) ? 'border-white bg-white' : 'border-slate-300'">
+                  <svg *ngIf="editFormData().interests?.includes(interest)" class="w-2.5 h-2.5 text-slate-900 absolute"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <input type="checkbox" class="hidden" [checked]="editFormData().interests?.includes(interest)"
                   (change)="toggleEditInterest(interest)" />
-                <span class="text-xs font-semibold tracking-wide">{{ interest }}</span>
+                <span class="text-xs font-medium tracking-wide">{{ interest }}</span>
               </label>
             </div>
-            <span *ngIf="!editFormData().interests?.length" class="text-[10px] text-red-500 font-bold mt-2 block">Select
+            <span *ngIf="!editFormData().interests?.length" class="text-[10px] text-red-500 font-medium mt-2 block">Select
               at least one product interest</span>
           </div>
 
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -687,47 +678,47 @@
                 <input #editCardCamera type="file" class="hidden" accept="image/*" capture="environment"
                   (change)="onEditCardSelected($event)" />
                 <button type="button" (click)="editCardInput.click()" [disabled]="isUpdatingVisitorCard()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Upload
                 </button>
                 <button type="button" (click)="openVisitingCardCamera(1)" [disabled]="isUpdatingVisitorCard()"
-                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-900 bg-slate-900 hover:bg-slate-800 text-[10px] font-semibold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Camera
                 </button>
                 <button *ngIf="editFormData().visiting_card_url" type="button"
                   (click)="removeEditVisitorCard($event)" [disabled]="isUpdatingVisitorCard()"
-                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-red-200 bg-red-50 hover:bg-red-100 text-[10px] font-semibold uppercase tracking-wider text-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Remove
                 </button>
               </div>
             </div>
 
             <div
-              class="w-full min-h-[160px] bg-gray-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center p-3 relative overflow-hidden">
+              class="w-full min-h-[140px] bg-slate-50 border border-dashed border-slate-300 rounded-md flex items-center justify-center p-3 relative overflow-hidden">
               <img *ngIf="editFormData().visiting_card_url" [src]="getImageUrl(editFormData().visiting_card_url)"
-                class="max-w-full max-h-[145px] object-contain rounded-md shadow-sm" alt="Visiting Card 1" />
+                class="max-w-full max-h-[125px] object-contain rounded shadow-sm border border-slate-200" alt="Visiting Card 1" />
 
               <div *ngIf="isUpdatingVisitorCard()"
-                class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 text-gray-900">
-                <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
-                <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card 1</span>
+                class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-slate-900">
+                <div class="h-5 w-5 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin"></div>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Updating Card 1</span>
               </div>
 
               <div *ngIf="!editFormData().visiting_card_url && !isUpdatingVisitorCard()"
-                class="flex flex-col items-center justify-center text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mb-2 opacity-30" fill="none"
+                class="flex flex-col items-center justify-center text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1 opacity-50" fill="none"
                   viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span class="text-[10px] font-bold uppercase tracking-wider">No Card 1 Uploaded</span>
+                <span class="text-[10px] font-medium uppercase tracking-wider">No Card Uploaded</span>
               </div>
             </div>
           </div>
 
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 Visiting Card Image 2
               </div>
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
@@ -736,49 +727,49 @@
                 <input #editCardCamera2 type="file" class="hidden" accept="image/*" capture="environment"
                   (change)="onEditCardSelected2($event)" />
                 <button type="button" (click)="editCardInput2.click()" [disabled]="isUpdatingVisitorCard2()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Upload
                 </button>
                 <button type="button" (click)="openVisitingCardCamera(2)" [disabled]="isUpdatingVisitorCard2()"
-                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-900 bg-slate-900 hover:bg-slate-800 text-[10px] font-semibold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Camera
                 </button>
                 <button *ngIf="editFormData().visiting_card_url_2" type="button"
                   (click)="removeEditVisitorCard2($event)" [disabled]="isUpdatingVisitorCard2()"
-                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-red-200 bg-red-50 hover:bg-red-100 text-[10px] font-semibold uppercase tracking-wider text-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Remove
                 </button>
               </div>
             </div>
 
             <div
-              class="w-full min-h-[160px] bg-gray-50 border border-dashed border-gray-300 rounded-xl flex items-center justify-center p-3 relative overflow-hidden">
+              class="w-full min-h-[140px] bg-slate-50 border border-dashed border-slate-300 rounded-md flex items-center justify-center p-3 relative overflow-hidden">
               <img *ngIf="editFormData().visiting_card_url_2" [src]="getImageUrl(editFormData().visiting_card_url_2)"
-                class="max-w-full max-h-[145px] object-contain rounded-md shadow-sm" alt="Visiting Card 2" />
+                class="max-w-full max-h-[125px] object-contain rounded shadow-sm border border-slate-200" alt="Visiting Card 2" />
 
               <div *ngIf="isUpdatingVisitorCard2()"
-                class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 text-gray-900">
-                <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
-                <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card 2</span>
+                class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-slate-900">
+                <div class="h-5 w-5 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin"></div>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Updating Card 2</span>
               </div>
 
               <div *ngIf="!editFormData().visiting_card_url_2 && !isUpdatingVisitorCard2()"
-                class="flex flex-col items-center justify-center text-gray-400">
-                <span class="text-[10px] font-bold uppercase tracking-wider">No Card 2 Uploaded</span>
+                class="flex flex-col items-center justify-center text-slate-400">
+                <span class="text-[10px] font-medium uppercase tracking-wider">No Card Uploaded</span>
               </div>
             </div>
           </div>
 
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-            <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
-            <textarea [(ngModel)]="editFormData().details" rows="5"
-              class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 resize-none"
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
+            <textarea [(ngModel)]="editFormData().details" rows="4"
+              class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 resize-none"
               placeholder="Text extracted from visiting card image 1..."></textarea>
           </div>
 
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -789,59 +780,59 @@
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 <input #editVoiceNoteInput type="file" class="hidden" accept="audio/*" (change)="onEditVoiceNoteSelected($event)" />
                 <button type="button" (click)="editVoiceNoteInput.click()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   {{ editFormData().voice_note_url ? 'Upload' : 'Add file' }}
                 </button>
                 <button type="button" (click)="startEditVoiceNoteRecording()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
-                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-900 bg-slate-900 hover:bg-slate-800 text-[10px] font-semibold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Record new
                 </button>
                 <button *ngIf="editFormData().voice_note_url" type="button" (click)="removeEditVoiceNote($event)"
                   [disabled]="isUpdatingVoiceNote() || isEditRecording()"
-                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-red-200 bg-red-50 hover:bg-red-100 text-[10px] font-semibold uppercase tracking-wider text-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Remove
                 </button>
               </div>
             </div>
             <div *ngIf="isUpdatingVoiceNote()"
-              class="mb-3 text-[11px] font-medium text-gray-500">Updating voice note...</div>
-            <div *ngIf="showEditVoiceRecorder() || isEditRecording() || editRecordingUrl()" class="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+              class="mb-3 text-[11px] font-medium text-slate-500">Updating voice note...</div>
+            <div *ngIf="showEditVoiceRecorder() || isEditRecording() || editRecordingUrl()" class="mb-3 p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                   <button type="button" (click)="toggleEditRecording()" [disabled]="isUpdatingVoiceNote()"
-                    class="w-10 h-10 flex items-center justify-center rounded-full transition-all"
-                    [ngClass]="isEditRecording() ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-900 hover:bg-black'">
-                    <svg *ngIf="!isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="w-8 h-8 flex items-center justify-center rounded transition-all shadow-sm"
+                    [ngClass]="isEditRecording() ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-900 hover:bg-slate-800'">
+                    <svg *ngIf="!isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
-                    <svg *ngIf="isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    <svg *ngIf="isEditRecording()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                     </svg>
                   </button>
                   <div>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">{{ isEditRecording() ? 'Recording...' : 'Ready to record' }}</p>
-                    <p class="text-lg font-mono text-gray-900">{{ formatTime(editRecordingTime()) }}</p>
+                    <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">{{ isEditRecording() ? 'Recording...' : 'Ready to record' }}</p>
+                    <p class="text-sm font-mono text-slate-900 font-semibold">{{ formatTime(editRecordingTime()) }}</p>
                   </div>
                 </div>
                 <button type="button" (click)="cancelEditVoiceRecording()" [disabled]="isUpdatingVoiceNote() || isEditRecording()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-600 disabled:opacity-60">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-600 disabled:opacity-60 shadow-sm">
                   Cancel
                 </button>
               </div>
-              <audio *ngIf="editRecordingUrl() && !isEditRecording()" [src]="safeEditRecordingUrl()" controls class="w-full rounded-lg"></audio>
+              <audio *ngIf="editRecordingUrl() && !isEditRecording()" [src]="safeEditRecordingUrl()" controls class="w-full rounded h-8"></audio>
             </div>
             <div *ngIf="editFormData().voice_note_url && !showEditVoiceRecorder() && !isEditRecording()" class="space-y-3">
-              <audio [src]="getImageUrl(editFormData().voice_note_url)" controls class="w-full rounded-lg"></audio>
+              <audio [src]="getImageUrl(editFormData().voice_note_url)" controls class="w-full rounded h-8"></audio>
             </div>
             <div *ngIf="!editFormData().voice_note_url && !showEditVoiceRecorder() && !isEditRecording()"
-              class="text-[11px] font-medium text-gray-500">No voice note attached. Record new or upload a file.</div>
+              class="text-[11px] font-medium text-slate-500">No voice note attached. Record new or upload a file.</div>
           </div>
 
           <!-- Voice Note 2 -->
-          <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+          <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -852,277 +843,269 @@
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 <input #editVoiceNoteInput2 type="file" class="hidden" accept="audio/*" (change)="onEditVoiceNoteSelected2($event)" />
                 <button type="button" (click)="editVoiceNoteInput2.click()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   {{ editFormData().voice_note_url_2 ? 'Upload' : 'Add file' }}
                 </button>
                 <button type="button" (click)="startEditVoiceNoteRecording2()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
-                  class="h-8 px-3 rounded-lg border border-gray-900 bg-gray-900 hover:bg-black text-[10px] font-bold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-slate-900 bg-slate-900 hover:bg-slate-800 text-[10px] font-semibold uppercase tracking-wider text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                   Record new
                 </button>
                 <button *ngIf="editFormData().voice_note_url_2" type="button" (click)="removeEditVoiceNote2($event)"
                   [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
-                  class="h-8 px-3 rounded-lg border border-red-100 bg-red-50 hover:bg-red-100 text-[10px] font-bold uppercase tracking-wider text-red-600 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                  class="h-7 px-2.5 rounded-sm border border-red-200 bg-red-50 hover:bg-red-100 text-[10px] font-semibold uppercase tracking-wider text-red-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
                   Remove
                 </button>
               </div>
             </div>
             <div *ngIf="isUpdatingVoiceNote2()"
-              class="mb-3 text-[11px] font-medium text-gray-500">Updating voice note 2...</div>
-            <div *ngIf="showEditVoiceRecorder2() || isEditRecording2() || editRecordingUrl2()" class="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
+              class="mb-3 text-[11px] font-medium text-slate-500">Updating voice note 2...</div>
+            <div *ngIf="showEditVoiceRecorder2() || isEditRecording2() || editRecordingUrl2()" class="mb-3 p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                   <button type="button" (click)="toggleEditRecording2()" [disabled]="isUpdatingVoiceNote2()"
-                    class="w-10 h-10 flex items-center justify-center rounded-full transition-all"
-                    [ngClass]="isEditRecording2() ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-900 hover:bg-black'">
-                    <svg *ngIf="!isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="w-8 h-8 flex items-center justify-center rounded transition-all shadow-sm"
+                    [ngClass]="isEditRecording2() ? 'bg-red-600 hover:bg-red-700' : 'bg-slate-900 hover:bg-slate-800'">
+                    <svg *ngIf="!isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
-                    <svg *ngIf="isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    <svg *ngIf="isEditRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                     </svg>
                   </button>
                   <div>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-500">{{ isEditRecording2() ? 'Recording...' : 'Ready to record' }}</p>
-                    <p class="text-lg font-mono text-gray-900">{{ formatTime(editRecordingTime2()) }}</p>
+                    <p class="text-[9px] font-bold uppercase tracking-wider text-slate-500">{{ isEditRecording2() ? 'Recording...' : 'Ready to record' }}</p>
+                    <p class="text-sm font-mono text-slate-900 font-semibold">{{ formatTime(editRecordingTime2()) }}</p>
                   </div>
                 </div>
                 <button type="button" (click)="cancelEditVoiceRecording2()" [disabled]="isUpdatingVoiceNote2() || isEditRecording2()"
-                  class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-600 disabled:opacity-60">
+                  class="h-7 px-2.5 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-600 disabled:opacity-60 shadow-sm">
                   Cancel
                 </button>
               </div>
-              <audio *ngIf="editRecordingUrl2() && !isEditRecording2()" [src]="safeEditRecordingUrl2()" controls class="w-full rounded-lg"></audio>
+              <audio *ngIf="editRecordingUrl2() && !isEditRecording2()" [src]="safeEditRecordingUrl2()" controls class="w-full rounded h-8"></audio>
             </div>
             <div *ngIf="editFormData().voice_note_url_2 && !showEditVoiceRecorder2() && !isEditRecording2()" class="space-y-3">
-              <audio [src]="getImageUrl(editFormData().voice_note_url_2)" controls class="w-full rounded-lg"></audio>
+              <audio [src]="getImageUrl(editFormData().voice_note_url_2)" controls class="w-full rounded h-8"></audio>
             </div>
             <div *ngIf="!editFormData().voice_note_url_2 && !showEditVoiceRecorder2() && !isEditRecording2()"
-              class="text-[11px] font-medium text-gray-500">No second voice note attached. Record new or upload a file.</div>
+              class="text-[11px] font-medium text-slate-500">No second voice note attached. Record new or upload a file.</div>
           </div>
         </div>
       </div>
 
       <!-- Edit Footer -->
-      <div class="px-6 py-4 border-t border-gray-100 bg-white flex justify-end gap-3">
+      <div class="px-5 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
         <button (click)="closeEdit()"
-          class="px-5 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg transition-all">
+          class="px-4 py-2 text-[13px] font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition-all shadow-sm">
           Cancel
         </button>
         <button (click)="saveEdit()"
-          class="px-5 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-lg shadow-md transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+          class="px-4 py-2 text-[13px] font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-sm transition-all focus:ring-1 focus:ring-offset-1 focus:ring-slate-900">
           Save Changes
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Monochrome Premium Modal (Details Review) -->
+  <!-- Details Review Modal (Enterprise Structure) -->
   <div *ngIf="selectedVisitor() && !editingVisitor()"
-    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
-      class="bg-white rounded-[24px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/20">
+      class="bg-white rounded-lg shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
       <!-- Modal Header -->
-      <div class="flex justify-between items-center px-8 py-5 border-b border-gray-100 bg-white">
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
         <div>
-          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Visitor Insights</h2>
-          <p class="text-xs text-gray-500 font-medium mt-1">Detailed enterprise record</p>
+          <h2 class="text-xl font-bold text-slate-900 tracking-tight">Visitor Insights</h2>
+          <p class="text-xs text-slate-500 mt-1">Detailed enterprise record</p>
         </div>
         <div class="flex items-center gap-4">
           <span
-            class="bg-white text-black border border-gray-300 font-bold px-3 py-1 text-xs uppercase tracking-wider rounded-[6px]">
+            class="bg-slate-100 text-slate-800 border border-slate-300 font-semibold px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm">
             {{ selectedVisitor()?.lead_category }}
           </span>
           <button (click)="closeReview()"
-            class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+            class="text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 p-1.5 rounded transition-colors focus:outline-none border border-slate-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Modal Body -->
-      <div class="p-8 overflow-y-auto flex-1 bg-gray-50/50">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-50">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
           <!-- Details Left -->
-          <div class="lg:col-span-2 space-y-5 bg-white p-7 rounded-[20px] border border-gray-100 shadow-sm">
+          <div class="lg:col-span-2 space-y-4 bg-white p-5 rounded-md border border-slate-200 shadow-sm">
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Name</div>
-              <div class="col-span-2 text-sm font-bold text-gray-900">{{ selectedVisitor()?.title ?
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Name</div>
+              <div class="col-span-2 text-[13px] font-bold text-slate-900">{{ selectedVisitor()?.title ?
                 selectedVisitor()?.title + ' ' : '' }}{{ selectedVisitor()?.full_name }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Organization</div>
-              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.company_name || '-' }}
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Organization</div>
+              <div class="col-span-2 text-[13px] text-slate-800 font-medium">{{ selectedVisitor()?.company_name || '-' }}
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Job Title</div>
-              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.job_title || '-' }}
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Job Title</div>
+              <div class="col-span-2 text-[13px] text-slate-800 font-medium">{{ selectedVisitor()?.job_title || '-' }}
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Email Contact</div>
-              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.email }}</div>
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Email Contact</div>
+              <div class="col-span-2 text-[13px] text-slate-900 font-semibold">{{ selectedVisitor()?.email }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Mobile Phone</div>
-              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.mobile }}</div>
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Mobile Phone</div>
+              <div class="col-span-2 text-[13px] text-slate-900 font-semibold">{{ selectedVisitor()?.mobile }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Alternate Mobile</div>
-              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.alternate_mobile || '-' }}</div>
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Alternate Mobile</div>
+              <div class="col-span-2 text-[13px] text-slate-900 font-semibold">{{ selectedVisitor()?.alternate_mobile || '-' }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Office Number</div>
-              <div class="col-span-2 text-sm text-gray-900 font-bold">{{ selectedVisitor()?.office_number || '-' }}</div>
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Office Number</div>
+              <div class="col-span-2 text-[13px] text-slate-900 font-semibold">{{ selectedVisitor()?.office_number || '-' }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Department</div>
-              <div class="col-span-2 text-sm text-gray-800 font-semibold">{{ selectedVisitor()?.department || '-' }}
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Department</div>
+              <div class="col-span-2 text-[13px] text-slate-800 font-medium">{{ selectedVisitor()?.department || '-' }}
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-b border-gray-50 pb-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center">Interests
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center">Interests
               </div>
               <div class="col-span-2">
                 <div class="flex flex-wrap gap-1.5">
                   <span *ngFor="let interest of selectedVisitor()?.interests"
-                    class="px-2.5 py-1 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-md border border-gray-200">
+                    class="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-semibold rounded border border-slate-200">
                     {{ interest }}
                   </span>
-                  <span *ngIf="!selectedVisitor()?.interests?.length" class="text-xs text-gray-400 italic">None
+                  <span *ngIf="!selectedVisitor()?.interests?.length" class="text-[11px] text-slate-400 italic">None
                     specified</span>
                 </div>
               </div>
             </div>
 
             <div class="grid grid-cols-3 gap-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Remarks</div>
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Remarks</div>
               <div
-                class="col-span-2 text-xs text-gray-700 font-semibold leading-relaxed bg-gray-50 p-3 rounded-xl border border-gray-100 min-h-[60px]">
+                class="col-span-2 text-[12px] text-slate-700 font-medium leading-relaxed bg-slate-50 p-2.5 rounded-sm border border-slate-200 min-h-[50px]">
                 {{ selectedVisitor()?.remarks || 'No remarks provided.' }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Details</div>
-              <div class="col-span-2 text-sm text-gray-700 whitespace-pre-wrap">{{ selectedVisitor()?.details || 'No details extracted.' }}</div>
+            <div class="grid grid-cols-3 gap-4 border-t border-slate-100 pt-3">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Details</div>
+              <div class="col-span-2 text-[12px] text-slate-700 font-medium whitespace-pre-wrap">{{ selectedVisitor()?.details || 'No details extracted.' }}</div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4" *ngIf="selectedVisitor()?.voice_note_url || selectedVisitor()?.voice_note_url_2">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Voice Notes</div>
+            <div class="grid grid-cols-3 gap-4 border-t border-slate-100 pt-3" *ngIf="selectedVisitor()?.voice_note_url || selectedVisitor()?.voice_note_url_2">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Voice Notes</div>
               <div class="col-span-2 space-y-4">
-                <div *ngIf="selectedVisitor()?.voice_note_url" class="space-y-3">
-                  <div class="text-sm font-semibold text-gray-900">Voice Note 1</div>
+                <div *ngIf="selectedVisitor()?.voice_note_url" class="space-y-2">
+                  <div class="text-xs font-semibold text-slate-900">Voice Note 1</div>
                   <div *ngIf="expandedAudioId() !== selectedVisitor()?.id || expandedAudioSlot() !== 1" class="w-full max-w-[320px]">
                     <button (click)="toggleAudioPlayback(selectedVisitor()!.id, 1, $event)"
-                      class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
-                      <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
-                          <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      class="w-full bg-slate-900 text-white hover:bg-slate-800 rounded-md px-3 py-2 flex items-center gap-2 transition-colors shadow-sm font-semibold text-[13px] justify-between group">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded border border-slate-600 group-hover:border-slate-500 flex items-center justify-center transition-colors">
+                          <svg class="h-3 w-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z" />
                           </svg>
                         </div>
                         <span>Play Recording</span>
                       </div>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
                     </button>
                   </div>
                   <div *ngIf="expandedAudioId() === selectedVisitor()?.id && expandedAudioSlot() === 1"
-                    class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
+                    class="bg-slate-900 rounded-md px-3 py-2 flex items-center gap-3 shadow-sm border border-slate-800 w-full max-w-[320px] animate-in fade-in duration-300">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
-                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      class="w-7 h-7 rounded border border-slate-600 hover:border-slate-400 bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-3 w-3 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
-                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <svg *ngIf="audioState().isPlaying" class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                       </svg>
                     </button>
-                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[11px] font-semibold text-center">
                       Unavailable
                     </div>
-                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
-                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{ formatTime(audioState().currentTime) }}</span>
-                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress" (click)="seekAudio($event)">
-                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100" [style.width.%]="audioState().progress"></div>
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-2">
+                      <span class="text-[10px] font-medium text-slate-400 w-7 text-right">{{ formatTime(audioState().currentTime) }}</span>
+                      <div class="relative h-1.5 flex-1 bg-slate-700 rounded-sm cursor-pointer group/progress" (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-sm transition-all duration-100" [style.width.%]="audioState().progress"></div>
                         <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
-                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                          <div class="h-0.5 w-1/3 bg-white/50 rounded-sm animate-[pulse_1s_ease-in-out_infinite]"></div>
                         </div>
                       </div>
-                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                      <span class="text-[10px] font-medium text-slate-400 w-7">{{ formatTime(audioState().duration) }}</span>
                     </div>
                     <button (click)="stopAudio($event)"
-                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                      class="w-6 h-6 rounded hover:bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-3.5 w-3.5 text-slate-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </div>
                 </div>
-                <div *ngIf="selectedVisitor()?.voice_note_url_2" class="space-y-3">
-                  <div class="text-sm font-semibold text-gray-900">Voice Note 2</div>
+                <div *ngIf="selectedVisitor()?.voice_note_url_2" class="space-y-2">
+                  <div class="text-xs font-semibold text-slate-900">Voice Note 2</div>
                   <div *ngIf="expandedAudioId() !== selectedVisitor()?.id || expandedAudioSlot() !== 2" class="w-full max-w-[320px]">
                     <button (click)="toggleAudioPlayback(selectedVisitor()!.id, 2, $event)"
-                      class="w-full bg-black text-white hover:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 transition-colors shadow-sm font-bold text-sm justify-between group">
-                      <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full border-2 border-white/20 group-hover:border-white/40 flex items-center justify-center transition-colors">
-                          <svg class="h-3.5 w-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      class="w-full bg-slate-900 text-white hover:bg-slate-800 rounded-md px-3 py-2 flex items-center gap-2 transition-colors shadow-sm font-semibold text-[13px] justify-between group">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded border border-slate-600 group-hover:border-slate-500 flex items-center justify-center transition-colors">
+                          <svg class="h-3 w-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z" />
                           </svg>
                         </div>
                         <span>Play Recording</span>
                       </div>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
                     </button>
                   </div>
                   <div *ngIf="expandedAudioId() === selectedVisitor()?.id && expandedAudioSlot() === 2"
-                    class="bg-black rounded-[18px] px-5 py-3 flex items-center gap-4 shadow-lg w-full max-w-[320px] animate-in fade-in duration-300">
+                    class="bg-slate-900 rounded-md px-3 py-2 flex items-center gap-3 shadow-sm border border-slate-800 w-full max-w-[320px] animate-in fade-in duration-300">
                     <button (click)="audioState().isPlaying ? pauseAudio() : resumeAudio()"
-                      class="w-9 h-9 rounded-full border-2 border-white/20 hover:border-white bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg *ngIf="!audioState().isPlaying" class="h-4 w-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      class="w-7 h-7 rounded border border-slate-600 hover:border-slate-400 bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg *ngIf="!audioState().isPlaying" class="h-3 w-3 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
-                      <svg *ngIf="audioState().isPlaying" class="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <svg *ngIf="audioState().isPlaying" class="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                       </svg>
                     </button>
-                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-xs font-bold text-center">
+                    <div *ngIf="audioState().hasError" class="flex-1 text-red-400 text-[11px] font-semibold text-center">
                       Unavailable
                     </div>
-                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-3">
-                      <span class="text-[11px] font-bold text-gray-400 w-8 text-right">{{ formatTime(audioState().currentTime) }}</span>
-                      <div class="relative h-2 flex-1 bg-white/20 rounded-full cursor-pointer group/progress" (click)="seekAudio($event)">
-                        <div class="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-100" [style.width.%]="audioState().progress"></div>
+                    <div *ngIf="!audioState().hasError" class="flex-1 flex items-center gap-2">
+                      <span class="text-[10px] font-medium text-slate-400 w-7 text-right">{{ formatTime(audioState().currentTime) }}</span>
+                      <div class="relative h-1.5 flex-1 bg-slate-700 rounded-sm cursor-pointer group/progress" (click)="seekAudio($event)">
+                        <div class="absolute inset-y-0 left-0 bg-white rounded-sm transition-all duration-100" [style.width.%]="audioState().progress"></div>
                         <div *ngIf="audioState().isLoading" class="absolute inset-0 flex items-center justify-center">
-                          <div class="h-1 w-1/3 bg-white/50 rounded-full animate-[pulse_1s_ease-in-out_infinite]"></div>
+                          <div class="h-0.5 w-1/3 bg-white/50 rounded-sm animate-[pulse_1s_ease-in-out_infinite]"></div>
                         </div>
                       </div>
-                      <span class="text-[11px] font-bold text-gray-400 w-8">{{ formatTime(audioState().duration) }}</span>
+                      <span class="text-[10px] font-medium text-slate-400 w-7">{{ formatTime(audioState().duration) }}</span>
                     </div>
                     <button (click)="stopAudio($event)"
-                      class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center transition-all shrink-0">
-                      <svg class="h-4 w-4 text-gray-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                      class="w-6 h-6 rounded hover:bg-slate-800 flex items-center justify-center transition-all shrink-0">
+                      <svg class="h-3.5 w-3.5 text-slate-400 hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   </div>
@@ -1133,9 +1116,9 @@
 
           <!-- Card Right -->
           <div class="flex flex-col gap-4">
-            <div class="bg-white p-5 rounded-[20px] border border-gray-100 shadow-sm">
+            <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm">
               <div class="mb-3 flex items-center justify-between gap-3">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1150,52 +1133,52 @@
                     (change)="onReviewCardSelected($event)" />
                   <button type="button" (click)="$event.stopPropagation(); reviewCardInput.click()"
                     [disabled]="isUpdatingVisitorCard()"
-                    class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                    class="h-7 px-2 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                     {{ selectedVisitor()?.visiting_card_url ? 'Change' : 'Add' }}
                   </button>
                   <button type="button" (click)="$event.stopPropagation(); reviewCardCameraInput.click()"
                     [disabled]="isUpdatingVisitorCard()"
-                    class="h-8 px-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-[10px] font-bold uppercase tracking-wider text-gray-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors">
+                    class="h-7 px-2 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                     Camera
                   </button>
                 </div>
               </div>
               <div
-                class="w-full bg-gray-50 border border-dashed border-gray-300 rounded-xl min-h-[200px] flex items-center justify-center p-2 relative group cursor-pointer transition-all duration-300 hover:border-gray-400 hover:bg-gray-100"
+                class="w-full bg-slate-50 border border-dashed border-slate-300 rounded-md min-h-[160px] flex items-center justify-center p-2 relative group cursor-pointer transition-all duration-200 hover:border-slate-400 hover:bg-slate-100"
                 (click)="selectedVisitor()?.visiting_card_url ? openImageViewer() : null">
                 <img *ngIf="selectedVisitor()?.visiting_card_url"
                   [src]="getImageUrl(selectedVisitor()?.visiting_card_url)"
-                  class="max-w-full max-h-[180px] object-contain rounded-md transition-transform duration-500 group-hover:scale-105 shadow-sm"
+                  class="max-w-full max-h-[140px] object-contain rounded transition-transform duration-300 group-hover:scale-[1.02] shadow-sm border border-slate-200"
                   alt="Visiting Card" />
 
                 <!-- Hint overlay -->
                 <div *ngIf="selectedVisitor()?.visiting_card_url"
-                  class="absolute inset-0 bg-black/10 flex items-center justify-center rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  class="absolute inset-0 bg-slate-900/10 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <span
-                    class="bg-gray-900/90 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-md flex items-center gap-1.5 tracking-wide">
+                    class="bg-slate-900/90 text-white text-[10px] font-semibold px-2.5 py-1 rounded shadow-sm flex items-center gap-1.5 tracking-wide">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                     </svg>
-                    Expand Image
+                    Expand
                   </span>
                 </div>
 
                 <div *ngIf="isUpdatingVisitorCard()"
-                  class="absolute inset-0 bg-white/80 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 rounded-xl text-gray-900">
-                  <div class="h-6 w-6 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin"></div>
-                  <span class="text-[10px] font-bold uppercase tracking-wider">Updating Card</span>
+                  class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 rounded-md text-slate-900">
+                  <div class="h-5 w-5 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin"></div>
+                  <span class="text-[10px] font-semibold uppercase tracking-wider">Updating</span>
                 </div>
 
                 <div *ngIf="!selectedVisitor()?.visiting_card_url"
-                  class="flex flex-col items-center justify-center text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-2 opacity-30" fill="none"
+                  class="flex flex-col items-center justify-center text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1 opacity-50" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span class="text-[10px] font-bold uppercase tracking-wider">No Card Uploaded</span>
+                  <span class="text-[10px] font-medium uppercase tracking-wider">No Card</span>
                 </div>
               </div>
             </div>
@@ -1208,40 +1191,40 @@
 
   <!-- Dedicated Image Viewer Modal with Zoom -->
   <div *ngIf="isImageViewerOpen() && selectedCardVisitor()?.visiting_card_url"
-    class="fixed inset-0 bg-gray-900/95 backdrop-blur-md flex items-center justify-center z-[100] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-[100] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
 
     <!-- Controls -->
     <div
-      class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2 sm:gap-3 z-[110] bg-white/10 p-2 rounded-2xl backdrop-blur-xl border border-white/20 shadow-2xl">
+      class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2 z-[110] bg-slate-900 p-1.5 rounded-md border border-slate-700 shadow-xl">
       <button (click)="zoomOut()"
-        class="p-3 hover:bg-white/20 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        class="p-2 hover:bg-slate-800 text-slate-300 hover:text-white rounded transition-all focus:outline-none flex items-center justify-center"
         title="Zoom Out">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
         </svg>
       </button>
 
-      <span class="text-white font-bold text-sm sm:text-base min-w-[4rem] text-center tracking-wider">{{ zoomLevel() *
+      <span class="text-white font-medium text-xs sm:text-sm min-w-[3.5rem] text-center tracking-wider">{{ zoomLevel() *
         100 | number:'1.0-0' }}%</span>
 
       <button (click)="zoomIn()"
-        class="p-3 hover:bg-white/20 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        class="p-2 hover:bg-slate-800 text-slate-300 hover:text-white rounded transition-all focus:outline-none flex items-center justify-center"
         title="Zoom In">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
       </button>
 
-      <div class="w-px h-8 bg-white/20 mx-2"></div>
+      <div class="w-px h-5 bg-slate-700 mx-1"></div>
 
       <button (click)="closeImageViewer()"
-        class="p-3 bg-white/10 hover:bg-red-500/90 text-white rounded-xl transition-all focus:outline-none flex items-center justify-center group"
+        class="p-2 bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white rounded transition-all focus:outline-none flex items-center justify-center"
         title="Close Viewer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
@@ -1250,54 +1233,54 @@
     <div class="relative w-full h-full flex items-center justify-center overflow-auto scrollbar-hide"
       (click)="closeImageViewer()">
       <img [src]="getImageUrl(selectedCardVisitor()?.visiting_card_url)" [style.transform]="'scale(' + zoomLevel() + ')'"
-        class="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-300 shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-xl origin-center border border-white/10"
-
+        class="max-w-[90vw] max-h-[85vh] object-contain transition-transform duration-200 shadow-2xl rounded-md origin-center border border-slate-700 bg-white"
         [class.cursor-zoom-in]="zoomLevel() < 3" [class.cursor-default]="zoomLevel() >= 3"
         (click)="$event.stopPropagation(); zoomIn()" alt="Visiting Card Full View" />
     </div>
   </div>
 
+  <!-- Camera Modal -->
   <div *ngIf="cameraModalSlot() !== null"
-    class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 transition-opacity animate-in fade-in duration-300">
-    <div class="w-full max-w-3xl bg-white rounded-[28px] shadow-2xl overflow-hidden border border-gray-200">
-      <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+    class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="w-full max-w-2xl bg-white rounded-md shadow-xl overflow-hidden border border-slate-200">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 bg-slate-50">
         <div>
-          <div class="text-sm font-bold text-gray-900">Capture Visiting Card {{ cameraModalSlot() === 1 ? '1' : '2' }}</div>
-          <div class="text-xs text-gray-500">Use your webcam to capture the visiting card image.</div>
+          <div class="text-sm font-bold text-slate-900">Capture Visiting Card {{ cameraModalSlot() === 1 ? '1' : '2' }}</div>
+          <div class="text-xs text-slate-500">Use your webcam to capture the visiting card image.</div>
         </div>
         <button type="button" (click)="closeVisitingCardCamera()"
-          class="h-10 w-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          class="h-8 w-8 rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <div class="p-5">
+      <div class="p-5 bg-white">
         <div *ngIf="cameraStream(); else cameraLoading" class="space-y-4">
-          <div class="relative overflow-hidden rounded-3xl bg-black aspect-[4/3]">
+          <div class="relative overflow-hidden rounded-md bg-slate-900 aspect-[4/3] border border-slate-300">
             <video #cameraVideo autoplay muted playsinline [srcObject]="cameraStream()"
               class="w-full h-full object-cover"></video>
           </div>
           <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-            <div class="text-sm text-gray-500">Point the visiting card into view and press Capture.</div>
-            <div class="flex items-center gap-3">
-              <button type="button" (click)="captureVisitingCardFromCamera(cameraVideo)"
-                class="inline-flex items-center justify-center rounded-xl bg-black px-4 py-2 text-sm font-bold text-white hover:bg-gray-900 transition-colors">
-                Capture
-              </button>
+            <div class="text-[13px] font-medium text-slate-500">Point the visiting card into view and press Capture.</div>
+            <div class="flex items-center gap-2">
               <button type="button" (click)="closeVisitingCardCamera()"
-                class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                class="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-[13px] font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
                 Cancel
+              </button>
+              <button type="button" (click)="captureVisitingCardFromCamera(cameraVideo)"
+                class="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-[13px] font-semibold text-white hover:bg-slate-800 transition-colors shadow-sm">
+                Capture
               </button>
             </div>
           </div>
         </div>
         <ng-template #cameraLoading>
-          <div class="min-h-[240px] flex flex-col items-center justify-center rounded-3xl border border-dashed border-gray-300 bg-gray-50 text-center p-6">
-            <div class="h-10 w-10 rounded-full border-2 border-gray-300 border-t-black animate-spin"></div>
-            <p class="mt-4 text-sm font-medium text-gray-700">Starting camera… allow access if prompted.</p>
-            <p class="mt-2 text-xs text-gray-500">If your browser blocks the camera, check permissions or try a different browser.</p>
+          <div class="min-h-[240px] flex flex-col items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-center p-6">
+            <div class="h-8 w-8 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin"></div>
+            <p class="mt-4 text-sm font-semibold text-slate-700">Starting camera… allow access if prompted.</p>
+            <p class="mt-1 text-[11px] text-slate-500">If your browser blocks the camera, check permissions or try a different browser.</p>
           </div>
         </ng-template>
       </div>
@@ -1306,182 +1289,181 @@
 
   <!-- Delete Confirmation Modal -->
   <div *ngIf="visitorToDelete()"
-    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300 p-6">
-      <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 mb-4 mx-auto">
-        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="bg-white rounded-md shadow-xl w-full max-w-sm overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200 p-6">
+      <div class="flex items-center justify-center w-10 h-10 rounded border border-red-100 bg-red-50 mb-4 mx-auto">
+        <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      <h3 class="text-lg font-bold text-gray-900 text-center mb-2">Delete Visitor</h3>
-      <p class="text-sm text-gray-500 text-center mb-6">Are you sure you want to delete this visitor? This action cannot
+      <h3 class="text-sm font-bold text-slate-900 text-center mb-1">Delete Visitor</h3>
+      <p class="text-[13px] font-medium text-slate-500 text-center mb-5">Are you sure you want to delete this visitor? This action cannot
         be undone.</p>
-      <div class="flex gap-3 w-full">
+      <div class="flex gap-2 w-full">
         <button (click)="closeDeleteConfirmation()"
-          class="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-sm font-bold transition-colors">Cancel</button>
+          class="flex-1 px-3 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md text-[13px] font-semibold transition-colors shadow-sm">Cancel</button>
         <button (click)="confirmDelete()"
-          class="flex-1 px-4 py-2.5 bg-gray-900 text-white hover:bg-black rounded-xl text-sm font-bold transition-colors shadow-sm">Delete</button>
+          class="flex-1 px-3 py-2 bg-red-600 text-white hover:bg-red-700 border border-red-600 rounded-md text-[13px] font-semibold transition-colors shadow-sm">Delete</button>
       </div>
     </div>
   </div>
 
   <!-- Add Visitor Modal -->
   <div *ngIf="isAddModalOpen()"
-    class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-[200] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
-      class="bg-white rounded-[24px] shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)] w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-white/40">
+      class="bg-white rounded-md shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
       <!-- Add Header -->
-      <div class="flex justify-between items-center px-8 py-6 border-b border-gray-100 bg-white">
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
         <div>
-          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Add New Visitor</h2>
-          <p class="text-xs text-gray-500 font-medium mt-1">Create a new enterprise enquiry record</p>
+          <h2 class="text-lg font-bold text-slate-900 tracking-tight">Add New Visitor</h2>
+          <p class="text-xs text-slate-500 font-medium mt-0.5">Create a new enterprise enquiry record</p>
         </div>
         <button (click)="closeAddModal()"
-          class="text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 p-2.5 rounded-full transition-colors focus:outline-none border border-gray-200/60">
+          class="text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 p-1.5 rounded transition-colors focus:outline-none border border-slate-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
       <!-- Add Body -->
-      <div class="p-8 overflow-y-auto flex-1 bg-gray-50/50">
-        <form [formGroup]="addVisitorForm" class="space-y-8">
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-50/80">
+        <form [formGroup]="addVisitorForm" class="space-y-6">
 
           <!-- 1. Venue Information -->
-          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
-            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+          <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Venue Selection *</h3>
             <div>
-              <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Venue</label>
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Venue</label>
               <select formControlName="venueId"
-                class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                 <option value="">Select Venue</option>
                 <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue }}</option>
               </select>
               <span *ngIf="addVisitorForm.get('venueId')?.invalid && addVisitorForm.get('venueId')?.touched"
-                class="text-[10px] text-red-500 font-bold mt-1 block">Venue is required</span>
+                class="text-[10px] text-red-500 font-semibold mt-1 block">Venue is required</span>
             </div>
           </div>
 
           <!-- 2. Personal Information -->
-          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
-            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+          <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Personal Information</h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
               <!-- Title -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Title</label>
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Title</label>
                 <select formControlName="title"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                   <option *ngFor="let t of titles" [value]="t">{{ t }}</option>
                 </select>
               </div>
 
               <!-- Full Name -->
               <div class="md:col-span-3">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Full Name
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Full Name
                   *</label>
                 <input type="text" formControlName="fullName" (keypress)="onFullNameKeypress($event)"
                   (input)="onFullNameInput($event)" (paste)="onPasteSanitizeFullName($event)"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="Enter full name" />
-                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                <span class="text-[10px] text-slate-400 font-medium mt-1 block"
                   *ngIf="!(addVisitorForm.get('fullName')?.invalid && addVisitorForm.get('fullName')?.touched)">Only
                   alphabets and periods are allowed</span>
                 <span *ngIf="addVisitorForm.get('fullName')?.invalid && addVisitorForm.get('fullName')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid Full Name is required</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Valid Full Name is required</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <!-- Mobile Number -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mobile Number
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mobile Number
                   *</label>
                 <input type="tel" formControlName="mobile" (keypress)="onMobileKeypress($event)"
                   (input)="onMobileInput($event)" (paste)="onPasteSanitizeMobile($event)" maxlength="10"
                   inputmode="numeric"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="10-digit number" />
-                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                <span class="text-[10px] text-slate-400 font-medium mt-1 block"
                   *ngIf="!(addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched)">Digits only, exactly 10 digits</span>
                 <span *ngIf="addVisitorForm.get('mobile')?.invalid && addVisitorForm.get('mobile')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid 10-digit Mobile is required</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Valid 10-digit Mobile is required</span>
               </div>
 
               <!-- Alternate Mobile Number -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Alternate Mobile
-                  Number</label>
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Alternate Mobile</label>
                 <input type="tel" formControlName="alternateMobile" (keypress)="onAlternateMobileKeypress($event)"
                   (input)="onAlternateMobileInput($event)" (paste)="onPasteSanitizeAlternateMobile($event)" maxlength="10"
                   inputmode="numeric"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="10-digit number" />
-                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                <span class="text-[10px] text-slate-400 font-medium mt-1 block"
                   *ngIf="!(addVisitorForm.get('alternateMobile')?.invalid && addVisitorForm.get('alternateMobile')?.touched)">Digits only, exactly 10 digits if provided</span>
                 <span *ngIf="addVisitorForm.get('alternateMobile')?.invalid && addVisitorForm.get('alternateMobile')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Alternate mobile must be exactly 10 digits</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Alternate mobile must be exactly 10 digits</span>
               </div>
 
               <!-- Office Number -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Office
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Office
                   Number</label>
                 <input type="tel" formControlName="officeNumber" (keypress)="onOfficeNumberKeypress($event)"
                   (input)="onOfficeNumberInput($event)" (paste)="onPasteSanitizeOfficeNumber($event)" maxlength="15"
                   inputmode="numeric"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="Digits only, up to 15" />
-                <span class="text-[10px] text-gray-400 font-medium mt-1 block"
+                <span class="text-[10px] text-slate-400 font-medium mt-1 block"
                   *ngIf="!(addVisitorForm.get('officeNumber')?.invalid && addVisitorForm.get('officeNumber')?.touched)">Digits only, up to 15 digits</span>
                 <span *ngIf="addVisitorForm.get('officeNumber')?.invalid && addVisitorForm.get('officeNumber')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Office number can only contain digits</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Office number can only contain digits</span>
               </div>
 
               <!-- Email -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Email Address
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Email Address
                   *</label>
                 <input type="email" formControlName="email"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="name@company.com" />
                 <span *ngIf="addVisitorForm.get('email')?.invalid && addVisitorForm.get('email')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Valid Email is required</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Valid Email is required</span>
               </div>
             </div>
           </div>
 
-          <!-- 2. Professional Information -->
-          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
-            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+          <!-- 3. Professional Information -->
+          <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Professional Information</h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Company
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Company
                   Name</label>
                 <input type="text" formControlName="companyName"
-                  class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                   placeholder="Organization name" />
                 <span *ngIf="addVisitorForm.get('companyName')?.invalid && addVisitorForm.get('companyName')?.touched"
-                  class="text-[10px] text-red-500 font-bold mt-1 block">Invalid characters</span>
+                  class="text-[10px] text-red-500 font-semibold mt-1 block">Invalid characters</span>
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Job
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Job
                   Title</label>
                 <div class="relative">
                   <select formControlName="jobTitle"
-                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    class="w-full px-3 py-2 pr-8 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                     <option value="">Select job title</option>
                     <option *ngFor="let jt of jobTitles" [value]="jt">{{ jt }}</option>
                   </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                  <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1492,14 +1474,14 @@
 
               <div>
                 <label
-                  class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Department</label>
+                  class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Department</label>
                 <div class="relative">
                   <select formControlName="department"
-                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    class="w-full px-3 py-2 pr-8 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                     <option value="">Select department</option>
                     <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
                   </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                  <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1509,14 +1491,14 @@
               </div>
 
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Lead
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Lead
                   Category</label>
                 <div class="relative">
                   <select formControlName="leadCategory"
-                    class="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm cursor-pointer appearance-none">
+                    class="w-full px-3 py-2 pr-8 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
                     <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
                   </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                  <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">
                     <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1527,38 +1509,38 @@
             </div>
           </div>
 
-          <!-- 3. Product Interest -->
-          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
-            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+          <!-- 4. Product Interest -->
+          <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Product Interests *</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
               <label *ngFor="let interest of productInterests"
-                class="flex items-center p-3.5 border rounded-xl cursor-pointer transition-all duration-200 group"
-                [ngClass]="selectedInterests().includes(interest) ? 'bg-gray-900 border-gray-900 text-white shadow-md' : 'bg-white border-gray-200 hover:border-gray-400 hover:bg-gray-50 text-gray-700'">
+                class="flex items-center p-2.5 border rounded-md cursor-pointer transition-all duration-150 group"
+                [ngClass]="selectedInterests().includes(interest) ? 'bg-slate-900 border-slate-900 text-white shadow-sm' : 'bg-white border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700'">
                 <div
-                  class="relative flex items-center justify-center w-4 h-4 mr-3 border-2 rounded flex-shrink-0 transition-colors"
-                  [ngClass]="selectedInterests().includes(interest) ? 'border-white bg-white' : 'border-gray-300 group-hover:border-gray-400'">
-                  <svg *ngIf="selectedInterests().includes(interest)" class="w-3 h-3 text-gray-900 absolute" fill="none"
+                  class="relative flex items-center justify-center w-3.5 h-3.5 mr-2 border-2 rounded-sm flex-shrink-0 transition-colors"
+                  [ngClass]="selectedInterests().includes(interest) ? 'border-white bg-white' : 'border-slate-300 group-hover:border-slate-400'">
+                  <svg *ngIf="selectedInterests().includes(interest)" class="w-2.5 h-2.5 text-slate-900 absolute" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <input type="checkbox" class="hidden" [checked]="selectedInterests().includes(interest)"
                   (change)="toggleInterest(interest)" />
-                <span class="text-sm font-semibold tracking-wide">{{ interest }}</span>
+                <span class="text-xs font-medium tracking-wide">{{ interest }}</span>
               </label>
             </div>
           </div>
 
-          <!-- 4. Attachment & Remarks -->
-          <div class="bg-white p-6 rounded-[20px] border border-gray-100 shadow-sm">
-            <h3 class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-50">
+          <!-- 5. Attachment & Remarks -->
+          <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Attachment & Remarks</h3>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <!-- Upload Area Card 1 -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting Card Image 1</label>
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Visiting Card Image 1</label>
                 <app-visiting-card-upload
                   title="Visiting Card Image 1"
                   [previewUrl]="filePreview()"
@@ -1567,12 +1549,12 @@
                   (removed)="removeFile()"
                 />
                 <div *ngIf="cardScanMessage()"
-                  class="mt-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-[11px] font-semibold"
-                  [ngClass]="isScanningCard() ? 'bg-gray-50 border-gray-200 text-gray-600' : 'bg-white border-gray-200 text-gray-700'">
-                  <div *ngIf="isScanningCard()" class="mt-0.5 h-3 w-3 rounded-full border-2 border-gray-300 border-t-gray-900 animate-spin flex-shrink-0"></div>
-                  <svg *ngIf="!isScanningCard()" class="mt-0.5 h-3.5 w-3.5 text-gray-500 flex-shrink-0" fill="none"
+                  class="mt-2 flex items-start gap-2 rounded border px-3 py-1.5 text-[11px] font-medium"
+                  [ngClass]="isScanningCard() ? 'bg-slate-50 border-slate-200 text-slate-600' : 'bg-white border-slate-200 text-slate-700'">
+                  <div *ngIf="isScanningCard()" class="mt-0.5 h-3 w-3 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin flex-shrink-0"></div>
+                  <svg *ngIf="!isScanningCard()" class="mt-0.5 h-3 w-3 text-slate-500 flex-shrink-0" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>{{ cardScanMessage() }}</span>
@@ -1581,7 +1563,7 @@
 
               <!-- Upload Area Card 2 -->
               <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Visiting Card Image 2</label>
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Visiting Card Image 2</label>
                 <app-visiting-card-upload
                   title="Visiting Card Image 2"
                   [previewUrl]="filePreview2()"
@@ -1591,95 +1573,92 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
               <div class="flex flex-col">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
-                <textarea formControlName="details" rows="5" readonly
-                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none flex-1 resize-none"
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
+                <textarea formControlName="details" rows="4" readonly
+                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none flex-1 resize-none"
                   placeholder="Text from visiting card image 1 will appear here after scan..."></textarea>
               </div>
 
               <!-- Remarks -->
               <div class="flex flex-col">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Remarks</label>
-                <textarea formControlName="remarks" rows="5"
-                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-900 outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all shadow-sm flex-1 resize-none"
+                <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Remarks</label>
+                <textarea formControlName="remarks" rows="4"
+                  class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm flex-1 resize-none"
                   placeholder="Share additional visitor notes..."></textarea>
               </div>
             </div>
           </div>
 
-          <!-- 5. Voice Note -->
-          <div class="bg-gray-900 p-6 rounded-[20px] border border-gray-800 shadow-sm relative overflow-hidden group">
-            <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+          <!-- 6. Voice Note -->
+          <div class="bg-slate-900 p-5 rounded-md border border-slate-800 shadow-sm relative overflow-hidden group">
             <h3
-              class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-800 relative z-10">
+              class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-800 relative z-10">
               Voice Note</h3>
 
             <!-- Recording Controls -->
             <div
-              class="flex items-center justify-between bg-black/50 backdrop-blur-sm border border-gray-800/80 p-4 rounded-2xl relative z-10 hover:border-gray-700 transition-all duration-300">
+              class="flex items-center justify-between bg-slate-800 border border-slate-700 p-3 rounded-md relative z-10">
 
               <!-- Left side: Status & Timer -->
               <div class="flex items-center gap-4">
                 <button type="button" (click)="toggleRecording()"
-                  class="relative w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none"
-                  [ngClass]="{'bg-red-500 hover:bg-red-600': isRecording(), 'bg-white hover:bg-gray-200': !isRecording() && !recordingUrl(), 'bg-gray-800 hover:bg-gray-700': !isRecording() && recordingUrl() }">
+                  class="relative w-10 h-10 flex items-center justify-center rounded transition-all duration-200 focus:outline-none shadow-sm border border-slate-700"
+                  [ngClass]="{'bg-red-600 hover:bg-red-700 border-red-600': isRecording(), 'bg-white hover:bg-slate-100 border-slate-300': !isRecording() && !recordingUrl(), 'bg-slate-700 hover:bg-slate-600': !isRecording() && recordingUrl() }">
 
                   <!-- Pulsing ring when recording -->
                   <div *ngIf="isRecording()"
-                    class="absolute inset-0 rounded-full border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
+                    class="absolute inset-0 rounded border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
                   </div>
 
                   <!-- Icon -->
                   <svg *ngIf="!isRecording() && !recordingUrl()" xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
-                  <svg *ngIf="isRecording()" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                  <svg *ngIf="isRecording()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                      d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                   </svg>
                   <svg *ngIf="!isRecording() && recordingUrl()" xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </button>
 
                 <div class="flex flex-col">
-                  <div class="flex items-center gap-2">
-                    <span *ngIf="isRecording()" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span class="text-sm font-bold tracking-wider"
-                      [ngClass]="{'text-red-400': isRecording(), 'text-gray-300': !isRecording()}">
+                  <div class="flex items-center gap-1.5">
+                    <span *ngIf="isRecording()" class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-[10px] font-semibold tracking-wider"
+                      [ngClass]="{'text-red-400': isRecording(), 'text-slate-400': !isRecording()}">
                       {{ isRecording() ? 'RECORDING' : (recordingUrl() ? 'RECORDED' : 'READY') }}
                     </span>
                   </div>
-                  <span class="text-2xl font-mono font-light text-white tracking-widest mt-0.5">
+                  <span class="text-lg font-mono font-medium text-white mt-0.5">
                     {{ formatTime(recordingTime()) }}
                   </span>
                 </div>
               </div>
 
               <!-- Right side: Audio Player, Record new & Delete -->
-              <div *ngIf="recordingUrl() && !isRecording()" class="flex items-center gap-3 animate-in fade-in duration-300">
+              <div *ngIf="recordingUrl() && !isRecording()" class="flex items-center gap-2 animate-in fade-in duration-300">
                 <audio [src]="safeRecordingUrl()" controls
-                  class="h-10 w-48 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+                  class="h-8 w-48 rounded outline-none [&::-webkit-media-controls-panel]:bg-slate-700 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
 
                 <button type="button" (click)="recordNewVoiceNote()"
-                  class="h-9 px-3 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-[10px] font-bold uppercase tracking-wider text-white transition-all"
+                  class="h-8 px-2.5 rounded border border-slate-600 bg-slate-700 hover:bg-slate-600 text-[10px] font-semibold uppercase tracking-wider text-white transition-all shadow-sm"
                   title="Record new">
-                  Record new
+                  New
                 </button>
 
                 <button type="button" (click)="clearVoiceNote()"
-                  class="p-2.5 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-xl transition-all"
+                  class="p-2 bg-slate-700 hover:bg-slate-600 hover:text-red-400 text-slate-300 border border-slate-600 rounded transition-all shadow-sm"
                   title="Delete Recording">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1688,95 +1667,92 @@
               </div>
 
               <!-- Waveform placeholder when recording -->
-              <div *ngIf="isRecording()" class="flex items-center justify-center gap-1 h-10 w-48 pr-4">
-                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+              <div *ngIf="isRecording()" class="flex items-center justify-center gap-1 h-8 w-48 pr-4">
+                <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 40%; animation-delay: 0.1s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 80%; animation-delay: 0.2s"></div>
-                <div class="w-1.5 bg-white/80 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/80 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 60%; animation-delay: 0.3s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 100%; animation-delay: 0.4s"></div>
-                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 70%; animation-delay: 0.5s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 50%; animation-delay: 0.6s"></div>
               </div>
 
             </div>
           </div>
 
-          <!-- 6. Voice Note 2 -->
-          <div class="bg-gray-900 p-6 rounded-[20px] border border-gray-800 shadow-sm relative overflow-hidden group">
-            <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+          <!-- 7. Voice Note 2 -->
+          <div class="bg-slate-900 p-5 rounded-md border border-slate-800 shadow-sm relative overflow-hidden group">
             <h3
-              class="text-[13px] font-bold uppercase tracking-widest text-gray-400 mb-5 pb-3 border-b border-gray-800 relative z-10">
+              class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-800 relative z-10">
               Voice Note 2</h3>
 
             <!-- Recording Controls -->
             <div
-              class="flex items-center justify-between bg-black/50 backdrop-blur-sm border border-gray-800/80 p-4 rounded-2xl relative z-10 hover:border-gray-700 transition-all duration-300">
+              class="flex items-center justify-between bg-slate-800 border border-slate-700 p-3 rounded-md relative z-10">
 
               <!-- Left side: Status & Timer -->
               <div class="flex items-center gap-4">
                 <button type="button" (click)="toggleRecording2()"
-                  class="relative w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 focus:outline-none"
-                  [ngClass]="{'bg-red-500 hover:bg-red-600': isRecording2(), 'bg-white hover:bg-gray-200': !isRecording2() && !recordingUrl2(), 'bg-gray-800 hover:bg-gray-700': !isRecording2() && recordingUrl2() }">
+                  class="relative w-10 h-10 flex items-center justify-center rounded transition-all duration-200 focus:outline-none shadow-sm border border-slate-700"
+                  [ngClass]="{'bg-red-600 hover:bg-red-700 border-red-600': isRecording2(), 'bg-white hover:bg-slate-100 border-slate-300': !isRecording2() && !recordingUrl2(), 'bg-slate-700 hover:bg-slate-600': !isRecording2() && recordingUrl2() }">
 
                   <!-- Pulsing ring when recording -->
                   <div *ngIf="isRecording2()"
-                    class="absolute inset-0 rounded-full border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
+                    class="absolute inset-0 rounded border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
                   </div>
 
                   <!-- Icon -->
                   <svg *ngIf="!isRecording2() && !recordingUrl2()" xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
-                  <svg *ngIf="isRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none"
+                  <svg *ngIf="isRecording2()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none"
                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                      d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                   </svg>
                   <svg *ngIf="!isRecording2() && recordingUrl2()" xmlns="http://www.w3.org/2000/svg"
-                    class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </button>
 
                 <div class="flex flex-col">
-                  <div class="flex items-center gap-2">
-                    <span *ngIf="isRecording2()" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span class="text-sm font-bold tracking-wider"
-                      [ngClass]="{'text-red-400': isRecording2(), 'text-gray-300': !isRecording2()}">
+                  <div class="flex items-center gap-1.5">
+                    <span *ngIf="isRecording2()" class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                    <span class="text-[10px] font-semibold tracking-wider"
+                      [ngClass]="{'text-red-400': isRecording2(), 'text-slate-400': !isRecording2()}">
                       {{ isRecording2() ? 'RECORDING' : (recordingUrl2() ? 'RECORDED' : 'READY') }}
                     </span>
                   </div>
-                  <span class="text-2xl font-mono font-light text-white tracking-widest mt-0.5">
+                  <span class="text-lg font-mono font-medium text-white mt-0.5">
                     {{ formatTime(recordingTime2()) }}
                   </span>
                 </div>
               </div>
 
               <!-- Right side: Audio Player, Record new & Delete -->
-              <div *ngIf="recordingUrl2() && !isRecording2()" class="flex items-center gap-3 animate-in fade-in duration-300">
+              <div *ngIf="recordingUrl2() && !isRecording2()" class="flex items-center gap-2 animate-in fade-in duration-300">
                 <audio [src]="safeRecordingUrl2()" controls
-                  class="h-10 w-48 rounded-lg outline-none [&::-webkit-media-controls-panel]:bg-gray-800 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
+                  class="h-8 w-48 rounded outline-none [&::-webkit-media-controls-panel]:bg-slate-700 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
 
                 <button type="button" (click)="recordNewVoiceNote2()"
-                  class="h-9 px-3 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-[10px] font-bold uppercase tracking-wider text-white transition-all"
+                  class="h-8 px-2.5 rounded border border-slate-600 bg-slate-700 hover:bg-slate-600 text-[10px] font-semibold uppercase tracking-wider text-white transition-all shadow-sm"
                   title="Record new">
-                  Record new
+                  New
                 </button>
 
                 <button type="button" (click)="clearVoiceNote2()"
-                  class="p-2.5 bg-gray-800 hover:bg-gray-700 hover:text-red-400 text-gray-400 rounded-xl transition-all"
+                  class="p-2 bg-slate-700 hover:bg-slate-600 hover:text-red-400 text-slate-300 border border-slate-600 rounded transition-all shadow-sm"
                   title="Delete Recording">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1785,18 +1761,18 @@
               </div>
 
               <!-- Waveform placeholder when recording -->
-              <div *ngIf="isRecording2()" class="flex items-center justify-center gap-1 h-10 w-48 pr-4">
-                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+              <div *ngIf="isRecording2()" class="flex items-center justify-center gap-1 h-8 w-48 pr-4">
+                <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 40%; animation-delay: 0.1s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 80%; animation-delay: 0.2s"></div>
-                <div class="w-1.5 bg-white/80 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/80 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 60%; animation-delay: 0.3s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 100%; animation-delay: 0.4s"></div>
-                <div class="w-1.5 bg-white/40 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 70%; animation-delay: 0.5s"></div>
-                <div class="w-1.5 bg-white/60 rounded-full animate-[waveform_1s_ease-in-out_infinite]"
+                <div class="w-1 bg-white/60 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 50%; animation-delay: 0.6s"></div>
               </div>
 
@@ -1807,15 +1783,15 @@
       </div>
 
       <!-- Add Footer -->
-      <div class="px-8 py-5 border-t border-gray-100 bg-white flex justify-end gap-3">
+      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
         <button (click)="closeAddModal()" [disabled]="isSubmitting()"
-          class="px-6 py-2.5 text-sm font-bold text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all disabled:opacity-50">
+          class="px-5 py-2 text-[13px] font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition-all disabled:opacity-50 shadow-sm">
           Cancel
         </button>
         <button (click)="saveNewVisitor()"
           [disabled]="isSubmitting() || addVisitorForm.invalid || selectedInterests().length === 0"
-          class="flex items-center gap-2 px-6 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-xl shadow-md transition-all focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-60 disabled:cursor-not-allowed">
-          <svg *ngIf="isSubmitting()" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+          class="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-sm transition-all focus:ring-1 focus:ring-offset-1 focus:ring-slate-900 disabled:opacity-60 disabled:cursor-not-allowed">
+          <svg *ngIf="isSubmitting()" class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg"
             fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor"
