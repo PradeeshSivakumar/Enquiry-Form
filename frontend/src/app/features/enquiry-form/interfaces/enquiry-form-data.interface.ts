@@ -15,6 +15,7 @@ export interface EnquiryFormData {
   voiceNote2?: File | null;
   venueId?: string;
   remarks?: string;
+  referredBy?: string;
 }
 
 export interface EnquiryPayload {
@@ -34,5 +35,6 @@ export interface EnquiryPayload {
   voiceNoteUrl2?: string;
   venueId?: string;
   remarks: string;
+  referred_by?: string;
   createdAt: string;
 }

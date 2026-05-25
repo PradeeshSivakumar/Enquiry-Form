@@ -1,0 +1,2 @@
+ALTER TABLE enquiries
+ADD COLUMN referred_by VARCHAR(255) NULL;

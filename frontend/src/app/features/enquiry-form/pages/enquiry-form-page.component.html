@@ -151,6 +151,12 @@
             </div>
             <div class="mt-6 grid grid-cols-1 gap-4">
               <div class="flex flex-col gap-4">
+                <app-custom-input
+                     label="Referred By"
+                     inputId="referredBy"
+                     [control]="form.controls.referredBy"
+                     [showSuccess]="showSuccess('referredBy')"
+/>
                 <app-textarea
                   label="Description"
                   inputId="remarks"

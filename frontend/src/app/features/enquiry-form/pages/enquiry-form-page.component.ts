@@ -110,7 +110,8 @@ export class EnquiryFormPageComponent {
     interests: this.fb.array<FormControl<boolean | null>>(this.interestOptions.map(() => this.fb.control(false)), [this.atLeastOneSelectedValidator()]),
     visitingCard: [null as File | null],
     visitingCard2: [null as File | null],
-    remarks: [''],
+    referredBy: [''],
+    remarks: [''],   
   });
 
   constructor() {
@@ -186,7 +187,7 @@ export class EnquiryFormPageComponent {
     return value.length > 0 && !!(control.invalid && (control.touched || this.formSubmitted()));
   }
 
-  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'alternateMobile' | 'officeNumber' | 'department'): boolean {
+  showSuccess(controlName: 'venueId' | 'title' | 'fullName' | 'companyName' | 'jobTitle' | 'email' | 'alternateMobile' | 'officeNumber' | 'department' | 'referredBy'): boolean {
     const control = this.form.controls[controlName];
     const value = `${control.value ?? ''}`.trim();
     const optionalFields = new Set(['title', 'companyName', 'jobTitle', 'alternateMobile', 'officeNumber', 'department']);
@@ -349,6 +350,7 @@ if (voiceBlob2) {
       voiceNote: voiceNoteData,
       voiceNote2: voiceNoteData2,
       venueId: rawValue.venueId ?? undefined,
+      referredBy: rawValue.referredBy ?? undefined,
       remarks: rawValue.remarks ?? undefined,
     };
 
@@ -409,7 +411,7 @@ if (voiceBlob2) {
   private updateCompletion(): void {
     const values = this.form.getRawValue();
     const total = 10;
-    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.alternateMobile, values.officeNumber, values.department, values.remarks, values.visitingCard, values.visitingCard2].filter(
+    const complete = [values.venueId, values.title, values.fullName, values.companyName, values.jobTitle, values.email, values.mobile, values.alternateMobile, values.officeNumber, values.department,values.referredBy, values.remarks, values.visitingCard, values.visitingCard2].filter(
       (value) => `${value ?? ''}`.trim().length > 0
     ).length;
 

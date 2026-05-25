@@ -22,6 +22,7 @@ export interface Visitor {
   voice_note_url_2?: string | null;
   venue_id?: string | null;
   remarks: string | null;
+  referred_by?: string | null;
   created_at: string;
   lead_category: string | null;
 }

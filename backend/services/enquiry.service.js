@@ -243,6 +243,7 @@ async function createEnquiry(payload, files = {}) {
     'voice_note_url',
     ...(hasVoiceNote2 ? ['voice_note_id_2', 'voice_note_url_2'] : []),
     'venue_id',
+    'referred_by',
     'remarks',
     ...(hasDetails ? ['details'] : []),
     'lead_category'
@@ -265,6 +266,7 @@ async function createEnquiry(payload, files = {}) {
     voiceNoteUrl,
     ...(hasVoiceNote2 ? [voiceNoteId2, voiceNoteUrl2] : []),
     payload.venueId,
+    payload.referred_by,
     payload.remarks,
     ...(hasDetails ? [payload.details] : []),
     payload.leadCategory || null
@@ -307,7 +309,7 @@ async function getEnquiries() {
   const voiceNote2Select = await hasVoiceNote2Columns() ? 'voice_note_url_2' : 'NULL AS voice_note_url_2';
   const detailsSelect = await hasDetailsColumn() ? 'details' : 'NULL AS details';
   const [enquiries] = await pool.execute(
-    `SELECT id, title, full_name, company_name, job_title, email, mobile, ${alternateMobileSelect}, ${officeNumberSelect}, department, interests, visiting_card_url, ${visitingCard2Select}, voice_note_url, ${voiceNote2Select}, venue_id, remarks, ${detailsSelect}, created_at, lead_category
+    `SELECT id, title, full_name, company_name, job_title, email, mobile, ${alternateMobileSelect}, ${officeNumberSelect}, department, interests, visiting_card_url, ${visitingCard2Select}, voice_note_url, ${voiceNote2Select}, venue_id,referred_by,  remarks, ${detailsSelect}, created_at, lead_category
      FROM enquiries WHERE status = 0 ORDER BY created_at DESC`
   );
 
@@ -610,8 +612,19 @@ async function updateEnquiry(id, enquiry) {
 
   await pool.execute(
     `UPDATE enquiries
-     SET full_name = ?, company_name = ?, email = ?, mobile = ?, ${alternateMobileSet}${officeNumberSet}department = ?, interests = CAST(? AS JSON), lead_category = ?, venue_id = ?, ${detailsSet}
-     WHERE id = ?`,
+ SET full_name = ?, 
+ company_name = ?, 
+ email = ?, 
+ mobile = ?, 
+ ${alternateMobileSet}
+ ${officeNumberSet}
+ department = ?, 
+ interests = CAST(? AS JSON), 
+ lead_category = ?, 
+ venue_id = ?, 
+ referred_by = ?,
+ ${detailsSet}
+ WHERE id = ?`,
     [
       enquiry.full_name,
       enquiry.company_name || null,
@@ -623,6 +636,7 @@ async function updateEnquiry(id, enquiry) {
       JSON.stringify(enquiry.interests),
       enquiry.lead_category || null,
       enquiry.venue_id || null,
+      enquiry.referred_by || null,
       ...detailsValue,
       id
     ]

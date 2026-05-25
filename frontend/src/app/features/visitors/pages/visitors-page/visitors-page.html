@@ -1,7 +1,6 @@
 <section
   class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700 bg-white min-h-screen">
 
-  <!-- Toast Notification -->
   <div *ngIf="toastMessage()"
     class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-md shadow-sm border animate-in slide-in-from-bottom-5 fade-in duration-300"
     [ngClass]="{
@@ -23,7 +22,6 @@
     <span class="text-sm font-semibold tracking-wide">{{ toastMessage()?.text }}</span>
   </div>
 
-  <!-- Header Section -->
   <div class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
     <div class="flex items-center gap-4">
       <div class="flex flex-col">
@@ -71,14 +69,11 @@
 
 
 
-  <!-- Main Content Card -->
   <div class="relative z-10">
 
-    <!-- Filter Tabs & Toolbar Container -->
     <div
       class="px-5 py-4 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-center gap-4 bg-white relative z-20 rounded-t-md border-x border-t">
 
-      <!-- Category Dropdown -->
       <div class="relative w-full sm:w-[220px]">
         <select
           [value]="activeCategory()"
@@ -88,7 +83,6 @@
             {{ tab }}
           </option>
         </select>
-        <!-- Dropdown Arrow -->
         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
           <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
@@ -96,10 +90,8 @@
         </div>
       </div>
 
-      <!-- Controls -->
       <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
 
-        <!-- Department Dropdown -->
         <div class="relative hidden sm:block">
           <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
             <option value="">All Departments</option>
@@ -110,7 +102,6 @@
           </div>
         </div>
 
-        <!-- Entries Dropdown -->
         <div class="relative hidden sm:block">
           <select (change)="onPageSizeChange($event)"
             class="appearance-none bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
@@ -125,7 +116,6 @@
           </div>
         </div>
 
-        <!-- View Toggle -->
         <div class="flex items-center p-0.5 bg-slate-50 border border-slate-300 rounded-md shadow-sm" *ngIf="visitors().length > 0">
           <button (click)="viewMode.set('table')" [class.bg-white]="viewMode() === 'table'"
             [class.text-slate-900]="viewMode() === 'table'" [class.shadow-sm]="viewMode() === 'table'" [class.text-slate-500]="viewMode() !== 'table'"
@@ -152,12 +142,10 @@
       </div>
     </div>
 
-    <!-- Loading State -->
     <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border-x border-b border-slate-200 rounded-b-md">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
     </div>
 
-    <!-- Error State -->
     <div *ngIf="error()"
       class="bg-red-50 text-red-800 p-4 rounded-b-md border-x border-b border-red-200 flex items-center shadow-sm">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-red-500" fill="none" viewBox="0 0 24 24"
@@ -168,7 +156,6 @@
       <span class="text-sm font-medium">{{ error() }}</span>
     </div>
 
-    <!-- Empty State -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length === 0" class="bg-white text-center py-20 border-x border-b border-slate-200 rounded-b-md">
       <div
         class="w-12 h-12 bg-slate-50 rounded-md border border-slate-200 flex items-center justify-center mx-auto mb-3 shadow-sm">
@@ -182,13 +169,9 @@
       <p class="text-slate-500 text-xs">There are currently no enquiries matching your criteria.</p>
     </div>
 
-    <!-- =================== -->
-    <!--     TABLE VIEW      -->
-    <!-- =================== -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'table'"
       class="overflow-x-auto min-h-[350px] print-area border-x border-b border-slate-200 bg-white">
 
-      <!-- Print Header -->
       <div class="hidden print-header p-5 bg-white border-b border-slate-200">
         <h2 class="text-2xl font-bold text-slate-900">Visitors Directory - PDF Summary</h2>
         <p class="text-sm text-slate-500 font-medium mt-1">Generated on {{ activeCategory() }} segment. Total: {{
@@ -312,7 +295,6 @@
               </td>
             </tr>
 
-            <!-- Accordion Audio Player Row -->
             <tr *ngIf="expandedAudioId() === visitor.id" class="bg-slate-50 border-b border-slate-200">
               <td colspan="11" class="p-0">
                 <div class="animate-in slide-in-from-top-2 fade-in duration-300 px-4 py-3 flex justify-center">
@@ -367,15 +349,11 @@
       </table>
     </div>
 
-    <!-- =================== -->
-    <!--     GRID VIEW       -->
-    <!-- =================== -->
     <div *ngIf="!loading() && !error() && filteredVisitors().length > 0 && viewMode() === 'grid'"
       class="p-5 border-x border-b border-slate-200 bg-slate-50/50">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         <div *ngFor="let visitor of paginatedVisitors()"
           class="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm hover:shadow transition-all duration-200 group flex flex-col">
-          <!-- Grid Card Image -->
           <div
             class="w-full h-36 bg-slate-50 flex items-center justify-center border-b border-slate-100 relative overflow-hidden">
             <img *ngIf="visitor.visiting_card_url" [src]="getImageUrl(visitor.visiting_card_url)" alt="Visiting Card"
@@ -388,7 +366,6 @@
               </svg>
             </div>
 
-            <!-- Quick Actions Overlay -->
             <div
               class="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button (click)="openEdit(visitor, $event)"
@@ -422,7 +399,6 @@
             </div>
           </div>
 
-          <!-- Grid Card Details -->
           <div class="p-4 flex-1 flex flex-col">
             <div class="flex justify-between items-start mb-1">
               <h3 class="text-sm font-semibold text-slate-900 truncate tracking-tight pr-2">
@@ -500,7 +476,6 @@
       </div>
     </div>
 
-    <!-- Footer / Pagination -->
     <div
       class="px-4 py-3 border border-t-0 border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md"
       *ngIf="filteredVisitors().length > 0">
@@ -539,13 +514,11 @@
     </div>
   </div>
 
-  <!-- Edit Visitor Modal -->
   <div *ngIf="editingVisitor()"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
       class="bg-white rounded-md shadow-lg w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
-      <!-- Edit Header -->
       <div class="flex justify-between items-center px-5 py-4 border-b border-slate-200 bg-white">
         <div>
           <h2 class="text-lg font-bold text-slate-900 tracking-tight">Edit Visitor</h2>
@@ -559,20 +532,19 @@
         </button>
       </div>
 
-      <!-- Edit Body -->
       <div class="p-5 overflow-y-auto flex-1 bg-slate-50/50">
         <div class="space-y-4">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Full Name</label>
               <input type="text" [(ngModel)]="editFormData().full_name"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Company
                 Name</label>
               <input type="text" [(ngModel)]="editFormData().company_name"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
           </div>
 
@@ -581,7 +553,7 @@
               <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Email
                 Address</label>
               <input type="email" [(ngModel)]="editFormData().email"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Mobile
@@ -589,7 +561,7 @@
               <input type="tel" [ngModel]="editFormData().mobile" (ngModelChange)="editFormData.set({ ...editFormData(), mobile: $event })"
                 maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
                 (input)="sanitizeEditPhoneField('mobile', $event, 10)"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="10-digit number" />
             </div>
             <div>
@@ -597,7 +569,7 @@
               <input type="tel" [ngModel]="editFormData().alternate_mobile" (ngModelChange)="editFormData.set({ ...editFormData(), alternate_mobile: $event })"
                 maxlength="10" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 10)"
                 (input)="sanitizeEditPhoneField('alternate_mobile', $event, 10)"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="10-digit number" />
             </div>
             <div>
@@ -606,32 +578,63 @@
               <input type="tel" [ngModel]="editFormData().office_number" (ngModelChange)="editFormData.set({ ...editFormData(), office_number: $event })"
                 maxlength="15" inputmode="numeric" (keypress)="onEditPhoneKeypress($event, 15)"
                 (input)="sanitizeEditPhoneField('office_number', $event, 15)"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
                 placeholder="Digits only, up to 15" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
             <div>
               <label
-                class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Department</label>
-              <input type="text" [(ngModel)]="editFormData().department"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm" />
+                class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                Department
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="editFormData().department"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+              />
             </div>
+
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Lead
-                Category</label>
-              <select [(ngModel)]="editFormData().lead_category"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
-                <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
+              <label
+                class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                Referred By
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="editFormData().referred_by"
+                placeholder="Enter referred by"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+              />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label
+                class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                Lead Category
+              </label>
+
+              <select
+                [(ngModel)]="editFormData().lead_category"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
+
+                <option *ngFor="let cat of leadCategories()" [value]="cat">
+                  {{ cat }}
+                </option>
+
               </select>
             </div>
+
           </div>
 
           <div>
             <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Venue</label>
             <select [(ngModel)]="editFormData().venue_id"
-              class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
+              class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
               <option [ngValue]="null">Select Venue</option>
               <option *ngFor="let v of venues()" [ngValue]="v.venue_id">
                 {{ v.venue }}
@@ -763,9 +766,10 @@
           <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <label class="block text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">Details (OCR from card 1)</label>
             <textarea [(ngModel)]="editFormData().details" rows="4"
-              class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 resize-none"
+              class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 resize-none"
               placeholder="Text extracted from visiting card image 1..."></textarea>
           </div>
+          
 
           <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
@@ -773,7 +777,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 5a7 7 0 100 14 7 7 0 000-14zm0 0v4m0 0h4" />
+                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                 </svg>
                 Voice Note
               </div>
@@ -829,7 +833,6 @@
               class="text-[11px] font-medium text-slate-500">No voice note attached. Record new or upload a file.</div>
           </div>
 
-          <!-- Voice Note 2 -->
           <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
             <div class="mb-3 flex items-center justify-between gap-3">
               <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
@@ -894,7 +897,6 @@
         </div>
       </div>
 
-      <!-- Edit Footer -->
       <div class="px-5 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
         <button (click)="closeEdit()"
           class="px-4 py-2 text-[13px] font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition-all shadow-sm">
@@ -908,13 +910,11 @@
     </div>
   </div>
 
-  <!-- Details Review Modal (Enterprise Structure) -->
   <div *ngIf="selectedVisitor() && !editingVisitor()"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
       class="bg-white rounded-lg shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
-      <!-- Modal Header -->
       <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
         <div>
           <h2 class="text-xl font-bold text-slate-900 tracking-tight">Visitor Insights</h2>
@@ -935,11 +935,9 @@
         </div>
       </div>
 
-      <!-- Modal Body -->
       <div class="p-6 overflow-y-auto flex-1 bg-slate-50">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          <!-- Details Left -->
           <div class="lg:col-span-2 space-y-4 bg-white p-5 rounded-md border border-slate-200 shadow-sm">
 
             <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3">
@@ -999,6 +997,11 @@
                     specified</span>
                 </div>
               </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 border-b border-slate-100 pb-3" *ngIf="selectedVisitor()?.referred_by">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Referred By</div>
+              <div class="col-span-2 text-[13px] text-slate-800 font-medium">{{ selectedVisitor()?.referred_by }}</div>
             </div>
 
             <div class="grid grid-cols-3 gap-4">
@@ -1114,7 +1117,6 @@
             </div>
           </div>
 
-          <!-- Card Right -->
           <div class="flex flex-col gap-4">
             <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm">
               <div class="mb-3 flex items-center justify-between gap-3">
@@ -1136,11 +1138,7 @@
                     class="h-7 px-2 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
                     {{ selectedVisitor()?.visiting_card_url ? 'Change' : 'Add' }}
                   </button>
-                  <button type="button" (click)="$event.stopPropagation(); reviewCardCameraInput.click()"
-                    [disabled]="isUpdatingVisitorCard()"
-                    class="h-7 px-2 rounded-sm border border-slate-300 bg-white hover:bg-slate-50 text-[10px] font-semibold uppercase tracking-wider text-slate-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm">
-                    Camera
-                  </button>
+                
                 </div>
               </div>
               <div
@@ -1151,7 +1149,6 @@
                   class="max-w-full max-h-[140px] object-contain rounded transition-transform duration-300 group-hover:scale-[1.02] shadow-sm border border-slate-200"
                   alt="Visiting Card" />
 
-                <!-- Hint overlay -->
                 <div *ngIf="selectedVisitor()?.visiting_card_url"
                   class="absolute inset-0 bg-slate-900/10 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <span
@@ -1189,11 +1186,9 @@
     </div>
   </div>
 
-  <!-- Dedicated Image Viewer Modal with Zoom -->
   <div *ngIf="isImageViewerOpen() && selectedCardVisitor()?.visiting_card_url"
     class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-[100] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
 
-    <!-- Controls -->
     <div
       class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2 z-[110] bg-slate-900 p-1.5 rounded-md border border-slate-700 shadow-xl">
       <button (click)="zoomOut()"
@@ -1229,7 +1224,6 @@
       </button>
     </div>
 
-    <!-- Interactive Image Container -->
     <div class="relative w-full h-full flex items-center justify-center overflow-auto scrollbar-hide"
       (click)="closeImageViewer()">
       <img [src]="getImageUrl(selectedCardVisitor()?.visiting_card_url)" [style.transform]="'scale(' + zoomLevel() + ')'"
@@ -1239,7 +1233,6 @@
     </div>
   </div>
 
-  <!-- Camera Modal -->
   <div *ngIf="cameraModalSlot() !== null"
     class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-[110] p-4 transition-opacity animate-in fade-in duration-300">
     <div class="w-full max-w-2xl bg-white rounded-md shadow-xl overflow-hidden border border-slate-200">
@@ -1287,7 +1280,6 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div *ngIf="visitorToDelete()"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
     <div class="bg-white rounded-md shadow-xl w-full max-w-sm overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200 p-6">
@@ -1309,13 +1301,11 @@
     </div>
   </div>
 
-  <!-- Add Visitor Modal -->
   <div *ngIf="isAddModalOpen()"
     class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
     <div
       class="bg-white rounded-md shadow-xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
 
-      <!-- Add Header -->
       <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
         <div>
           <h2 class="text-lg font-bold text-slate-900 tracking-tight">Add New Visitor</h2>
@@ -1329,11 +1319,9 @@
         </button>
       </div>
 
-      <!-- Add Body -->
       <div class="p-6 overflow-y-auto flex-1 bg-slate-50/80">
         <form [formGroup]="addVisitorForm" class="space-y-6">
 
-          <!-- 1. Venue Information -->
           <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
             <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Venue Selection *</h3>
@@ -1349,13 +1337,11 @@
             </div>
           </div>
 
-          <!-- 2. Personal Information -->
           <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
             <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Personal Information</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <!-- Title -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Title</label>
                 <select formControlName="title"
@@ -1364,7 +1350,6 @@
                 </select>
               </div>
 
-              <!-- Full Name -->
               <div class="md:col-span-3">
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Full Name
                   *</label>
@@ -1381,7 +1366,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <!-- Mobile Number -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mobile Number
                   *</label>
@@ -1396,7 +1380,6 @@
                   class="text-[10px] text-red-500 font-semibold mt-1 block">Valid 10-digit Mobile is required</span>
               </div>
 
-              <!-- Alternate Mobile Number -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Alternate Mobile</label>
                 <input type="tel" formControlName="alternateMobile" (keypress)="onAlternateMobileKeypress($event)"
@@ -1410,7 +1393,6 @@
                   class="text-[10px] text-red-500 font-semibold mt-1 block">Alternate mobile must be exactly 10 digits</span>
               </div>
 
-              <!-- Office Number -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Office
                   Number</label>
@@ -1425,7 +1407,6 @@
                   class="text-[10px] text-red-500 font-semibold mt-1 block">Office number can only contain digits</span>
               </div>
 
-              <!-- Email -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Email Address
                   *</label>
@@ -1438,7 +1419,6 @@
             </div>
           </div>
 
-          <!-- 3. Professional Information -->
           <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
             <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Professional Information</h3>
@@ -1509,7 +1489,6 @@
             </div>
           </div>
 
-          <!-- 4. Product Interest -->
           <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
             <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Product Interests *</h3>
@@ -1532,13 +1511,23 @@
             </div>
           </div>
 
-          <!-- 5. Attachment & Remarks -->
           <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm">
             <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-4 pb-2 border-b border-slate-100">
               Attachment & Remarks</h3>
 
+            <div class="mb-5">
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                Referred By
+              </label>
+              <input
+                type="text"
+                formControlName="referred_by"
+                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
+                placeholder="Enter referred by"
+              />
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <!-- Upload Area Card 1 -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Visiting Card Image 1</label>
                 <app-visiting-card-upload
@@ -1561,7 +1550,6 @@
                 </div>
               </div>
 
-              <!-- Upload Area Card 2 -->
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Visiting Card Image 2</label>
                 <app-visiting-card-upload
@@ -1581,7 +1569,6 @@
                   placeholder="Text from visiting card image 1 will appear here after scan..."></textarea>
               </div>
 
-              <!-- Remarks -->
               <div class="flex flex-col">
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Remarks</label>
                 <textarea formControlName="remarks" rows="4"
@@ -1591,28 +1578,23 @@
             </div>
           </div>
 
-          <!-- 6. Voice Note -->
           <div class="bg-slate-900 p-5 rounded-md border border-slate-800 shadow-sm relative overflow-hidden group">
             <h3
               class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-800 relative z-10">
               Voice Note</h3>
 
-            <!-- Recording Controls -->
             <div
               class="flex items-center justify-between bg-slate-800 border border-slate-700 p-3 rounded-md relative z-10">
 
-              <!-- Left side: Status & Timer -->
               <div class="flex items-center gap-4">
                 <button type="button" (click)="toggleRecording()"
                   class="relative w-10 h-10 flex items-center justify-center rounded transition-all duration-200 focus:outline-none shadow-sm border border-slate-700"
                   [ngClass]="{'bg-red-600 hover:bg-red-700 border-red-600': isRecording(), 'bg-white hover:bg-slate-100 border-slate-300': !isRecording() && !recordingUrl(), 'bg-slate-700 hover:bg-slate-600': !isRecording() && recordingUrl() }">
 
-                  <!-- Pulsing ring when recording -->
                   <div *ngIf="isRecording()"
                     class="absolute inset-0 rounded border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
                   </div>
 
-                  <!-- Icon -->
                   <svg *ngIf="!isRecording() && !recordingUrl()" xmlns="http://www.w3.org/2000/svg"
                     class="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1644,7 +1626,6 @@
                 </div>
               </div>
 
-              <!-- Right side: Audio Player, Record new & Delete -->
               <div *ngIf="recordingUrl() && !isRecording()" class="flex items-center gap-2 animate-in fade-in duration-300">
                 <audio [src]="safeRecordingUrl()" controls
                   class="h-8 w-48 rounded outline-none [&::-webkit-media-controls-panel]:bg-slate-700 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
@@ -1666,7 +1647,6 @@
                 </button>
               </div>
 
-              <!-- Waveform placeholder when recording -->
               <div *ngIf="isRecording()" class="flex items-center justify-center gap-1 h-8 w-48 pr-4">
                 <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 40%; animation-delay: 0.1s"></div>
@@ -1685,28 +1665,23 @@
             </div>
           </div>
 
-          <!-- 7. Voice Note 2 -->
           <div class="bg-slate-900 p-5 rounded-md border border-slate-800 shadow-sm relative overflow-hidden group">
             <h3
               class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-800 relative z-10">
               Voice Note 2</h3>
 
-            <!-- Recording Controls -->
             <div
               class="flex items-center justify-between bg-slate-800 border border-slate-700 p-3 rounded-md relative z-10">
 
-              <!-- Left side: Status & Timer -->
               <div class="flex items-center gap-4">
                 <button type="button" (click)="toggleRecording2()"
                   class="relative w-10 h-10 flex items-center justify-center rounded transition-all duration-200 focus:outline-none shadow-sm border border-slate-700"
                   [ngClass]="{'bg-red-600 hover:bg-red-700 border-red-600': isRecording2(), 'bg-white hover:bg-slate-100 border-slate-300': !isRecording2() && !recordingUrl2(), 'bg-slate-700 hover:bg-slate-600': !isRecording2() && recordingUrl2() }">
 
-                  <!-- Pulsing ring when recording -->
                   <div *ngIf="isRecording2()"
                     class="absolute inset-0 rounded border-2 border-red-500 animate-[ping_1.5s_ease-out_infinite] opacity-40">
                   </div>
 
-                  <!-- Icon -->
                   <svg *ngIf="!isRecording2() && !recordingUrl2()" xmlns="http://www.w3.org/2000/svg"
                     class="h-5 w-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1738,7 +1713,6 @@
                 </div>
               </div>
 
-              <!-- Right side: Audio Player, Record new & Delete -->
               <div *ngIf="recordingUrl2() && !isRecording2()" class="flex items-center gap-2 animate-in fade-in duration-300">
                 <audio [src]="safeRecordingUrl2()" controls
                   class="h-8 w-48 rounded outline-none [&::-webkit-media-controls-panel]:bg-slate-700 [&::-webkit-media-controls-current-time-display]:text-white [&::-webkit-media-controls-time-remaining-display]:text-white [&::-webkit-media-controls-play-button]:brightness-200"></audio>
@@ -1760,7 +1734,6 @@
                 </button>
               </div>
 
-              <!-- Waveform placeholder when recording -->
               <div *ngIf="isRecording2()" class="flex items-center justify-center gap-1 h-8 w-48 pr-4">
                 <div class="w-1 bg-white/40 rounded-sm animate-[waveform_1s_ease-in-out_infinite]"
                   style="height: 40%; animation-delay: 0.1s"></div>
@@ -1782,7 +1755,6 @@
         </form>
       </div>
 
-      <!-- Add Footer -->
       <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
         <button (click)="closeAddModal()" [disabled]="isSubmitting()"
           class="px-5 py-2 text-[13px] font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition-all disabled:opacity-50 shadow-sm">

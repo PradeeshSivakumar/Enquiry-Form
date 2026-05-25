@@ -179,6 +179,7 @@ function normalizePayload(body) {
     officeNumber: emptyToNull(body.officeNumber ?? body.office_number),
     department: emptyToNull(body.department),
     interests: parseInterests(body.interests),
+    referred_by: emptyToNull(body.referred_by ?? body.referredBy),
     remarks: emptyToNull(body.remarks),
     details: emptyToNull(body.details),
     leadCategory: emptyToNull(body.leadCategory),

@@ -24,6 +24,7 @@ export class EnquiryService {
     formData.append('interests', JSON.stringify(data.interests));
     formData.append('venueId', data.venueId ?? '');
     formData.append('remarks', data.remarks ?? '');
+    formData.append('referredBy', data.referredBy ?? '');
 
     if (data.visitingCard) {
       formData.append('visitingCard', data.visitingCard);

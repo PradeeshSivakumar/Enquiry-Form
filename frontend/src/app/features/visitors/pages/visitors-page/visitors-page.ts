@@ -408,6 +408,7 @@ readonly leadCategoryStats = computed(() => {
       department: [''],
       leadCategory: [''],
       venueId: ['', Validators.required],
+        referred_by: [''],
       remarks: ['', Validators.maxLength(500)],
       details: ['']
     });
@@ -1353,6 +1354,9 @@ readonly leadCategoryStats = computed(() => {
     if (formValues.leadCategory) formData.append('leadCategory', formValues.leadCategory);
     if (formValues.venueId) formData.append('venueId', formValues.venueId);
     if (formValues.remarks) formData.append('remarks', formValues.remarks);
+    if (formValues.referred_by) {
+  formData.append('referred_by', formValues.referred_by);
+}
     
     formData.append('interests', JSON.stringify(this.selectedInterests()));
     
@@ -1397,6 +1401,7 @@ readonly leadCategoryStats = computed(() => {
           details: response.payload.details,
           voice_note_url: response.payload.voiceNoteUrl,
           voice_note_url_2: response.payload.voiceNoteUrl2,
+          referred_by: response.payload.referred_by,
           remarks: response.payload.remarks,
           created_at: response.payload.createdAt,
           lead_category: response.payload.leadCategory
