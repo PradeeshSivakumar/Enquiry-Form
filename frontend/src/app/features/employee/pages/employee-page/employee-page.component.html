@@ -1,9 +1,10 @@
 <section class="w-full mx-auto p-4 sm:p-6 lg:p-8 font-sans text-gray-900 animate-in fade-in duration-700 bg-white min-h-screen">
       
+  <!-- Toast Notification -->
   <div *ngIf="toastMessage()" 
-       class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-md shadow-lg border animate-in slide-in-from-bottom-5 fade-in duration-300"
+       class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-[6px] shadow-md border animate-in slide-in-from-bottom-5 fade-in duration-300"
        [ngClass]="{
-         'bg-gray-900 border-gray-800 text-white': toastMessage()?.type === 'success',
+         'bg-[#0f172a] border-gray-800 text-white': toastMessage()?.type === 'success',
          'bg-red-50 border-red-200 text-red-800': toastMessage()?.type === 'error'
        }">
     <svg *ngIf="toastMessage()?.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -15,12 +16,13 @@
     <span class="text-sm font-medium tracking-wide">{{ toastMessage()?.text }}</span>
   </div>
 
+  <!-- Page Header (Intact spacing) -->
   <div class="mb-6 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
     <div class="flex items-center gap-4">
       <div class="flex flex-col">
         <div class="flex items-center gap-3 mb-1">
-          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-none tracking-tight font-['Inter',sans-serif]">Employee</h1>
-          <button (click)="downloadFilteredData()" class="flex items-center justify-center p-1.5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 rounded-md transition-all group shadow-sm" title="Export CSV">
+          <h1 class="text-3xl lg:text-4xl font-[800] text-gray-900 leading-none tracking-tight font-['Syne',sans-serif]">Employee</h1>
+          <button (click)="downloadFilteredData()" class="flex items-center justify-center p-1.5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 rounded-[6px] transition-all group shadow-sm" title="Export CSV">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
               <polyline points="14 2 14 8 20 8"/>
@@ -41,19 +43,20 @@
           </svg>
         </div>
         <input type="text" placeholder="Search employee..." (input)="onSearch($event)" 
-               class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] font-medium text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all placeholder-gray-400 shadow-sm" />
+               class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all placeholder-gray-400 shadow-sm" />
       </div>
-      <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap border border-[#0f172a]">
+      <button (click)="openAddModal()" class="w-full sm:w-auto flex justify-center items-center gap-2 px-4 py-2 bg-[#0f172a] hover:bg-black text-white rounded-[6px] text-sm font-medium transition-all shadow-sm whitespace-nowrap border border-[#0f172a]">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         <span>Add</span>
       </button>
     </div>
   </div>
 
-  <div class="relative z-10 bg-white border border-gray-200 rounded-md shadow-sm flex flex-col">
+  <!-- Table Container -->
+  <div class="relative z-10 bg-white border border-gray-300 rounded-[6px] shadow-sm flex flex-col">
     <div class="px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row justify-between sm:justify-end gap-3 relative z-20">
       <div class="relative w-full sm:w-[180px] group">
-        <select [value]="statusFilter()" (change)="onStatusFilterChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-800 py-1.5 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] transition-all cursor-pointer shadow-sm">
+        <select [value]="statusFilter()" (change)="onStatusFilterChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
           <option value="1">Active</option>
           <option value="0">Inactive</option>
         </select>
@@ -64,7 +67,7 @@
         </div>
       </div>
       <div class="relative w-full sm:w-[140px] group">
-        <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-800 py-1.5 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] transition-all cursor-pointer shadow-sm">
+        <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
           <option value="5" [selected]="pageSize() === 5">5 rows</option>
           <option value="10" [selected]="pageSize() === 10">10 rows</option>
           <option value="25" [selected]="pageSize() === 25">25 rows</option>
@@ -77,53 +80,56 @@
       </div>
     </div>
 
+    <!-- Loading State -->
     <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
     </div>
 
-    <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 m-4 rounded-md border border-red-200 flex items-center shadow-sm">
+    <!-- Error State -->
+    <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 m-4 rounded-[6px] border border-red-200 flex items-center shadow-sm">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
-      <span class="text-[13px] font-medium">{{ error() }}</span>
+      <span class="text-sm font-medium">{{ error() }}</span>
     </div>
 
+    <!-- Data Table -->
     <div *ngIf="!loading() && !error() && filteredEmployees().length > 0" class="overflow-x-auto min-h-[350px]">
-      <table class="min-w-full text-left text-sm whitespace-nowrap border-collapse">
+      <table class="min-w-full text-left text-sm border-collapse">
         <thead class="bg-[#0f172a] text-white sticky top-0 z-10">
-          <tr class="divide-x divide-[#1e293b]">
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">#</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">Name</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">Email</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">Mobile Number</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">Role</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase">Status</th>
-            <th scope="col" class="px-4 py-3 font-semibold tracking-wide text-[11px] uppercase text-right">Actions</th>
+          <tr>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12 text-center">#</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Name</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Email</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Mobile Number</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Role</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Status</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
-          <tr *ngFor="let emp of paginatedEmployees(); let i = index" class="transition-colors duration-150 hover:bg-gray-50 divide-x divide-gray-100 group">
-            <td class="px-4 py-3 text-gray-500 text-[13px]">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
-            <td class="px-4 py-3 font-semibold text-gray-900 text-[13px]">{{ emp.name }}</td>
-            <td class="px-4 py-3 text-gray-600 text-[13px]">{{ emp.email }}</td>
-            <td class="px-4 py-3 text-gray-600 text-[13px]">{{ emp.mobile_number }}</td>
-            <td class="px-4 py-3">
+          <tr *ngFor="let emp of paginatedEmployees(); let i = index" class="hover:bg-[#f8fafc] transition-colors">
+            <td class="px-4 py-2.5 text-gray-500 font-medium text-center">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
+            <td class="px-4 py-2.5 font-semibold text-gray-900">{{ emp.name }}</td>
+            <td class="px-4 py-2.5 text-gray-700">{{ emp.email }}</td>
+            <td class="px-4 py-2.5 text-gray-700">{{ emp.mobile_number }}</td>
+            <td class="px-4 py-2.5">
               <span class="bg-gray-100 border border-gray-200 text-[#0f172a] font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded">{{ emp.role }}</span>
             </td>
-            <td class="px-4 py-3">
+            <td class="px-4 py-2.5">
               <span class="font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded border" [ngClass]="getStatusLabel(emp.status) === 'Inactive' ? 'bg-gray-100 border-gray-200 text-gray-600' : 'bg-green-50 border-green-200 text-green-700'">
                 {{ getStatusLabel(emp.status) }}
               </span>
             </td>
-            <td class="px-4 py-3 text-right">
+            <td class="px-4 py-2.5 text-right">
               <div class="flex items-center justify-end gap-1.5">
-                <button (click)="openEditModal(emp)" class="p-1.5 border border-gray-200 text-gray-600 hover:text-[#0f172a] bg-white hover:bg-gray-100 rounded transition-all" title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button (click)="openEditModal(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </button>
-                <button (click)="openDeleteConfirmation(emp)" class="p-1.5 border border-gray-200 text-gray-600 hover:text-red-600 bg-white hover:bg-red-50 hover:border-red-200 rounded transition-all" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button (click)="openDeleteConfirmation(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
@@ -134,22 +140,23 @@
       </table>
     </div>
 
-    <div *ngIf="filteredEmployees().length > 0" class="px-4 py-3 border-t border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md">
-      <div class="text-[13px] font-medium text-gray-500">
-        Showing <span class="text-gray-900 font-semibold">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
-        <span class="text-gray-900 font-semibold">{{ (currentPage() * pageSize()) > filteredEmployees().length ? filteredEmployees().length : (currentPage() * pageSize()) }}</span> of
-        <span class="text-gray-900 font-semibold">{{ filteredEmployees().length }}</span> entries
+    <!-- Pagination -->
+    <div *ngIf="filteredEmployees().length > 0" class="px-4 py-3 border-t border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-[6px]">
+      <div class="text-gray-600 text-sm">
+        Showing <span class="font-medium text-gray-900">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
+        <span class="font-medium text-gray-900">{{ (currentPage() * pageSize()) > filteredEmployees().length ? filteredEmployees().length : (currentPage() * pageSize()) }}</span> of
+        <span class="font-medium text-gray-900">{{ filteredEmployees().length }}</span> entries
       </div>
-      <nav class="flex items-center gap-1">
+      <nav class="flex items-center gap-1.5">
         <button (click)="prevPage()" [disabled]="currentPage() === 1"
-          class="flex items-center justify-center px-3 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm text-[13px]">
+          class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none shadow-sm text-sm">
           Previous
         </button>
-        <div class="flex items-center justify-center min-w-[2rem] h-8 rounded-md bg-[#0f172a] border border-[#0f172a] text-[13px] font-semibold text-white shadow-sm">
+        <div class="px-3 py-1.5 border border-[#0f172a] bg-[#0f172a] text-white rounded-[6px] font-medium shadow-sm">
           {{ currentPage() }}
         </div>
         <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()"
-          class="flex items-center justify-center px-3 h-8 rounded-md border border-gray-300 text-gray-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm text-[13px]">
+          class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none shadow-sm text-sm">
           Next
         </button>
       </nav>
@@ -157,45 +164,66 @@
   </div>
 </section>
 
-<div *ngIf="isModalOpen()" class="fixed inset-0 bg-gray-900/50 flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-200">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 border border-gray-200">
-    <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 bg-[#0f172a]">
-      <h2 class="text-[16px] font-semibold text-white tracking-tight">{{ editingEmployee() ? 'Edit Employee' : 'Add Employee' }}</h2>
-      <button (click)="closeModal()" class="text-gray-400 hover:text-white transition-colors focus:outline-none">
+<!-- Add/Edit Employee Modal -->
+<div *ngIf="isModalOpen()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity">
+  <div class="bg-white rounded-[8px] shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-300">
+    <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 bg-gray-50">
+      <div>
+        <h2 class="text-lg font-bold text-gray-900">{{ editingEmployee() ? 'Edit Employee' : 'Add Employee' }}</h2>
+        <p class="text-xs text-gray-500 mt-0.5">{{ editingEmployee() ? 'Update existing employee details' : 'Create new employee login account' }}</p>
+      </div>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 p-1.5 rounded focus:outline-none transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
     <form [formGroup]="form" (ngSubmit)="saveEmployee()" class="flex flex-col">
-      <div class="p-5 bg-white space-y-4">
+      <div class="p-5 space-y-4">
         <div>
-          <label class="block text-[12px] font-semibold text-gray-700 mb-1">Name</label>
-          <input type="text" formControlName="name" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('name')" />
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Name</label>
+          <input type="text" formControlName="name" placeholder="e.g. John Doe" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('name')" />
         </div>
         <div>
-          <label class="block text-[12px] font-semibold text-gray-700 mb-1">Email</label>
-          <input type="email" formControlName="email" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('email')" />
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Email</label>
+          <input type="email" formControlName="email" placeholder="e.g. john@niraltek.com" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('email')" />
         </div>
         <div *ngIf="!editingEmployee()">
-          <label class="block text-[12px] font-semibold text-gray-700 mb-1">Password</label>
-          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('password')" />
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Password</label>
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Enter secure password" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('password')" />
         </div>
         <div>
-          <label class="block text-[12px] font-semibold text-gray-700 mb-1">Mobile Number</label>
-          <input type="text" formControlName="mobile_number" maxlength="10" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('mobile_number')" />
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Mobile Number</label>
+          <input type="text" formControlName="mobile_number" maxlength="10" placeholder="10-digit number" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('mobile_number')" />
         </div>
         <div>
-          <label class="block text-[12px] font-semibold text-gray-700 mb-1">Role</label>
-          <input type="text" formControlName="role" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-[13px] text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('role')" />
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Role</label>
+          <input type="text" formControlName="role" placeholder="e.g. Admin or Staff" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] transition-all shadow-sm" [class.border-red-400]="showError('role')" />
         </div>
       </div>
-      <div class="px-5 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3 rounded-b-lg">
-        <button type="button" (click)="closeModal()" class="px-4 py-2 text-[13px] font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-all shadow-sm">Cancel</button>
-        <button type="submit" [disabled]="isSubmitting()" class="px-4 py-2 text-[13px] font-semibold text-white bg-[#0f172a] hover:bg-slate-800 rounded-md shadow-sm border border-[#0f172a] transition-all disabled:opacity-60"> 
+      <div class="px-5 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+        <button type="button" (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">Cancel</button>
+        <button type="submit" [disabled]="isSubmitting()" class="px-4 py-2 text-sm font-medium text-white bg-[#0f172a] hover:bg-black rounded-[6px] transition-colors disabled:opacity-50 focus:outline-none"> 
           {{ isSubmitting() ? 'Saving...' : 'Save' }}
         </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="employeeToDelete()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-[8px] shadow-xl w-full max-w-sm overflow-hidden p-6 border border-gray-300 text-center">
+    <div class="w-12 h-12 border border-red-200 bg-red-50 rounded flex items-center justify-center mx-auto mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Employee?</h3>
+    <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete <span class="font-bold text-gray-900">{{ employeeToDelete()?.name }}</span>? This action cannot be undone.</p>
+    <div class="flex gap-3">
+      <button (click)="employeeToDelete.set(null)" class="flex-1 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">Cancel</button>
+      <button (click)="deleteEmployee()" class="flex-1 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-[6px] transition-colors focus:outline-none">Delete</button>
+    </div>
   </div>
 </div>

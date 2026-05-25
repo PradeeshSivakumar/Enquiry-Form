@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LayoutService } from '../layout.service';
@@ -23,7 +23,7 @@ import { AuthService } from '../../core/auth/auth.service';
           </div>
         </div>
 
-        <div class="relative flex items-center gap-2 sm:gap-4" *ngIf="authService.currentUser() as user">
+        <div #profileContainer class="relative flex items-center gap-2 sm:gap-4" *ngIf="authService.currentUser() as user">
           <button
             type="button"
             (click)="toggleProfileMenu()"
@@ -114,11 +114,20 @@ export class TopbarComponent {
   layout = inject(LayoutService);
   authService = inject(AuthService);
   private fb = inject(FormBuilder);
+  
+  @ViewChild('profileContainer') profileContainer?: ElementRef;
 
   isPasswordModalOpen = signal(false);
   isProfileMenuOpen = signal(false);
   isChangingPassword = signal(false);
   passwordError = signal<string | null>(null);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.isProfileMenuOpen() && this.profileContainer && !this.profileContainer.nativeElement.contains(event.target as Node)) {
+      this.isProfileMenuOpen.set(false);
+    }
+  }
 
   passwordForm = this.fb.group({
     currentPassword: ['', Validators.required],

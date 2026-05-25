@@ -1,164 +1,203 @@
-<section class="w-full max-w-[1500px] mx-auto p-4 sm:p-6 lg:p-8 font-sans text-slate-900 animate-in fade-in duration-700 bg-white min-h-screen">
-  
-  <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-    <div>
-      <h1 class="text-5xl font-extrabold text-slate-900 tracking-tight font-sans">Department</h1>
-      <p class="mt-1 text-sm font-medium text-slate-500">
-        Manage department lookup values across enquiry and visitor workflows.
-      </p>
+<div class="flex-1 flex flex-col min-w-0 font-sans text-gray-900 bg-white min-h-screen">
+  <main class="flex-1 overflow-auto px-6 py-5 lg:px-8 relative bg-white">
+
+    <!-- Toast Notification -->
+    <div *ngIf="toastMessage()" 
+         class="fixed bottom-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-[6px] shadow-md border animate-in slide-in-from-bottom-5 fade-in duration-300"
+         [ngClass]="{
+           'bg-[#0f172a] border-gray-800 text-white': toastMessage()?.type === 'success',
+           'bg-red-50 border-red-200 text-red-800': toastMessage()?.type === 'error'
+         }">
+      <svg *ngIf="toastMessage()?.type === 'success'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+      <svg *ngIf="toastMessage()?.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+      <span class="text-sm font-medium tracking-wide">{{ toastMessage()?.text }}</span>
     </div>
-    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-      
-      <div class="relative w-full sm:w-[260px]">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+
+    <!-- Page Header -->
+    <div class="mb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+      <div>
+        <h1 class="text-[2.8rem] lg:text-[3.2rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">
+          Department
+        </h1>
+        <p class="text-sm text-gray-500 font-medium mt-1">Manage department lookup values across enquiry and visitor workflows.</p>
+      </div>
+      <div class="flex items-center gap-3 w-full lg:w-auto">
+        <div class="relative w-full lg:w-[260px]">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <input type="text" placeholder="Search departments..." (input)="onSearch($event)" 
+                 class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] placeholder-gray-400" />
+        </div>
+        <button *ngIf="canManageDepartments()" (click)="openAddModal()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#0f172a] hover:bg-black text-white rounded-[6px] text-sm font-medium transition-colors">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add
+        </button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="flex justify-end mb-4">
+      <div class="relative">
+        <select (change)="onPageSizeChange($event)" class="appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer">
+          <option value="5" [selected]="pageSize() === 5">5 rows</option>
+          <option value="10" [selected]="pageSize() === 10">10 rows</option>
+          <option value="25" [selected]="pageSize() === 25">25 rows</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
           </svg>
         </div>
-        <input type="text" placeholder="Search departments..." (input)="onSearch($event)"
-          class="w-full bg-white border border-slate-300 rounded-md pl-9 pr-4 py-2 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors" />
-      </div>
-
-      <button (click)="openAddModal()"
-        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-semibold transition-colors hover:bg-slate-800 shadow-sm border border-transparent">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        <span>Add</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="relative z-10">
-    
-    <div class="flex flex-col sm:flex-row items-center justify-between pb-3 gap-4">
-      <div class="text-xs font-medium text-slate-500">Showing {{ sortedDepartments().length }} departments</div>
-      <div class="flex items-center justify-end">
-        <div class="relative">
-          <select (change)="onPageSizeChange($event)"
-            class="appearance-none bg-white border border-slate-300 rounded-md pl-3 pr-8 py-1.5 text-sm font-medium text-slate-700 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer">
-            <option value="5" [selected]="pageSize() === 5">5 rows</option>
-            <option value="10" [selected]="pageSize() === 10">10 rows</option>
-            <option value="25" [selected]="pageSize() === 25">25 rows</option>
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-          </div>
-        </div>
       </div>
     </div>
 
-    <div class="rounded-md border border-slate-200 bg-white overflow-x-auto shadow-sm">
-      <table class="min-w-full text-left text-sm text-slate-700 whitespace-nowrap">
-        <thead class="bg-slate-900 text-white uppercase text-[11px] tracking-wider font-semibold">
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border border-gray-200 rounded-[6px]">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 mb-4 rounded-[6px] border border-red-200 flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span class="text-sm font-medium">{{ error() }}</span>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && !error() && filteredDepartments().length === 0" class="bg-white border border-gray-200 rounded-[6px] text-center py-16">
+      <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mx-auto mb-3 border border-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      </div>
+      <h3 class="text-sm font-semibold text-gray-900 mb-1">No departments found</h3>
+      <p class="text-gray-500 text-xs">There are currently no records matching your criteria.</p>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="!loading() && !error() && filteredDepartments().length > 0" class="bg-white border border-gray-300 rounded-[6px] shadow-sm overflow-x-auto">
+      <table class="min-w-full text-left text-sm border-collapse">
+        <thead class="bg-[#0f172a] text-white">
           <tr>
-            <th class="px-4 py-3 border-b border-r border-white/20 w-16 text-center">#</th>
-            <th class="px-4 py-3 border-b border-r border-white/20 w-1/3">Department</th>
-            <th class="px-4 py-3 border-b border-r border-white/20">Description</th>
-            <th class="px-4 py-3 border-b border-white/20 text-right w-32">Actions</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12 text-center">#</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
+              <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Department <span>{{ sortIndicator('name') }}</span></button>
+            </th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Description</th>
+            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr *ngFor="let department of paginatedDepartments(); let i = index; trackBy: trackByDepartmentId"
-            class="hover:bg-slate-50 transition-colors duration-150">
-            <td class="px-4 py-3 text-center text-slate-500 font-medium">
-              {{ (currentPage() - 1) * pageSize() + i + 1 }}
-            </td>
-            <td class="px-4 py-3 font-semibold text-slate-900">{{ department.name }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ department.description || 'No description' }}</td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex items-center justify-end gap-2">
-                <button (click)="openEditModal(department)" class="p-1.5 text-slate-500 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 rounded-md transition-colors shadow-sm" title="Edit">
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let department of paginatedDepartments(); let i = index; trackBy: trackByDepartmentId" class="hover:bg-[#f8fafc] transition-colors">
+            <td class="px-4 py-2.5 text-gray-500 font-medium text-center">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
+            <td class="px-4 py-2.5 text-gray-900 font-semibold">{{ department.name }}</td>
+            <td class="px-4 py-2.5 text-gray-700">{{ department.description || 'No description' }}</td>
+            <td class="px-4 py-2.5 text-right">
+              <div class="flex items-center justify-end gap-1.5" *ngIf="canManageDepartments(); else deptViewOnly">
+                <button (click)="openEditModal(department)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </button>
-                <button (click)="openDeleteConfirmation(department)" class="p-1.5 text-slate-500 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 hover:bg-red-50 rounded-md transition-colors shadow-sm" title="Delete">
+                <button (click)="openDeleteConfirmation(department)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
               </div>
+              <ng-template #deptViewOnly>
+                <span class="text-xs text-gray-400 font-medium">View only</span>
+              </ng-template>
             </td>
-          </tr>
-          <tr *ngIf="!loading() && sortedDepartments().length === 0">
-            <td colspan="4" class="px-4 py-8 text-center text-slate-500 font-medium">No departments found.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div *ngIf="sortedDepartments().length > 0" class="px-4 py-3 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-md border-x border-b shadow-sm -mt-px relative z-0">
-      <div class="text-xs font-medium text-slate-500">
-        Showing <span class="text-slate-900 font-semibold">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
-        <span class="text-slate-900 font-semibold">{{ (currentPage() * pageSize()) > sortedDepartments().length ? sortedDepartments().length : (currentPage() * pageSize()) }}</span> of
-        <span class="text-slate-900 font-semibold">{{ sortedDepartments().length }}</span> entries
+    <!-- Pagination -->
+    <div class="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm" *ngIf="filteredDepartments().length > 0">
+      <div class="text-gray-600">
+        Showing <span class="font-medium text-gray-900">{{ filteredDepartments().length === 0 ? 0 : (currentPage() - 1) * pageSize() + 1 }}</span> to 
+        <span class="font-medium text-gray-900">{{ (currentPage() * pageSize()) > filteredDepartments().length ? filteredDepartments().length : (currentPage() * pageSize()) }}</span> of 
+        <span class="font-medium text-gray-900">{{ filteredDepartments().length }}</span> entries
       </div>
-      <nav class="flex items-center gap-1">
-        <button (click)="prevPage()" [disabled]="currentPage() === 1"
-          class="flex items-center justify-center px-3 h-8 rounded-md border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm text-sm">
-          Previous
-        </button>
-        <div class="flex items-center justify-center min-w-[2rem] h-8 rounded-md bg-slate-900 border border-slate-900 text-xs font-semibold text-white shadow-sm">
-          {{ currentPage() }}
-        </div>
-        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-          class="flex items-center justify-center px-3 h-8 rounded-md border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white shadow-sm text-sm">
-          Next
-        </button>
+      <nav class="flex items-center gap-1.5">
+        <button (click)="prevPage()" [disabled]="currentPage() === 1" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Previous</button>
+        <div class="px-3 py-1.5 border border-[#0f172a] bg-[#0f172a] text-white rounded-[6px] font-medium">{{ currentPage() }}</div>
+        <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Next</button>
       </nav>
     </div>
-  </div>
 
-  <div *ngIf="isModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-    <div class="w-full max-w-xl rounded-lg bg-white p-6 shadow-xl border border-slate-200">
-      <div class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
+  </main>
+</div>
+
+<!-- Add/Edit Department Modal -->
+<div *ngIf="isModalOpen()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 sm:p-6">
+  <div class="bg-white rounded-[8px] shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-300">
+    <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 bg-gray-50">
+      <div>
+        <h2 class="text-lg font-bold text-gray-900">{{ editingDepartment() ? 'Edit Department' : 'Add Department' }}</h2>
+        <p class="text-xs text-gray-500 mt-0.5">{{ editingDepartment() ? 'Update existing department details' : 'Create new department lookup record' }}</p>
+      </div>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 p-1.5 rounded focus:outline-none transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="saveDepartment()" class="flex flex-col">
+      <div class="p-5 space-y-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-900 tracking-tight">{{ editingDepartment() ? 'Edit Department' : 'Add Department' }}</h2>
-          <p class="text-sm text-slate-500 mt-1">Use this form to manage department values.</p>
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Department Name</label>
+          <input type="text" formControlName="name" placeholder="e.g. Sales" maxlength="150" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="hasError('name')" />
+          <span *ngIf="hasError('name')" class="text-[10px] text-red-500 font-medium mt-1 block">Name is required and must be under 150 characters.</span>
         </div>
-        <button type="button" (click)="closeModal()" class="text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 p-2 rounded-md transition-colors border border-slate-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        <div>
+          <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Description</label>
+          <textarea formControlName="description" rows="4" placeholder="Enter description (optional)" maxlength="500" class="w-full resize-none px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]"></textarea>
+          <span *ngIf="hasError('description')" class="text-[10px] text-red-500 font-medium mt-1 block">Description must be under 500 characters.</span>
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+        <button type="button" (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="isSubmitting()" class="px-4 py-2 text-sm font-medium text-white bg-[#0f172a] hover:bg-black rounded-[6px] transition-colors disabled:opacity-50 focus:outline-none">
+          {{ isSubmitting() ? 'Saving...' : 'Save' }}
         </button>
       </div>
-      <form [formGroup]="form" (ngSubmit)="saveDepartment()" class="space-y-5">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Department Name</label>
-          <input type="text" formControlName="name" maxlength="150" placeholder="Enter department name"
-            class="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors" />
-          <div *ngIf="hasError('name')" class="mt-1.5 text-xs font-semibold text-red-600">Name is required and must be under 150 characters.</div>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Description</label>
-          <textarea formControlName="description" rows="4" maxlength="500" placeholder="Enter description (optional)"
-            class="w-full rounded-md border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm transition-colors resize-none"></textarea>
-          <div *ngIf="hasError('description')" class="mt-1.5 text-xs font-semibold text-red-600">Description must be under 500 characters.</div>
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-          <button type="button" (click)="closeModal()"
-            class="px-4 py-2 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">Cancel</button>
-          <button type="submit" [disabled]="isSubmitting()"
-            class="px-4 py-2 rounded-md bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 disabled:opacity-70 transition-colors shadow-sm">
-            {{ editingDepartment() ? 'Update' : 'Add' }}
-          </button>
-        </div>
-      </form>
-    </div>
+    </form>
   </div>
+</div>
 
-  <div *ngIf="departmentToDelete()" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-    <div class="w-full max-w-sm rounded-lg bg-white p-6 shadow-xl border border-slate-200">
-      <div class="flex items-center justify-center w-12 h-12 rounded-md bg-red-50 border border-red-100 mb-4 mx-auto">
-        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-      </div>
-      <h3 class="text-lg font-bold text-slate-900 text-center">Delete Department</h3>
-      <p class="mt-2 text-sm text-slate-500 text-center">Are you sure you want to delete this department? This action cannot be undone.</p>
-      <div class="mt-6 flex items-center gap-3">
-        <button type="button" (click)="departmentToDelete.set(null)"
-          class="flex-1 px-4 py-2 rounded-md border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">Cancel</button>
-        <button type="button" (click)="deleteDepartment()"
-          class="flex-1 px-4 py-2 rounded-md bg-red-600 text-sm font-semibold text-white hover:bg-red-700 transition-colors shadow-sm">Delete</button>
-      </div>
+<!-- Delete Confirmation Modal -->
+<div *ngIf="departmentToDelete()" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-[8px] shadow-xl w-full max-w-sm overflow-hidden p-6 border border-gray-300 text-center">
+    <div class="w-12 h-12 border border-red-200 bg-red-50 rounded flex items-center justify-center mx-auto mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    <h3 class="text-lg font-bold text-gray-900 mb-2">Delete Department?</h3>
+    <p class="text-sm text-gray-500 mb-6">This action cannot be undone. Are you sure you want to remove <span class="font-bold text-gray-900">{{ departmentToDelete()?.name }}</span>?</p>
+    <div class="flex gap-3">
+      <button (click)="departmentToDelete.set(null)" class="flex-1 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">
+        Cancel
+      </button>
+      <button (click)="deleteDepartment()" class="flex-1 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-[6px] transition-colors focus:outline-none">
+        Delete
+      </button>
     </div>
   </div>
-</section>
+</div>
