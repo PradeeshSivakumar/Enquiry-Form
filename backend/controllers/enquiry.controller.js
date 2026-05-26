@@ -41,6 +41,26 @@ async function getEnquiries(_req, res, next) {
   }
 }
 
+async function getFilteredEnquiries(req, res, next) {
+  try {
+    const filters = {
+      fromDate: emptyToNull(req.query.fromDate),
+      toDate: emptyToNull(req.query.toDate),
+      department: emptyToNull(req.query.department),
+      product: emptyToNull(req.query.product),
+      category: emptyToNull(req.query.category),
+      venue: emptyToNull(req.query.venue),
+      search: emptyToNull(req.query.search),
+      limit: req.query.limit ? Number(req.query.limit) : 1000,
+      offset: req.query.offset ? Number(req.query.offset) : 0
+    };
+
+    res.json(await enquiryService.getFilteredEnquiries(filters));
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function updateLeadCategory(req, res, next) {
   try {
     const { category } = req.body;
@@ -247,6 +267,7 @@ module.exports = {
   uploadVisitingCard,
   createEnquiry,
   getEnquiries,
+  getFilteredEnquiries,
   updateLeadCategory,
   updateVisitingCard,
   removeVisitingCard,

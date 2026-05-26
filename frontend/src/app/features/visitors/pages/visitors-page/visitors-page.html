@@ -57,13 +57,7 @@
         <input type="text" placeholder="Search directory..." (input)="onSearch($event)"
           class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400 shadow-sm" />
       </div>
-      <button *ngIf="selectedVisitorIds().size > 0" (click)="navigateToSendEmail()"
-        class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2 bg-slate-950 hover:bg-slate-900 text-white rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap animate-in zoom-in-95 duration-200">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-        </svg>
-        Send Email ({{ selectedVisitorIds().size }})
-      </button>
+
       <button *ngIf="canAdd" (click)="openAddModal()"
         class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,6 +92,24 @@
       </div>
 
       <div class="flex flex-wrap items-center justify-end gap-3 w-full xl:w-auto flex-1">
+
+        <!-- Date Range Filter -->
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="flex items-center gap-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">From</span>
+            <input type="date" [value]="fromDate()" (change)="onFromDateChange($event)"
+              class="bg-white border border-slate-300 text-slate-800 py-1.5 px-2.5 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all shadow-sm w-[135px] h-[38px] cursor-pointer" />
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To</span>
+            <input type="date" [value]="toDate()" (change)="onToDateChange($event)"
+              class="bg-white border border-slate-300 text-slate-800 py-1.5 px-2.5 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all shadow-sm w-[135px] h-[38px] cursor-pointer" />
+          </div>
+          <button type="button" *ngIf="fromDate() || toDate()" (click)="clearDateFilters()"
+            class="text-[11px] font-bold text-red-600 hover:underline px-1.5 py-1">
+            Clear
+          </button>
+        </div>
 
         <div class="relative hidden sm:block">
           <select [value]="activeDepartment()" (change)="onDepartmentChange($event)" class="appearance-none bg-white border border-slate-300 text-slate-800 py-2 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
@@ -188,13 +200,6 @@
       <table class="min-w-full text-left text-sm whitespace-nowrap data-table">
         <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800 rounded-none">
          <tr class="border-b border-slate-700">
-            <th scope="col" class="px-4 !py-2.5 text-center border-r border-white/20 w-10">
-              <input type="checkbox" 
-                     class="rounded border-slate-700 bg-slate-800 text-slate-100 focus:ring-slate-950 focus:ring-offset-slate-900 h-4 w-4 cursor-pointer" 
-                     [checked]="isAllSelected()"
-                     [indeterminate]="isSomeSelected()"
-                     (change)="toggleSelectAll($event)">
-            </th>
             <th scope="col" class="px-4 !py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12 rounded-none !rounded-tl-none">#</th>
             <th scope="col" class="px-4 !py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
               <button type="button" (click)="sortBy('name')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Visitor <span>{{ sortIndicator('name') }}</span></button>
@@ -220,15 +225,7 @@
           <ng-container *ngFor="let visitor of paginatedVisitors(); let i = index">
             <tr class="transition-colors duration-150 hover:bg-slate-50 relative group"
               [class.cursor-pointer]="canViewDetails"
-              [class.bg-slate-50]="isVisitorSelected(visitor.id)"
               (click)="canViewDetails ? openReview(visitor) : null">
-
-              <td class="px-4 py-3 text-center w-10" (click)="$event.stopPropagation()">
-                <input type="checkbox"
-                       class="rounded border-slate-300 text-slate-950 focus:ring-slate-950 h-4 w-4 cursor-pointer"
-                       [checked]="isVisitorSelected(visitor.id)"
-                       (change)="toggleSelectVisitor(visitor.id, $event)">
-              </td>
 
               <td class="px-4 py-3 text-slate-500 font-medium text-xs">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
 

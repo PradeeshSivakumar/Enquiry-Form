@@ -400,66 +400,211 @@
         </form>
 
         <!-- Recipients Selection Sidebar (Right) -->
-        <div class="w-full lg:w-[320px] bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col max-h-[500px] lg:max-h-none">
-          <div class="border-b border-slate-100 pb-3 mb-3 flex items-center justify-between">
+        <div class="w-full lg:w-[350px] bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col max-h-[90vh] lg:max-h-none overflow-y-auto">
+          
+          <!-- Section Title -->
+          <div class="border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Recipients ({{ selectedRecipients().length }})</h3>
-              <p class="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wide">Target distribution list</p>
+              <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Recipients</h3>
+              <p class="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wide">Filter & select target segment</p>
             </div>
-            <button type="button" *ngIf="selectedRecipients().length > 0" (click)="clearAllRecipients()" class="text-[10px] font-bold text-red-600 hover:underline">
-              Clear All
-            </button>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-900 bg-slate-100 border border-slate-300 px-2 py-0.5 rounded-sm">
+                {{ selectedRecipients().length }} Selected
+              </span>
+            </div>
           </div>
 
-          <!-- Quick search visitor list to add recipients manually inside composer -->
-          <div class="relative mb-3">
-            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <input #compSearch type="text" placeholder="Add recipients by name..."
-              class="w-full pl-8 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded text-[11px] font-medium text-slate-900 outline-none focus:bg-white focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400" />
-          </div>
-
-          <!-- Preloaded selections scroll list -->
-          <div class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[150px]">
-            <!-- List filtered visitors by input search above if active, else list current selected, else show suggestions -->
-            <ng-container *ngIf="compSearch.value.trim() !== ''; else listSelected">
-              <div class="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Search Results</div>
-              <div *ngFor="let item of allVisitors() | slice:0:100" 
-                class="flex items-center justify-between p-1.5 rounded border border-slate-100 text-xs transition-colors hover:bg-slate-50"
-                [style.display]="item.full_name.toLowerCase().includes(compSearch.value.toLowerCase()) ? 'flex' : 'none'">
-                <div class="truncate flex-1 pr-2">
-                  <p class="font-bold text-slate-900 truncate">{{ item.full_name }}</p>
-                  <p class="text-[10px] text-slate-400 truncate">{{ item.email }}</p>
-                </div>
-                <button type="button" (click)="toggleRecipient(item)" 
-                  [class.bg-slate-900]="isRecipientSelected(item)"
-                  [class.text-white]="isRecipientSelected(item)"
-                  [class.border-slate-300]="!isRecipientSelected(item)"
-                  [class.text-slate-700]="!isRecipientSelected(item)"
-                  class="px-2 py-0.5 rounded border text-[10px] font-bold transition-all shadow-sm">
-                  {{ isRecipientSelected(item) ? 'Added' : 'Add' }}
-                </button>
-              </div>
-            </ng-container>
+          <!-- FILTERS SECTION -->
+          <div class="space-y-3 mb-4">
+            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Filter Visitors</h4>
             
-            <ng-template #listSelected>
-              <div *ngIf="selectedRecipients().length === 0" class="text-center py-10 text-slate-400 text-xs">
-                No recipients loaded. Use the search box above to add visitors.
+            <!-- Date Filters Row -->
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">From Date</label>
+                <input type="date" [value]="recipientFromDate()" (change)="onRecipientFromDateChange($event)"
+                  class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer" />
               </div>
-              <div *ngFor="let item of selectedRecipients()" class="flex items-center justify-between p-2 rounded border border-slate-100 bg-slate-50/50 hover:bg-slate-50 text-xs">
-                <div class="truncate flex-1 pr-2">
-                  <p class="font-bold text-slate-900 truncate">{{ item.full_name }}</p>
-                  <p class="text-[10px] text-slate-400 truncate">{{ item.email }}</p>
-                </div>
-                <button type="button" (click)="toggleRecipient(item)" class="text-slate-400 hover:text-red-600 transition-colors">
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">To Date</label>
+                <input type="date" [value]="recipientToDate()" (change)="onRecipientToDateChange($event)"
+                  class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer" />
               </div>
-            </ng-template>
+            </div>
+
+            <!-- Optional filters -->
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Department Filter -->
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Department</label>
+                <select [value]="recipientDepartment()" (change)="onRecipientDepartmentChange($event)"
+                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
+                  <option value="">All</option>
+                  <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
+                </select>
+              </div>
+              
+              <!-- Lead Category Filter -->
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Category</label>
+                <select [value]="recipientCategory()" (change)="onRecipientCategoryChange($event)"
+                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
+                  <option value="">All</option>
+                  <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <!-- Product Filter -->
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Product</label>
+                <select [value]="recipientProduct()" (change)="onRecipientProductChange($event)"
+                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
+                  <option value="">All</option>
+                  <option *ngFor="let prod of activeProducts()" [value]="prod">{{ prod }}</option>
+                </select>
+              </div>
+              
+              <!-- Venue Filter -->
+              <div>
+                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Venue</label>
+                <select [value]="recipientVenue()" (change)="onRecipientVenueChange($event)"
+                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
+                  <option value="">All</option>
+                  <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue }}</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Clear filters button -->
+            <div class="flex justify-between items-center pt-1" *ngIf="recipientFromDate() || recipientToDate() || recipientDepartment() || recipientProduct() || recipientCategory() || recipientVenue()">
+              <span class="text-[10px] text-slate-500 font-semibold">Filters are active</span>
+              <button type="button" (click)="clearRecipientFilters()" class="text-[10px] font-bold text-red-600 hover:underline">
+                Clear Filters
+              </button>
+            </div>
           </div>
+
+          <!-- DYNAMIC RECIPIENT COUNT & BULK ACTION -->
+          <div class="bg-slate-50 border border-slate-200 rounded p-3 mb-4 flex flex-col gap-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-500 font-semibold">Matching Visitors:</span>
+              <span class="font-extrabold text-slate-955">
+                <span *ngIf="recipientsLoading()" class="inline-block animate-pulse">...</span>
+                <span *ngIf="!recipientsLoading()">{{ totalMatchingRecipients() }}</span>
+              </span>
+            </div>
+            
+            <div class="flex gap-2 mt-1">
+              <button type="button" (click)="selectAllMatching()" [disabled]="recipientsLoading() || totalMatchingRecipients() === 0"
+                class="flex-1 text-center py-1 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm">
+                Select All
+              </button>
+              <button type="button" (click)="clearAllRecipients()" [disabled]="selectedRecipients().length === 0"
+                class="flex-1 text-center py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50 text-slate-700 rounded text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm">
+                Deselect All
+              </button>
+            </div>
+          </div>
+
+          <!-- DROPDOWN MULTISELECT CONTAINER -->
+          <div class="relative recipient-dropdown-container mb-4">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Select Recipients</label>
+            
+            <!-- Trigger button -->
+            <button type="button" (click)="toggleRecipientDropdown($event)"
+              class="w-full bg-white border border-slate-300 text-slate-800 py-2 px-3 rounded-md text-[13px] font-semibold outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm text-left flex justify-between items-center">
+              <span class="truncate">
+                {{ selectedRecipients().length > 0 ? selectedRecipients().length + ' selected' : 'Choose recipients...' }}
+              </span>
+              <svg class="h-4.5 w-4.5 text-slate-400 transition-transform duration-200" [class.rotate-180]="recipientDropdownOpen()"
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+              </svg>
+            </button>
+
+            <!-- Dropdown panel -->
+            <div *ngIf="recipientDropdownOpen()"
+              class="absolute z-30 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-lg flex flex-col max-h-[300px] animate-in fade-in duration-100">
+              
+              <!-- Search inside dropdown -->
+              <div class="p-2 border-b border-slate-100 bg-slate-50">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <input type="text" placeholder="Search matching names..." [value]="recipientDropdownSearch()" (input)="onRecipientDropdownSearch($event)"
+                    class="w-full pl-8 pr-2 py-1.5 bg-white border border-slate-200 rounded text-xs font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400 shadow-sm" />
+                </div>
+              </div>
+
+              <!-- Scrollable list of visitors -->
+              <div class="flex-1 overflow-y-auto max-h-[220px] divide-y divide-slate-100">
+                <!-- Loading State -->
+                <div *ngIf="recipientsLoading()" class="flex justify-center items-center py-8">
+                  <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-900"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="!recipientsLoading() && displayedRecipients().length === 0" class="text-center py-8 text-xs text-slate-400">
+                  No matching visitors found
+                </div>
+
+                <!-- Recipient rows -->
+                <ng-container *ngIf="!recipientsLoading() && displayedRecipients().length > 0">
+                  <div *ngFor="let item of displayedRecipients()" (click)="toggleRecipient(item)"
+                    [class.bg-slate-50]="isRecipientSelected(item)"
+                    class="flex items-center gap-3 p-2.5 hover:bg-slate-50 cursor-pointer text-xs transition-colors">
+                    
+                    <div class="relative flex items-center justify-center w-4 h-4 border rounded border-slate-300 shrink-0"
+                      [class.bg-slate-900]="isRecipientSelected(item)"
+                      [class.border-slate-900]="isRecipientSelected(item)">
+                      <svg *ngIf="isRecipientSelected(item)" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+
+                    <div class="truncate flex-1">
+                      <p class="font-bold text-slate-900 truncate">
+                        {{ item.full_name }}
+                      </p>
+                      <p class="text-[10px] text-slate-500 truncate">
+                        {{ item.company_name || 'No Company' }} • {{ item.email }}
+                      </p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+
+          <!-- SELECTED CHIPS LIST -->
+          <div class="flex-1 flex flex-col min-h-[150px]">
+            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Selected List</h4>
+            <div class="flex-1 border border-dashed border-slate-200 rounded p-2.5 overflow-y-auto max-h-[300px] bg-slate-50/20">
+              <div *ngIf="selectedRecipients().length === 0" class="text-center py-10 text-[11px] text-slate-400 font-medium">
+                No recipients selected. Use the filters and dropdown to add target contacts.
+              </div>
+              <div class="flex flex-wrap gap-1.5" *ngIf="selectedRecipients().length > 0">
+                <div *ngFor="let item of selectedRecipients()"
+                  class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors shrink-0">
+                  <span class="truncate max-w-[150px]" [title]="item.full_name + ' (' + item.email + ')'">
+                    {{ item.full_name }}
+                  </span>
+                  <button type="button" (click)="toggleRecipient(item)" class="text-slate-400 hover:text-red-600 transition-colors focus:outline-none ml-0.5">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

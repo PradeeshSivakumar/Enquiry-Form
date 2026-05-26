@@ -17,6 +17,7 @@ router.post(
   enquiryController.createEnquiry
 );
 router.get('/', authenticateToken, enquiryController.getEnquiries);
+router.get('/filtered', authenticateToken, enquiryController.getFilteredEnquiries);
 router.put('/:id/category', authenticateToken, enquiryController.updateLeadCategory);
 router.put('/:id/visiting-card', authenticateToken, upload.single('visitingCard'), enquiryController.updateVisitingCard);
 router.delete('/:id/visiting-card', authenticateToken, enquiryController.removeVisitingCard);

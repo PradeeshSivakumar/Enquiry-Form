@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,6 +6,10 @@ import { EmailCampaignsService, Campaign, CampaignTemplate, CampaignRecipient, C
 import { Visitor, VisitorsService } from '../../../visitors/services/visitors.service';
 import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 import { PermissionService } from '../../../../core/permissions/permission.service';
+import { VenueService, Venue } from '../../../venue/services/venue.service';
+import { ProductsService } from '../../../products/services/products.service';
+import { DepartmentService } from '../../../department/services/department.service';
+import { LeadCategoryService } from '../../../lead-category/services/lead-category.service';
 
 @Component({
   selector: 'app-email-campaigns-page',
@@ -21,6 +25,10 @@ export class EmailCampaignsPageComponent implements OnInit {
   private visitorsService = inject(VisitorsService);
   private permissionService = inject(PermissionService);
   private fb = inject(FormBuilder);
+  private venueService = inject(VenueService);
+  private productsService = inject(ProductsService);
+  private departmentService = inject(DepartmentService);
+  private leadCategoryService = inject(LeadCategoryService);
   Math = Math;
 
   // Security checks mapped to module permissions
@@ -63,6 +71,38 @@ export class EmailCampaignsPageComponent implements OnInit {
   selectedCampaign = signal<CampaignDetails | null>(null);
   selectedTemplate = signal<CampaignTemplate | null>(null);
 
+  // Filter options lists
+  venues = signal<Venue[]>([]);
+  activeProducts = signal<string[]>([]);
+  departments = signal<string[]>([]);
+  leadCategories = signal<string[]>([]);
+
+  // Filter selection signals
+  recipientFromDate = signal<string>('');
+  recipientToDate = signal<string>('');
+  recipientDepartment = signal<string>('');
+  recipientProduct = signal<string>('');
+  recipientCategory = signal<string>('');
+  recipientVenue = signal<string>('');
+  recipientDropdownSearch = signal<string>('');
+
+  // Dropdown control signals
+  recipientDropdownOpen = signal<boolean>(false);
+  filteredRecipients = signal<Visitor[]>([]);
+  totalMatchingRecipients = signal<number>(0);
+  recipientsLoading = signal<boolean>(false);
+
+  displayedRecipients = computed(() => {
+    const searchVal = this.recipientDropdownSearch().toLowerCase().trim();
+    const list = this.filteredRecipients();
+    if (!searchVal) return list;
+    return list.filter(v => 
+      (v.full_name?.toLowerCase().includes(searchVal)) ||
+      (v.company_name?.toLowerCase().includes(searchVal)) ||
+      (v.email?.toLowerCase().includes(searchVal))
+    );
+  });
+
   // All available visitors for selection
   allVisitors = signal<Visitor[]>([]);
   selectedRecipients = signal<Visitor[]>([]);
@@ -85,6 +125,7 @@ export class EmailCampaignsPageComponent implements OnInit {
       this.loadDashboardData();
       this.loadTemplates();
       this.loadVisitors();
+      this.loadFilterOptions();
     }
   }
 
@@ -277,6 +318,18 @@ export class EmailCampaignsPageComponent implements OnInit {
     this.composerForm.patchValue({
       name: `Email Campaign - ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
     });
+    
+    // Reset filters and dropdown
+    this.recipientFromDate.set('');
+    this.recipientToDate.set('');
+    this.recipientDepartment.set('');
+    this.recipientProduct.set('');
+    this.recipientCategory.set('');
+    this.recipientVenue.set('');
+    this.recipientDropdownSearch.set('');
+    this.recipientDropdownOpen.set(false);
+    
+    this.loadFilteredRecipients();
     this.composerOpen.set(true);
     document.body.style.overflow = 'hidden';
   }
@@ -346,6 +399,138 @@ export class EmailCampaignsPageComponent implements OnInit {
   closeDeleteTemplateModal() {
     this.deleteTemplateModalOpen.set(false);
     this.selectedTemplate.set(null);
+  }
+
+  toggleRecipientDropdown(event: Event) {
+    event.stopPropagation();
+    this.recipientDropdownOpen.update(o => !o);
+  }
+
+  closeRecipientDropdown() {
+    this.recipientDropdownOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.recipient-dropdown-container')) {
+      this.closeRecipientDropdown();
+    }
+  }
+
+  onRecipientDropdownSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.recipientDropdownSearch.set(input.value);
+  }
+
+  onRecipientFromDateChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.recipientFromDate.set(input.value);
+    this.loadFilteredRecipients();
+  }
+
+  onRecipientToDateChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.recipientToDate.set(input.value);
+    this.loadFilteredRecipients();
+  }
+
+  onRecipientDepartmentChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.recipientDepartment.set(select.value);
+    this.loadFilteredRecipients();
+  }
+
+  onRecipientProductChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.recipientProduct.set(select.value);
+    this.loadFilteredRecipients();
+  }
+
+  onRecipientCategoryChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.recipientCategory.set(select.value);
+    this.loadFilteredRecipients();
+  }
+
+  onRecipientVenueChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.recipientVenue.set(select.value);
+    this.loadFilteredRecipients();
+  }
+
+  clearRecipientFilters() {
+    this.recipientFromDate.set('');
+    this.recipientToDate.set('');
+    this.recipientDepartment.set('');
+    this.recipientProduct.set('');
+    this.recipientCategory.set('');
+    this.recipientVenue.set('');
+    this.recipientDropdownSearch.set('');
+    this.loadFilteredRecipients();
+  }
+
+  loadFilterOptions() {
+    this.venueService.getVenues().subscribe({
+      next: (data) => this.venues.set(data),
+      error: (err) => console.error('Error fetching venues', err)
+    });
+
+    this.productsService.getActiveProducts().subscribe({
+      next: (data) => this.activeProducts.set(data.map(p => p.name)),
+      error: (err) => console.error('Error fetching products', err)
+    });
+
+    this.departmentService.getActiveDepartments().subscribe({
+      next: (data) => this.departments.set(data.map(d => d.name)),
+      error: (err) => console.error('Error loading departments', err)
+    });
+
+    this.leadCategoryService.getActiveLeadCategories().subscribe({
+      next: (data) => this.leadCategories.set(data.map(c => c.name)),
+      error: (err) => console.error('Error loading categories', err)
+    });
+  }
+
+  loadFilteredRecipients() {
+    this.recipientsLoading.set(true);
+    this.visitorsService.getFilteredVisitors({
+      fromDate: this.recipientFromDate(),
+      toDate: this.recipientToDate(),
+      department: this.recipientDepartment(),
+      product: this.recipientProduct(),
+      category: this.recipientCategory(),
+      venue: this.recipientVenue(),
+      search: '', // Keep search empty on backend so it retrieves all filtered matching segment recipients
+      limit: 1000,
+      offset: 0
+    }).subscribe({
+      next: (res) => {
+        this.filteredRecipients.set(res.visitors);
+        this.totalMatchingRecipients.set(res.total);
+        this.recipientsLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load filtered recipients', err);
+        this.filteredRecipients.set([]);
+        this.totalMatchingRecipients.set(0);
+        this.recipientsLoading.set(false);
+      }
+    });
+  }
+
+  selectAllMatching() {
+    const matching = this.filteredRecipients();
+    this.selectedRecipients.update(selected => {
+      const merged = [...selected];
+      matching.forEach(visitor => {
+        if (!merged.some(v => v.id === visitor.id)) {
+          merged.push(visitor);
+        }
+      });
+      return merged;
+    });
+    this.showToast(`Selected all ${matching.length} matching recipients`, 'success');
   }
 
   // Recipient handling inside the composer dropdown

@@ -316,6 +316,134 @@ async function getEnquiries() {
   return enquiries;
 }
 
+async function getFilteredEnquiries(filters = {}) {
+  const {
+    fromDate,
+    toDate,
+    department,
+    product,
+    category,
+    venue,
+    search,
+    limit = 1000,
+    offset = 0
+  } = filters;
+
+  const hasOfficeNumber = await hasOfficeNumberColumn();
+  const hasAlternateMobile = await hasAlternateMobileColumn();
+  const hasVisitingCard2 = await hasVisitingCard2Columns();
+  const hasVoiceNote2 = await hasVoiceNote2Columns();
+  const hasDetails = await hasDetailsColumn();
+
+  const officeNumberSelect = hasOfficeNumber ? 'office_number' : 'NULL AS office_number';
+  const alternateMobileSelect = hasAlternateMobile ? 'alternate_mobile' : 'NULL AS alternate_mobile';
+  const visitingCard2Select = hasVisitingCard2 ? 'visiting_card_url_2' : 'NULL AS visiting_card_url_2';
+  const voiceNote2Select = hasVoiceNote2 ? 'voice_note_url_2' : 'NULL AS voice_note_url_2';
+  const detailsSelect = hasDetails ? 'details' : 'NULL AS details';
+
+  let whereClauses = [];
+  let params = [];
+
+  // Base clauses
+  whereClauses.push('status = 0');
+  whereClauses.push('email IS NOT NULL');
+  whereClauses.push("TRIM(email) != ''");
+
+  if (fromDate) {
+    whereClauses.push('created_at >= ?');
+    params.push(`${fromDate} 00:00:00`);
+  }
+  if (toDate) {
+    whereClauses.push('created_at <= ?');
+    params.push(`${toDate} 23:59:59`);
+  }
+  if (department) {
+    whereClauses.push('department = ?');
+    params.push(department);
+  }
+  if (product) {
+    whereClauses.push('JSON_CONTAINS(interests, JSON_ARRAY(?))');
+    params.push(product);
+  }
+  if (category) {
+    whereClauses.push('lead_category = ?');
+    params.push(category);
+  }
+  if (venue) {
+    whereClauses.push('venue_id = ?');
+    params.push(venue);
+  }
+
+  if (search) {
+    let searchClauses = [
+      'full_name LIKE ?',
+      'company_name LIKE ?',
+      'job_title LIKE ?',
+      'email LIKE ?',
+      'mobile LIKE ?',
+      'department LIKE ?',
+      'CAST(interests AS CHAR) LIKE ?'
+    ];
+    let searchVal = `%${search}%`;
+    let searchParams = [searchVal, searchVal, searchVal, searchVal, searchVal, searchVal, searchVal];
+
+    if (hasAlternateMobile) {
+      searchClauses.push('alternate_mobile LIKE ?');
+      searchParams.push(searchVal);
+    }
+    if (hasOfficeNumber) {
+      searchClauses.push('office_number LIKE ?');
+      searchParams.push(searchVal);
+    }
+    if (hasDetails) {
+      searchClauses.push('details LIKE ?');
+      searchParams.push(searchVal);
+    }
+
+    whereClauses.push(`(${searchClauses.join(' OR ')})`);
+    params = params.concat(searchParams);
+  }
+
+  const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+  const selectSql = `
+    SELECT id, title, full_name, company_name, job_title, email, mobile, 
+           ${alternateMobileSelect}, ${officeNumberSelect}, department, interests, 
+           visiting_card_url, ${visitingCard2Select}, voice_note_url, ${voiceNote2Select}, 
+           venue_id, referred_by, remarks, ${detailsSelect}, created_at, lead_category
+    FROM enquiries
+    WHERE id IN (
+      SELECT MAX(id)
+      FROM enquiries
+      ${whereSql}
+      GROUP BY email
+    )
+    ORDER BY created_at DESC
+  `;
+
+  // Count query for pagination
+  const countSql = `
+    SELECT COUNT(DISTINCT email) AS total
+    FROM enquiries
+    ${whereSql}
+  `;
+
+  // Fetch count
+  const [countResult] = await pool.execute(countSql, params);
+  const total = countResult[0]?.total || 0;
+
+  // Fetch data with limit and offset interpolated directly to avoid binding type errors in mysql2
+  const parsedLimit = isNaN(Number(limit)) ? 1000 : Number(limit);
+  const parsedOffset = isNaN(Number(offset)) ? 0 : Number(offset);
+  const dataSql = `${selectSql} LIMIT ${parsedLimit} OFFSET ${parsedOffset}`;
+  const [enquiries] = await pool.execute(dataSql, params);
+
+  return {
+    visitors: enquiries,
+    total
+  };
+}
+
 async function updateLeadCategory(id, category) {
   await pool.execute(
     `UPDATE enquiries SET lead_category = ? WHERE id = ?`,
@@ -674,6 +802,7 @@ module.exports = {
   uploadVisitingCard,
   createEnquiry,
   getEnquiries,
+  getFilteredEnquiries,
   updateLeadCategory,
   updateVisitingCard,
   removeVisitingCard,

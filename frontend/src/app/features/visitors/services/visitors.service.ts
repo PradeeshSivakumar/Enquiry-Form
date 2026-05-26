@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -34,6 +34,31 @@ export class VisitorsService {
   private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  getFilteredVisitors(params: {
+    fromDate?: string;
+    toDate?: string;
+    department?: string;
+    product?: string;
+    category?: string;
+    venue?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Observable<{ visitors: Visitor[]; total: number }> {
+    let httpParams = new HttpParams();
+    if (params.fromDate) httpParams = httpParams.set('fromDate', params.fromDate);
+    if (params.toDate) httpParams = httpParams.set('toDate', params.toDate);
+    if (params.department) httpParams = httpParams.set('department', params.department);
+    if (params.product) httpParams = httpParams.set('product', params.product);
+    if (params.category) httpParams = httpParams.set('category', params.category);
+    if (params.venue) httpParams = httpParams.set('venue', params.venue);
+    if (params.search) httpParams = httpParams.set('search', params.search);
+    if (params.limit !== undefined) httpParams = httpParams.set('limit', params.limit.toString());
+    if (params.offset !== undefined) httpParams = httpParams.set('offset', params.offset.toString());
+
+    return this.http.get<{ visitors: Visitor[]; total: number }>(`${this.apiUrl}/filtered`, { params: httpParams });
+  }
 
   getVisitors(): Observable<Visitor[]> {
     return this.http.get<Visitor[]>(this.apiUrl);

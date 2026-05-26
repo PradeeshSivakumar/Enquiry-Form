@@ -48,7 +48,8 @@ export class VisitorsPage implements OnInit {
   private router = inject(Router);
 
   // Email Campaign integration
-  selectedVisitorIds = signal<Set<number>>(new Set());
+  fromDate = signal<string>('');
+  toDate = signal<string>('');
   visitorHistory = signal<any[]>([]);
   visitorHistoryLoading = signal<boolean>(false);
   lastContactedDate = signal<string | null>(null);
@@ -200,6 +201,8 @@ export class VisitorsPage implements OnInit {
     const query = this.searchQuery().toLowerCase().trim();
     const category = this.activeCategory();
     const dept = this.activeDepartment();
+    const from = this.fromDate();
+    const to = this.toDate();
     
     let result = this.visitors();
     
@@ -209,6 +212,22 @@ export class VisitorsPage implements OnInit {
     
     if (dept) {
       result = result.filter(v => v.department === dept);
+    }
+
+    if (from) {
+      const fromTimestamp = new Date(`${from}T00:00:00`).getTime();
+      result = result.filter(v => {
+        if (!v.created_at) return false;
+        return new Date(v.created_at).getTime() >= fromTimestamp;
+      });
+    }
+
+    if (to) {
+      const toTimestamp = new Date(`${to}T23:59:59`).getTime();
+      result = result.filter(v => {
+        if (!v.created_at) return false;
+        return new Date(v.created_at).getTime() <= toTimestamp;
+      });
     }
     
     if (query) {
@@ -1510,54 +1529,22 @@ readonly leadCategoryStats = computed(() => {
       }
     }
 
-    toggleSelectVisitor(visitorId: number, event: Event) {
-      event.stopPropagation();
-      this.selectedVisitorIds.update(set => {
-        const newSet = new Set(set);
-        if (newSet.has(visitorId)) {
-          newSet.delete(visitorId);
-        } else {
-          newSet.add(visitorId);
-        }
-        return newSet;
-      });
+    onFromDateChange(event: Event) {
+      const target = event.target as HTMLInputElement;
+      this.fromDate.set(target.value);
+      this.currentPage.set(1);
     }
 
-    isVisitorSelected(visitorId: number): boolean {
-      return this.selectedVisitorIds().has(visitorId);
+    onToDateChange(event: Event) {
+      const target = event.target as HTMLInputElement;
+      this.toDate.set(target.value);
+      this.currentPage.set(1);
     }
 
-    toggleSelectAll(event: Event) {
-      const checkbox = event.target as HTMLInputElement;
-      if (checkbox.checked) {
-        const ids = this.filteredVisitors().map(v => v.id);
-        this.selectedVisitorIds.set(new Set(ids));
-      } else {
-        this.selectedVisitorIds.set(new Set());
-      }
-    }
-
-    isAllSelected(): boolean {
-      const filtered = this.filteredVisitors();
-      if (filtered.length === 0) return false;
-      return filtered.every(v => this.selectedVisitorIds().has(v.id));
-    }
-
-    isSomeSelected(): boolean {
-      const filtered = this.filteredVisitors();
-      const selectedCount = filtered.filter(v => this.selectedVisitorIds().has(v.id)).length;
-      return selectedCount > 0 && selectedCount < filtered.length;
-    }
-
-    navigateToSendEmail() {
-      const ids = Array.from(this.selectedVisitorIds());
-      if (ids.length === 0) {
-        this.showToast('Please select at least one visitor to send email.', 'error');
-        return;
-      }
-      this.router.navigate(['/email-campaigns'], {
-        queryParams: { visitorIds: ids.join(',') }
-      });
+    clearDateFilters() {
+      this.fromDate.set('');
+      this.toDate.set('');
+      this.currentPage.set(1);
     }
 
   openCardViewer(visitor: Visitor, event: Event) {
