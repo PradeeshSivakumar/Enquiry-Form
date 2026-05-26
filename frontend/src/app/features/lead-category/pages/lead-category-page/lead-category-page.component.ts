@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { LeadCategory, LeadCategoryService } from '../../services/lead-category.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { PRODUCT_MASTER_ROLES } from '../../../../auth/guards/role.guard';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
+import { PermissionService } from '../../../../core/permissions/permission.service';
 
 @Component({
   selector: 'app-lead-category-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './lead-category-page.component.html',
   styleUrl: './lead-category-page.component.css',
 })
@@ -16,6 +18,11 @@ export class LeadCategoryPageComponent implements OnInit {
   private leadCategoryService = inject(LeadCategoryService);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private permissionService = inject(PermissionService);
+
+  get canAdd() { return this.permissionService.canAdd('lead_categories'); }
+  get canEdit() { return this.permissionService.canEdit('lead_categories'); }
+  get canDelete() { return this.permissionService.canDelete('lead_categories'); }
 
   categories = signal<LeadCategory[]>([]);
   loading = signal<boolean>(true);

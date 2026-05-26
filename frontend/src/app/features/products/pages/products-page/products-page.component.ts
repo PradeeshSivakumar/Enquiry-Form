@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Product, ProductsService } from '../../services/products.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { PRODUCT_MASTER_ROLES } from '../../../../auth/guards/role.guard';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
+import { PermissionService } from '../../../../core/permissions/permission.service';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './products-page.component.html',
   styleUrl: './products-page.component.css',
 })
@@ -16,6 +18,12 @@ export class ProductsPageComponent implements OnInit {
   private productsService = inject(ProductsService);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private permissionService = inject(PermissionService);
+
+  get canAdd() { return this.permissionService.canAdd('products'); }
+  get canEdit() { return this.permissionService.canEdit('products'); }
+  get canDelete() { return this.permissionService.canDelete('products'); }
+  get canExport() { return this.permissionService.canExport('products'); }
 
   products = signal<Product[]>([]);
   loading = signal<boolean>(true);
@@ -74,6 +82,37 @@ export class ProductsPageComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+  allowOnlyLetters(event: KeyboardEvent): void {
+  const charCode = event.key;
+
+  if (!/^[a-zA-Z ]$/.test(charCode)) {
+    event.preventDefault();
+  }
+}
+
+  downloadFilteredData(): void {
+    const data = this.filteredProducts();
+    if (data.length === 0) return;
+
+    const headers = ['Product Name', 'Category', 'Description'];
+    const csvContent = [
+      headers.join(','),
+      ...data.map(p => [
+        `"${p.name.replace(/"/g, '""')}"`,
+        `"${(p.category || '').replace(/"/g, '""')}"`,
+        `"${(p.description || '').replace(/"/g, '""')}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `products_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   onSearch(event: Event): void {

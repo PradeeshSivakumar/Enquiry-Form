@@ -101,7 +101,7 @@ async function deleteVenue(id) {
     throw err;
   }
 
-  const [enquiries] = await pool.execute('SELECT id FROM enquiries WHERE venue_id = ? LIMIT 1', [venueRows[0].venue_id]);
+  const [enquiries] = await pool.execute('SELECT id FROM enquiries WHERE venue_id = ? AND status = 0 LIMIT 1', [venueRows[0].venue_id]);
   if (enquiries.length > 0) {
     const err = new Error('Cannot delete venue as it is being used in enquiries.');
     err.statusCode = 400;

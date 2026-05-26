@@ -1,0 +1,34 @@
+<div class="pagination-container">
+  <div class="pagination-info">
+    Showing <span class="highlight">{{ startRange }}</span> to <span class="highlight">{{ endRange }}</span> of <span class="highlight">{{ totalItems }}</span> entries
+  </div>
+  <nav class="pagination-nav">
+    <button type="button" class="pagination-btn arrow-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+      &laquo; Previous
+    </button>
+    
+    <div class="page-numbers">
+      <ng-container *ngFor="let page of pages">
+        <button 
+          type="button"
+          *ngIf="page !== '...'; else ellipsis"
+          class="pagination-btn page-btn" 
+          [class.active]="page === currentPage" 
+          (click)="selectPage(page)">
+          {{ page }}
+        </button>
+        <ng-template #ellipsis>
+          <span class="ellipsis-span">...</span>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <button type="button" class="pagination-btn arrow-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+      Next &raquo;
+    </button>
+
+    <button type="button" class="pagination-btn show-all-btn" (click)="toggleShowAll()" [class.active-show-all]="isShowAllActive">
+      {{ isShowAllActive ? 'Show Paginated' : 'Show All' }}
+    </button>
+  </nav>
+</div>

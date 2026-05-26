@@ -5,11 +5,12 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/auth/jwt.interceptor';
+import { loaderInterceptor } from './core/loader.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([jwtInterceptor])),
+    provideHttpClient(withInterceptors([jwtInterceptor, loaderInterceptor])),
     provideAnimations(),
     provideRouter(routes)
   ],

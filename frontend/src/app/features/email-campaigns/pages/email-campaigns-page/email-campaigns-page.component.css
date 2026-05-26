@@ -1,0 +1,43 @@
+/* Premium layout styles for Email Campaigns features */
+
+:host {
+  display: block;
+  background-color: #ffffff;
+}
+
+/* Custom scrollbar styling for recipient and logs cards */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
+
+/* Line clamping fallback */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+/* Dynamic pulse and subtle transition states */
+.transition-all {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:focus {
+  outline: none;
+}

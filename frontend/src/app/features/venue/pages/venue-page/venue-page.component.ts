@@ -2,17 +2,24 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Venue, VenueService } from '../../services/venue.service';
+import { PermissionService } from '../../../../core/permissions/permission.service';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-venue-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './venue-page.component.html',
   styleUrl: './venue-page.component.css',
 })
 export class VenuePageComponent implements OnInit {
   private venueService = inject(VenueService);
+  private permissionService = inject(PermissionService);
   private fb = inject(FormBuilder);
+
+  get canAdd() { return this.permissionService.canAdd('venues'); }
+  get canEdit() { return this.permissionService.canEdit('venues'); }
+  get canDelete() { return this.permissionService.canDelete('venues'); }
 
   venues = signal<Venue[]>([]);
   loading = signal<boolean>(true);
@@ -49,6 +56,14 @@ export class VenuePageComponent implements OnInit {
     }
     return result;
   });
+
+allowVenueCharacters(event: KeyboardEvent): void {
+  const char = event.key;
+
+  if (!/^[A-Za-z0-9\s&.,()-]$/.test(char)) {
+    event.preventDefault();
+  }
+}
 
   sortedVenues = computed(() => this.sortRows(this.filteredVenues(), this.getVenueSortValue.bind(this)));
 

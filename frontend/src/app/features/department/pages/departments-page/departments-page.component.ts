@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Department, DepartmentService } from '../../services/department.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { PRODUCT_MASTER_ROLES } from '../../../../auth/guards/role.guard';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
+import { PermissionService } from '../../../../core/permissions/permission.service';
 
 @Component({
   selector: 'app-departments-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './departments-page.component.html',
   styleUrl: './departments-page.component.css',
 })
@@ -16,6 +18,11 @@ export class DepartmentsPageComponent implements OnInit {
   private departmentService = inject(DepartmentService);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private permissionService = inject(PermissionService);
+
+  get canAdd() { return this.permissionService.canAdd('departments'); }
+  get canEdit() { return this.permissionService.canEdit('departments'); }
+  get canDelete() { return this.permissionService.canDelete('departments'); }
 
   departments = signal<Department[]>([]);
   loading = signal<boolean>(true);
@@ -75,6 +82,13 @@ export class DepartmentsPageComponent implements OnInit {
     });
   }
 
+  allowOnlyLetters(event: KeyboardEvent): void {
+  const charCode = event.key;
+
+  if (!/^[a-zA-Z ]$/.test(charCode)) {
+    event.preventDefault();
+  }
+}
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchQuery.set(target.value);

@@ -14,6 +14,9 @@ const departmentRoutes = require('./routes/department.routes');
 const leadCategoryRoutes = require('./routes/lead-category.routes');
 const authRoutes = require('./routes/auth.routes');
 const sidebarRoutes = require('./routes/sidebar.routes');
+const rolesRoutes = require('./routes/roles.routes');
+const modulesRoutes = require('./routes/modules.routes');
+const campaignsRoutes = require('./routes/campaigns.routes');
 const errorMiddleware = require('./middleware/error.middleware');
 
 const app = express();
@@ -48,6 +51,9 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/lead-categories', leadCategoryRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/sidebar', sidebarRoutes);
+app.use('/api/roles', rolesRoutes);
+app.use('/api/modules', modulesRoutes);
+app.use('/api/campaigns', campaignsRoutes);
 
 const frontendDistPath = path.join(__dirname, '..', 'dist', 'niraltek-enquiry', 'browser');
 if (fs.existsSync(frontendDistPath)) {

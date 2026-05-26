@@ -2,19 +2,30 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Employee, EmployeeService } from '../../services/employee.service';
+import { RolesService, Role } from '../../../roles/services/roles.service';
+import { PermissionService } from '../../../../core/permissions/permission.service';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-employee-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './employee-page.component.html',
   styleUrl: './employee-page.component.css',
 })
 export class EmployeePageComponent implements OnInit {
   private employeeService = inject(EmployeeService);
+  private rolesService = inject(RolesService);
+  private permissionService = inject(PermissionService);
   private fb = inject(FormBuilder);
 
+  get canAdd() { return this.permissionService.canAdd('employees'); }
+  get canEdit() { return this.permissionService.canEdit('employees'); }
+  get canDelete() { return this.permissionService.canDelete('employees'); }
+  get canExport() { return this.permissionService.canExport('employees'); }
+
   employees = signal<Employee[]>([]);
+  activeRoles = signal<Role[]>([]);
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   
@@ -70,7 +81,15 @@ export class EmployeePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.fetchRoles();
     this.fetchEmployees();
+  }
+
+  fetchRoles(): void {
+    this.rolesService.getActiveRoles().subscribe({
+      next: (roles) => this.activeRoles.set(roles),
+      error: () => console.error('Failed to fetch active roles')
+    });
   }
 
   initForm(): void {
@@ -342,4 +361,17 @@ export class EmployeePageComponent implements OnInit {
       this.toastMessage.set(null);
     }, 3000);
   }
+  allowOnlyLetters(event: KeyboardEvent): void {
+  const charCode = event.key;
+  if (!/^[a-zA-Z ]$/.test(charCode)) {
+    event.preventDefault();
+  }
+}
+
+allowOnlyNumbers(event: KeyboardEvent): void {
+  const charCode = event.key;
+  if (!/[0-9]/.test(charCode)) {
+    event.preventDefault();
+  }
+}
 }

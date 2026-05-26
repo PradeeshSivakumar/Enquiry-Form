@@ -19,7 +19,7 @@ import { AuthService } from '../../core/auth/auth.service';
           </button>
 
           <div class="flex items-center gap-2">
-            <h2 class="text-[18px] font-extrabold text-black tracking-tight font-['Syne',sans-serif]">Niraltek Enquiry Form</h2>
+            <h2 class="text-[16px] sm:text-[18px] font-extrabold text-slate-800 tracking-tight font-['Plus_Jakarta_Sans',sans-serif]">Niraltek Enquiry Form</h2>
           </div>
         </div>
 

@@ -9,7 +9,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Syne',sans-serif] relative overflow-hidden">
+    <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-['Plus_Jakarta_Sans',sans-serif] relative overflow-hidden">
       <!-- Background Abstract Elements -->
       <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div class="absolute -top-[20%] -right-[10%] w-[70%] h-[70%] rounded-full bg-gradient-to-b from-gray-200/50 to-transparent blur-3xl opacity-50"></div>

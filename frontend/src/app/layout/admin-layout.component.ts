@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderStripComponent } from './header/header-strip.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopbarComponent } from './header/topbar.component';
 import { LayoutService } from './layout.service';
+import { PermissionService } from '../core/permissions/permission.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -31,6 +32,11 @@ import { LayoutService } from './layout.service';
     </div>
   `,
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   layout = inject(LayoutService);
+  private permissionService = inject(PermissionService);
+
+  ngOnInit() {
+    this.permissionService.loadPermissions().subscribe();
+  }
 }

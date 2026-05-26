@@ -11,6 +11,10 @@ import { LeadCategoryService } from '../../../lead-category/services/lead-catego
 import { INTEREST_OPTIONS } from '../../../../core/constants/form-options';
 import { environment } from '../../../../../environments/environment';
 import { VisitingCardUploadComponent } from '../../../enquiry-form/components/visiting-card-upload.component';
+import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
+import { PermissionService } from '../../../../core/permissions/permission.service';
+import { Router } from '@angular/router';
+import { EmailCampaignsService } from '../../../email-campaigns/services/email-campaigns.service';
 
 export type LeadCategory = string;
 
@@ -28,7 +32,7 @@ type ExtractedVisitingCardData = Partial<{
 @Component({
   selector: 'app-visitors-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, VisitingCardUploadComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, VisitingCardUploadComponent, PaginationComponent],
   templateUrl: './visitors-page.html',
   styleUrl: './visitors-page.css',
 })
@@ -39,6 +43,21 @@ export class VisitorsPage implements OnInit {
   private departmentService = inject(DepartmentService);
   private leadCategoryService = inject(LeadCategoryService);
   private fb = inject(FormBuilder);
+  private permissionService = inject(PermissionService);
+  private emailCampaignsService = inject(EmailCampaignsService);
+  private router = inject(Router);
+
+  // Email Campaign integration
+  selectedVisitorIds = signal<Set<number>>(new Set());
+  visitorHistory = signal<any[]>([]);
+  visitorHistoryLoading = signal<boolean>(false);
+  lastContactedDate = signal<string | null>(null);
+
+  get canAdd() { return this.permissionService.canAdd('visitors_directory'); }
+  get canEdit() { return this.permissionService.canEdit('visitors_directory'); }
+  get canDelete() { return this.permissionService.canDelete('visitors_directory'); }
+  get canExport() { return this.permissionService.canExport('visitors_directory'); }
+  get canViewDetails() { return this.permissionService.canViewDetails('visitors_directory'); }
 
   visitors = signal<Visitor[]>([]);
   venues = signal<Venue[]>([]);
@@ -1471,6 +1490,74 @@ readonly leadCategoryStats = computed(() => {
       this.selectedVisitor.set(visitor);
       this.isUpdatingVisitorCard.set(false);
       this.isUpdatingVoiceNote.set(false);
+      
+      // Fetch recipient history
+      if (visitor.id) {
+        this.visitorHistoryLoading.set(true);
+        this.emailCampaignsService.getVisitorHistory(visitor.id).subscribe({
+          next: (res: any) => {
+            this.visitorHistory.set(res.history || []);
+            this.lastContactedDate.set(res.lastContacted || null);
+            this.visitorHistoryLoading.set(false);
+          },
+          error: (err: any) => {
+            console.error('Error fetching communication history:', err);
+            this.visitorHistory.set([]);
+            this.lastContactedDate.set(null);
+            this.visitorHistoryLoading.set(false);
+          }
+        });
+      }
+    }
+
+    toggleSelectVisitor(visitorId: number, event: Event) {
+      event.stopPropagation();
+      this.selectedVisitorIds.update(set => {
+        const newSet = new Set(set);
+        if (newSet.has(visitorId)) {
+          newSet.delete(visitorId);
+        } else {
+          newSet.add(visitorId);
+        }
+        return newSet;
+      });
+    }
+
+    isVisitorSelected(visitorId: number): boolean {
+      return this.selectedVisitorIds().has(visitorId);
+    }
+
+    toggleSelectAll(event: Event) {
+      const checkbox = event.target as HTMLInputElement;
+      if (checkbox.checked) {
+        const ids = this.filteredVisitors().map(v => v.id);
+        this.selectedVisitorIds.set(new Set(ids));
+      } else {
+        this.selectedVisitorIds.set(new Set());
+      }
+    }
+
+    isAllSelected(): boolean {
+      const filtered = this.filteredVisitors();
+      if (filtered.length === 0) return false;
+      return filtered.every(v => this.selectedVisitorIds().has(v.id));
+    }
+
+    isSomeSelected(): boolean {
+      const filtered = this.filteredVisitors();
+      const selectedCount = filtered.filter(v => this.selectedVisitorIds().has(v.id)).length;
+      return selectedCount > 0 && selectedCount < filtered.length;
+    }
+
+    navigateToSendEmail() {
+      const ids = Array.from(this.selectedVisitorIds());
+      if (ids.length === 0) {
+        this.showToast('Please select at least one visitor to send email.', 'error');
+        return;
+      }
+      this.router.navigate(['/email-campaigns'], {
+        queryParams: { visitorIds: ids.join(',') }
+      });
     }
 
   openCardViewer(visitor: Visitor, event: Event) {
@@ -1738,7 +1825,15 @@ readonly leadCategoryStats = computed(() => {
       const file = new File([blob], `visiting-card-${Date.now()}.jpg`, { type: 'image/jpeg' });
       const slot = this.cameraModalSlot();
       if (slot) {
-        this.uploadCapturedVisitingCard(file, slot);
+        if (this.editingVisitor()) {
+          this.uploadCapturedVisitingCard(file, slot);
+        } else {
+          if (slot === 1) {
+            this.onVisitingCard1File(file);
+          } else {
+            this.onVisitingCard2File(file);
+          }
+        }
       }
       this.closeVisitingCardCamera();
     }, 'image/jpeg', 0.92);

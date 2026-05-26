@@ -20,7 +20,18 @@
     <!-- Page Header -->
     <div class="mb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
       <div>
-        <h1 class="text-[2.8rem] lg:text-[3.2rem] font-[800] text-black leading-none tracking-tight font-['Syne',sans-serif]">Products</h1>
+        <div class="flex items-center gap-3">
+          <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-none tracking-tight font-['Plus_Jakarta_Sans',sans-serif]">Products</h1>
+          <button *ngIf="canExport" (click)="downloadFilteredData()" class="flex items-center justify-center p-1.5 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-600 rounded-[6px] transition-all group shadow-sm" title="Export CSV">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <line x1="10" y1="9" x2="8" y2="9"/>
+            </svg>
+          </button>
+        </div>
         <p class="text-sm text-gray-500 font-medium mt-1">Manage product records and master catalogue details.</p>
       </div>
       <div class="flex items-center gap-3 w-full lg:w-auto">
@@ -33,7 +44,7 @@
           <input type="text" placeholder="Search products..." (input)="onSearch($event)" 
                  class="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] placeholder-gray-400" />
         </div>
-        <button *ngIf="canManageProducts()" (click)="openAddModal()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#0f172a] hover:bg-black text-white rounded-[6px] text-sm font-medium transition-colors">
+        <button *ngIf="canAdd" (click)="openAddModal()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-[#0f172a] hover:bg-black text-white rounded-[6px] text-sm font-medium transition-colors">
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
@@ -96,7 +107,7 @@
             <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">
               <button type="button" (click)="sortBy('category')" class="flex items-center gap-1 uppercase tracking-wider hover:text-gray-200 focus:outline-none">Category <span>{{ sortIndicator('category') }}</span></button>
             </th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
+            <th *ngIf="canEdit || canDelete" scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -107,22 +118,19 @@
               <div class="text-xs text-gray-500 mt-0.5 max-w-md truncate">{{ product.description || '-' }}</div>
             </td>
             <td class="px-4 py-2.5 text-gray-700 font-medium">{{ product.category || '-' }}</td>
-            <td class="px-4 py-2.5 text-right">
-              <div class="flex items-center justify-end gap-1.5" *ngIf="canManageProducts(); else productViewOnly">
-                <button (click)="openEditModal(product)" class="p-1.5 border border-gray-300 rounded-[4px] text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
+            <td *ngIf="canEdit || canDelete" class="px-4 py-2.5 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button *ngIf="canEdit" (click)="openEditModal(product)" class="p-1.5 border border-gray-300 rounded-[4px] text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                 </button>
-                <button (click)="openDeleteConfirmation(product)" class="p-1.5 border border-gray-300 rounded-[4px] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
+                <button *ngIf="canDelete" (click)="openDeleteConfirmation(product)" class="p-1.5 border border-gray-300 rounded-[4px] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
               </div>
-              <ng-template #productViewOnly>
-                <span class="text-xs text-gray-400 font-medium">View only</span>
-              </ng-template>
             </td>
           </tr>
         </tbody>
@@ -130,18 +138,14 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm" *ngIf="filteredProducts().length > 0">
-      <div class="text-gray-600">
-        Showing <span class="font-medium text-gray-900">{{ (currentPage() - 1) * pageSize() + 1 }}</span> to
-        <span class="font-medium text-gray-900">{{ (currentPage() * pageSize()) > filteredProducts().length ? filteredProducts().length : (currentPage() * pageSize()) }}</span> of
-        <span class="font-medium text-gray-900">{{ filteredProducts().length }}</span> entries
-      </div>
-      <nav class="flex items-center gap-1.5">
-        <button (click)="prevPage()" [disabled]="currentPage() === 1" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Previous</button>
-        <div class="px-3 py-1.5 border border-[#0f172a] bg-[#0f172a] text-white rounded-[6px] font-medium">{{ currentPage() }}</div>
-        <button (click)="nextPage()" [disabled]="currentPage() >= totalPages()" class="px-3 py-1.5 border border-gray-300 rounded-[6px] text-gray-600 hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed bg-white font-medium transition-colors focus:outline-none">Next</button>
-      </nav>
-    </div>
+    <app-pagination
+      *ngIf="filteredProducts().length > 0"
+      [totalItems]="filteredProducts().length"
+      [pageSize]="pageSize()"
+      [currentPage]="currentPage()"
+      (pageChange)="currentPage.set($event)"
+      (pageSizeChange)="pageSize.set($event); currentPage.set(1)">
+    </app-pagination>
 
   </main>
 </div>
@@ -165,7 +169,7 @@
       <div class="p-5 space-y-4">
         <div>
           <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Product Name</label>
-          <input type="text" formControlName="name" placeholder="e.g. Network Switch" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('name')" />
+          <input type="text" formControlName="name"  (keypress)="allowOnlyLetters($event)" placeholder="e.g. Network Switch" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-[6px] text-sm text-gray-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a]" [class.border-red-400]="showError('name')" />
         </div>
         <div>
           <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Category</label>

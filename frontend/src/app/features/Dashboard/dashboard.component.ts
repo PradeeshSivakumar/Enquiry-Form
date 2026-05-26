@@ -79,6 +79,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = signal(true);
   error = signal<string | null>(null);
   chartsReady = signal(false);
+  trendRange = signal<7 | 30>(30);
 
   stats = signal<DashboardStats>({
     totalEnquiries: 0,
@@ -151,6 +152,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   onResize(): void {
     this.trendChart?.resize();
     this.productChart?.resize();
+  }
+
+  onTrendRangeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.trendRange.set(value === '7' ? 7 : 30);
+    this.drawTrendChart();
   }
 
   loadDashboard(): void {
@@ -271,7 +278,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const data = this.monthlyTrends();
+    let data = this.monthlyTrends();
+    if (this.trendRange() === 7) {
+      data = data.slice(-7);
+    }
+
     const configuration: ChartConfiguration<'line'> = {
       type: 'line',
       data: {
@@ -279,17 +290,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         datasets: [
           {
             label: 'Enquiries',
-            data: data.map((item) => item.count),
-            borderColor: '#081028',
-            backgroundColor: 'rgba(8, 16, 40, 0.12)',
-            borderWidth: 3,
-            pointBackgroundColor: '#ffffff',
-            pointBorderColor: '#081028',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            tension: 0.35,
-            fill: true
+            data: data.map(item => item.count),
+            borderColor: data.map((_, index) => {
+              const colors = ['#081028', '#2563EB', '#10B981', '#F59E0B', '#7C3AED', '#0F766E', '#EF4444'];
+              return colors[index % colors.length];
+            }),
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            backgroundColor: 'rgba(37,99,235,0.2)'
           }
         ]
       },
@@ -320,7 +329,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
             ticks: {
               color: '#6B7280',
               font: {
-                size: 12,
+                size: 11,
                 weight: 600
               }
             }
@@ -331,12 +340,12 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
               precision: 0,
               color: '#6B7280',
               font: {
-                size: 12,
+                size: 11,
                 weight: 600
               }
             },
             grid: {
-              color: '#E5E7EB'
+              color: '#F1F5F9' // Very crisp, clean grid color
             }
           }
         }

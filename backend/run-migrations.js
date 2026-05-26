@@ -19,14 +19,34 @@ async function runMigrations() {
       const filePath = path.join(migrationsDir, file);
       const sql = fs.readFileSync(filePath, 'utf8');
 
+      // Strip comments first from the entire SQL string, then split by semicolon
+      const cleanSql = sql
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .replace(/--.*$/gm, '');          // Remove single-line comments
+
+      const statements = cleanSql
+        .split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0);
+
       try {
-        await pool.execute(sql);
-        console.log(`✓ Migration completed: ${file}`);
+        let completedStatements = 0;
+        for (const statement of statements) {
+          // Use pool.query because prepared statements (pool.execute) don't support DDL/transaction control well in MySQL
+          await pool.query(statement);
+          completedStatements++;
+        }
+        console.log(`✓ Migration completed: ${file} (${completedStatements} statements)`);
         successCount++;
       } catch (error) {
         // Skip migrations that fail due to duplicate columns/tables
-        if (error.code === 'ER_DUP_FIELDNAME' || error.code === 'ER_TABLE_EXISTS_ERROR' || error.code === 'ER_DUP_KEYNAME') {
-          console.log(`⊘ Migration skipped (already exists): ${file}`);
+        if (
+          error.code === 'ER_DUP_FIELDNAME' || 
+          error.code === 'ER_TABLE_EXISTS_ERROR' || 
+          error.code === 'ER_DUP_KEYNAME' ||
+          error.code === 'ER_CANT_DROP_FIELD_OR_KEY'
+        ) {
+          console.log(`⊘ Migration skipped (already exists or already dropped): ${file}`);
           skipCount++;
         } else {
           console.error(`✗ Migration failed: ${file}`);
