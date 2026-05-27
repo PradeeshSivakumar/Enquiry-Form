@@ -5,9 +5,10 @@
   margin-top: 1.25rem;
   padding: 0.75rem 0.5rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 0.8125rem; /* 13px */
-  color: #4b5563; /* text-gray-600 */
-  border-top: 1px solid #e5e7eb; /* Subtle top border below table */
+  font-size: 0.8125rem;
+  /* 13px */
+  color: #64748B;
+  border-top: 1px solid #DCE3F1;
   background-color: #ffffff;
   flex-wrap: wrap;
   gap: 1rem;
@@ -19,7 +20,7 @@
 
 .pagination-info .highlight {
   font-weight: 600;
-  color: #111827; /* text-gray-900 */
+  color: #1E293B;
 }
 
 .pagination-nav {
@@ -35,7 +36,7 @@
   margin: 0;
   font-family: inherit;
   font-size: inherit;
-  color: #1f2937; /* text-gray-800 */
+  color: #ffffff;
   cursor: pointer;
   outline: none;
   display: inline-flex;
@@ -47,16 +48,16 @@
 
 /* Base button hovers */
 .pagination-btn:hover:not(:disabled) {
-  color: #2563eb; /* blue hover */
+  color: #2563EB;
 }
 
 .arrow-btn {
-  font-weight: 500;
-  color: #4b5563;
+  font-weight: 600;
+  color: #123C7A;
 }
 
 .arrow-btn:disabled {
-  color: #d1d5db;
+  color: #CBD5E1;
   cursor: not-allowed;
 }
 
@@ -67,24 +68,28 @@
 }
 
 .page-btn {
-  width: 2rem; /* 32px */
+  width: 2rem;
   height: 2rem;
   border-radius: 50%;
   font-weight: 500;
-  color: #1f2937;
+  color: #ffffff;
+  background-color: #123C7A;
+  border: none;
 }
 
 /* Active circular highlighted style matching the reference */
 .page-btn.active {
-  background-color: #2563eb; /* Vibrant enterprise blue */
-  color: #ffffff;
+  background: #123C7A !important;
+  color: #ffffff !important;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .page-btn:hover:not(.active):not(:disabled) {
-  background-color: #f3f4f6;
-  color: #2563eb;
+  background-color: #0F3267;
+  color: #ffffff;
+  border-color: transparent;
 }
 
 .ellipsis-span {
@@ -93,7 +98,7 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  color: #9ca3af;
+  color: #64748B;
   user-select: none;
 }
 
@@ -102,22 +107,22 @@
   font-weight: 500;
   padding: 0.375rem 0.75rem;
   border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  color: #4b5563;
+  background-color: #123C7A;
+  color: #ffffff;
   margin-left: 0.25rem;
+  border: none;
 }
 
 .show-all-btn:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #111827;
+  background-color: #0F3267;
+  border-color: transparent;
+  color: #ffffff;
 }
 
 .show-all-btn.active-show-all {
-  background-color: #eff6ff;
-  border-color: #bfdbfe;
-  color: #2563eb;
+  background: #123C7A !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 

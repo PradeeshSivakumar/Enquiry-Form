@@ -73,67 +73,78 @@
   <!-- Dashboard Tab Content -->
   <div *ngIf="activeTab() === 'dashboard'" class="space-y-6">
     <!-- Metric Cards Dashboard -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
       <!-- Total Campaigns Card -->
-      <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-400 mb-2">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Total Campaigns</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Sent Campaigns</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-extrabold text-slate-900">{{ totalCampaigns() }}</span>
+          <span class="text-2xl font-extrabold text-slate-900">{{ totalCampaigns() }}</span>
         </div>
-        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Dynamic broadcasts tracked</p>
+        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Sent campaigns log</p>
       </div>
 
       <!-- Emails Broadcast Sent Card -->
-      <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-400 mb-2">
           <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Emails Sent</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2" />
           </svg>
         </div>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-extrabold text-slate-900">{{ totalSent() }}</span>
+          <span class="text-2xl font-extrabold text-slate-900">{{ totalSent() }}</span>
         </div>
         <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Delivered recipient instances</p>
       </div>
 
-      <!-- Average Open Rate Card -->
-      <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+      <!-- Scheduled Campaigns Card -->
+      <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-400 mb-2">
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Open Rate</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Scheduled</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-455" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-extrabold text-slate-900">{{ openRate() }}%</span>
+          <span class="text-2xl font-extrabold text-slate-900">{{ totalScheduled() }}</span>
         </div>
-        <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2 overflow-hidden">
-          <div class="bg-slate-900 h-full rounded-full transition-all duration-500" [style.width.%]="openRate()"></div>
+        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Pending triggers: {{ pendingTriggers() }}</p>
+      </div>
+
+      <!-- Draft Emails Card -->
+      <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Drafts</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
         </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-extrabold text-slate-900">{{ totalDrafts() }}</span>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Unpublished drafts</p>
       </div>
 
       <!-- Failed Deliveries Card -->
-      <div class="bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between text-slate-400 mb-2">
           <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Bounced / Failed</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
         <div class="flex items-baseline gap-2">
-          <span class="text-3xl font-extrabold" [ngClass]="{'text-red-600': totalFailed() > 0, 'text-slate-900': totalFailed() === 0}">{{ totalFailed() }}</span>
+          <span class="text-2xl font-extrabold text-red-650">{{ totalFailed() }}</span>
         </div>
-        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Invalid or unreachable mailboxes</p>
+        <p class="text-[10px] text-slate-500 mt-2 font-semibold uppercase tracking-wide">Failed campaigns: {{ totalFailedCampaigns() }}</p>
       </div>
     </div>
-
+ 
     <!-- Recent Activity Section -->
     <div class="bg-white rounded-md border border-slate-200 shadow-sm">
       <div class="px-5 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
@@ -152,7 +163,6 @@
               <th scope="col" class="px-6 py-3">Campaign Name</th>
               <th scope="col" class="px-6 py-3">Subject</th>
               <th scope="col" class="px-6 py-3 text-center">Delivered</th>
-              <th scope="col" class="px-6 py-3 text-center">Opened</th>
               <th scope="col" class="px-6 py-3 text-center">Failed</th>
               <th scope="col" class="px-6 py-3">Date Created</th>
               <th scope="col" class="px-6 py-3 text-right">Action</th>
@@ -163,7 +173,6 @@
               <td class="px-6 py-4 font-semibold text-slate-900">{{ item.name }}</td>
               <td class="px-6 py-4 truncate max-w-[250px]" [title]="item.subject">{{ item.subject }}</td>
               <td class="px-6 py-4 text-center font-semibold text-green-700">{{ item.sent_count }}</td>
-              <td class="px-6 py-4 text-center font-semibold text-indigo-700">{{ item.open_count }}</td>
               <td class="px-6 py-4 text-center font-semibold text-red-600">{{ item.failed_count }}</td>
               <td class="px-6 py-4 text-slate-500 text-xs">{{ item.created_at | date:'medium' }}</td>
               <td class="px-6 py-4 text-right" (click)="$event.stopPropagation()">
@@ -180,6 +189,39 @@
 
   <!-- Campaign Log Tab Content -->
   <div *ngIf="activeTab() === 'campaigns'" class="space-y-4">
+    <!-- Sub-tab Manager Navigation -->
+    <div class="border-b border-slate-200 mb-4 flex items-center justify-between">
+      <nav class="-mb-px flex gap-6" aria-label="Subtabs">
+        <button (click)="switchManagerTab('sent')"
+          [class.border-[#0f172a]]="managerTab() === 'sent'"
+          [class.text-[#0f172a]]="managerTab() === 'sent'"
+          [class.font-bold]="managerTab() === 'sent'"
+          [class.border-transparent]="managerTab() !== 'sent'"
+          [class.text-slate-500]="managerTab() !== 'sent'"
+          class="pb-3 px-1 border-b-2 font-semibold text-xs uppercase tracking-wider transition-all focus:outline-none cursor-pointer">
+          Sent Campaigns
+        </button>
+        <button (click)="switchManagerTab('scheduled')"
+          [class.border-[#0f172a]]="managerTab() === 'scheduled'"
+          [class.text-[#0f172a]]="managerTab() === 'scheduled'"
+          [class.font-bold]="managerTab() === 'scheduled'"
+          [class.border-transparent]="managerTab() !== 'scheduled'"
+          [class.text-slate-500]="managerTab() !== 'scheduled'"
+          class="pb-3 px-1 border-b-2 font-semibold text-xs uppercase tracking-wider transition-all focus:outline-none cursor-pointer">
+          Scheduled & Pending
+        </button>
+        <button (click)="switchManagerTab('drafts')"
+          [class.border-[#0f172a]]="managerTab() === 'drafts'"
+          [class.text-[#0f172a]]="managerTab() === 'drafts'"
+          [class.font-bold]="managerTab() === 'drafts'"
+          [class.border-transparent]="managerTab() !== 'drafts'"
+          [class.text-slate-500]="managerTab() !== 'drafts'"
+          class="pb-3 px-1 border-b-2 font-semibold text-xs uppercase tracking-wider transition-all focus:outline-none cursor-pointer">
+          Draft Emails
+        </button>
+      </nav>
+    </div>
+
     <!-- Filters & Search Toolbar -->
     <div class="px-5 py-4 border border-slate-200 bg-white rounded-md shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="relative w-full md:w-[320px]">
@@ -195,16 +237,23 @@
 
     <!-- Campaigns Datatable -->
     <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden">
-      <div *ngIf="campaignsLoading()" class="flex justify-center items-center py-20">
+      <!-- Loading Indicator -->
+      <div *ngIf="campaignsLoading() || scheduledLoading() || draftsLoading()" class="flex justify-center items-center py-20">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
       </div>
 
-      <div *ngIf="!campaignsLoading() && campaigns().length === 0" class="text-center py-20 text-slate-400">
+      <!-- No Campaigns State -->
+      <div *ngIf="!(campaignsLoading() || scheduledLoading() || draftsLoading()) && 
+                 ((managerTab() === 'sent' && campaigns().length === 0) || 
+                  (managerTab() === 'scheduled' && scheduled().length === 0) || 
+                  (managerTab() === 'drafts' && drafts().length === 0))" 
+        class="text-center py-20 text-slate-400">
         <h3 class="text-sm font-semibold text-slate-900 mb-1">No campaigns logged</h3>
-        <p class="text-slate-500 text-xs">There are no records matching your query.</p>
+        <p class="text-slate-500 text-xs">There are no records matching your query under this tab.</p>
       </div>
 
-      <div *ngIf="!campaignsLoading() && campaigns().length > 0" class="overflow-x-auto">
+      <!-- Sent Campaigns Table -->
+      <div *ngIf="!(campaignsLoading() || scheduledLoading() || draftsLoading()) && managerTab() === 'sent' && campaigns().length > 0" class="overflow-x-auto">
         <table class="min-w-full text-left text-sm whitespace-nowrap">
           <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider">
             <tr>
@@ -217,9 +266,6 @@
               </th>
               <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">
                 <button type="button" (click)="sortBy('sent_count')" class="flex items-center gap-1 hover:text-slate-200 mx-auto">Sent <span>{{ sortIndicator('sent_count') }}</span></button>
-              </th>
-              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">
-                <button type="button" (click)="sortBy('open_count')" class="flex items-center gap-1 hover:text-slate-200 mx-auto">Opened <span>{{ sortIndicator('open_count') }}</span></button>
               </th>
               <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">
                 <button type="button" (click)="sortBy('failed_count')" class="flex items-center gap-1 hover:text-slate-200 mx-auto">Failed <span>{{ sortIndicator('failed_count') }}</span></button>
@@ -236,13 +282,140 @@
               <td class="px-6 py-3 font-semibold text-slate-900 text-sm">{{ item.name }}</td>
               <td class="px-6 py-3 truncate max-w-[200px]" [title]="item.subject">{{ item.subject }}</td>
               <td class="px-6 py-3 text-center text-green-700 font-bold">{{ item.sent_count }}</td>
-              <td class="px-6 py-3 text-center text-indigo-700 font-bold">{{ item.open_count }}</td>
               <td class="px-6 py-3 text-center text-red-600 font-bold">{{ item.failed_count }}</td>
               <td class="px-6 py-3 text-slate-500 text-xs">{{ item.created_at | date:'medium' }}</td>
               <td class="px-6 py-3 text-right" (click)="$event.stopPropagation()">
-                <button (click)="openCampaignDetails(item)" class="px-2.5 py-1 text-[11px] font-bold text-slate-700 border border-slate-300 bg-white hover:bg-slate-100 rounded shadow-sm">
-                  View Detail
-                </button>
+                <div class="flex justify-end gap-1.5">
+                  <button (click)="openCampaignDetails(item)" class="px-2 py-1 text-[10px] font-bold text-blue-700 border border-blue-200 bg-white hover:bg-blue-50 rounded-[4px] shadow-sm cursor-pointer">
+                    View
+                  </button>
+                  <button (click)="openConfirmModal('delete', item, $event)" class="px-2 py-1 text-[10px] font-bold text-red-600 border border-red-200 bg-white hover:bg-red-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Scheduled Campaigns Table -->
+      <div *ngIf="!(campaignsLoading() || scheduledLoading() || draftsLoading()) && managerTab() === 'scheduled' && scheduled().length > 0" class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm whitespace-nowrap">
+          <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider">
+            <tr>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Campaign Name</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Scheduled Time</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Timezone</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Recipients</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Status</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Trigger Type</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Next Execution</th>
+              <th scope="col" class="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white text-slate-700">
+            <tr *ngFor="let item of scheduled()" class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-3 font-semibold text-slate-900 text-sm">{{ item.name }}</td>
+              <td class="px-6 py-3 text-xs font-medium">{{ formatTimestampToSummary(item.scheduled_at, item.timezone) }}</td>
+              <td class="px-6 py-3 text-center text-xs font-semibold text-slate-500">{{ item.timezone }}</td>
+              <td class="px-6 py-3 text-center font-bold text-slate-950">{{ getRecipientsCount(item) }}</td>
+              <td class="px-6 py-3 text-center">
+                <span [ngClass]="{
+                  'bg-yellow-50 border-yellow-200 text-yellow-800': item.status === 'Scheduled',
+                  'bg-blue-50 border-blue-200 text-blue-800': item.status === 'Sending',
+                  'bg-red-50 border-red-200 text-red-800': item.status === 'Failed',
+                  'bg-slate-100 border-slate-350 text-slate-600': item.status === 'Cancelled'
+                }" class="px-2 py-0.5 text-[9px] font-extrabold rounded-[4px] border uppercase tracking-wider">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td class="px-6 py-3 text-center text-xs capitalize font-semibold text-slate-500">{{ item.trigger_type || 'scheduled' }}</td>
+              <td class="px-6 py-3 text-xs text-slate-500">{{ item.status === 'Scheduled' ? formatTimestampToSummary(item.scheduled_at, item.timezone) : '-' }}</td>
+              <td class="px-6 py-3 text-right">
+                <div class="flex justify-end gap-1.5">
+                  <button (click)="openConfirmModal('trigger_schedule', item, $event)" [disabled]="item.status === 'Sending'"
+                    class="px-2 py-1 text-[10px] font-bold text-green-700 border border-green-200 bg-white hover:bg-green-50 rounded-[4px] shadow-sm cursor-pointer disabled:opacity-50">
+                    Trigger Now
+                  </button>
+                  <button *ngIf="item.status === 'Scheduled'" (click)="openConfirmModal('pause', item, $event)"
+                    class="px-2 py-1 text-[10px] font-bold text-amber-700 border border-amber-250 bg-white hover:bg-amber-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Pause
+                  </button>
+                  <button *ngIf="item.status === 'Cancelled'" (click)="openRescheduleModal(item, $event)"
+                    class="px-2 py-1 text-[10px] font-bold text-blue-700 border border-blue-200 bg-white hover:bg-blue-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Resume
+                  </button>
+                  <button (click)="openRescheduleModal(item, $event)" [disabled]="item.status === 'Sending'"
+                    class="px-2 py-1 text-[10px] font-bold text-indigo-700 border border-indigo-200 bg-white hover:bg-indigo-50 rounded-[4px] shadow-sm cursor-pointer disabled:opacity-50">
+                    Reschedule
+                  </button>
+                  <button (click)="openComposer(item)" [disabled]="item.status === 'Sending'"
+                    class="px-2 py-1 text-[10px] font-bold text-slate-700 border border-slate-350 bg-white hover:bg-slate-100 rounded-[4px] shadow-sm cursor-pointer disabled:opacity-50">
+                    Edit
+                  </button>
+                  <button (click)="openConfirmModal('delete', item, $event)" [disabled]="item.status === 'Sending'"
+                    class="px-2 py-1 text-[10px] font-bold text-red-600 border border-red-200 bg-white hover:bg-red-50 rounded-[4px] shadow-sm cursor-pointer disabled:opacity-50">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Draft Campaigns Table -->
+      <div *ngIf="!(campaignsLoading() || scheduledLoading() || draftsLoading()) && managerTab() === 'drafts' && drafts().length > 0" class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm whitespace-nowrap">
+          <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider">
+            <tr>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Campaign Name</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Subject</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Created By</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Created Date</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Recipients Count</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10 text-center">Schedule Status</th>
+              <th scope="col" class="px-6 py-3 border-r border-white/10">Last Updated</th>
+              <th scope="col" class="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200 bg-white text-slate-700">
+            <tr *ngFor="let item of drafts()" class="hover:bg-slate-50 transition-colors">
+              <td class="px-6 py-3 font-semibold text-slate-900 text-sm">{{ item.name }}</td>
+              <td class="px-6 py-3 truncate max-w-[200px]" [title]="item.subject">{{ item.subject }}</td>
+              <td class="px-6 py-3 text-xs font-semibold text-slate-700">{{ item.creator_name || 'System Admin' }}</td>
+              <td class="px-6 py-3 text-xs text-slate-500">{{ item.created_at | date:'medium' }}</td>
+              <td class="px-6 py-3 text-center font-bold text-slate-950">{{ getRecipientsCount(item) }}</td>
+              <td class="px-6 py-3 text-center">
+                <span class="bg-slate-100 border-slate-300 text-slate-650 px-2 py-0.5 text-[9px] font-extrabold rounded-[4px] border uppercase tracking-wider">
+                  Draft
+                </span>
+              </td>
+              <td class="px-6 py-3 text-xs text-slate-500">{{ item.created_at | date:'medium' }}</td>
+              <td class="px-6 py-3 text-right">
+                <div class="flex justify-end gap-1.5">
+                  <button (click)="openComposer(item)"
+                    class="px-2 py-1 text-[10px] font-bold text-blue-700 border border-blue-200 bg-white hover:bg-blue-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Edit Draft
+                  </button>
+                  <button (click)="openCampaignPreview(item)"
+                    class="px-2 py-1 text-[10px] font-bold text-indigo-700 border border-indigo-200 bg-white hover:bg-indigo-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Preview
+                  </button>
+                  <button (click)="openComposer(item)"
+                    class="px-2 py-1 text-[10px] font-bold text-amber-700 border border-amber-250 bg-white hover:bg-amber-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Schedule
+                  </button>
+                  <button (click)="openConfirmModal('send_now', item, $event)"
+                    class="px-2 py-1 text-[10px] font-bold text-green-700 border border-green-200 bg-white hover:bg-green-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Send Now
+                  </button>
+                  <button (click)="openConfirmModal('delete', item, $event)"
+                    class="px-2 py-1 text-[10px] font-bold text-red-600 border border-red-200 bg-white hover:bg-red-50 rounded-[4px] shadow-sm cursor-pointer">
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -316,265 +489,413 @@
   </div>
 
   <!-- Modal Composer (Bulk Email Composer) -->
-  <div *ngIf="composerOpen()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
+  <div *ngIf="composerOpen()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-200">
+    <div class="bg-white rounded-[6px] shadow-xl w-full max-w-6xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 border border-slate-300">
       
-      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
+      <!-- Enterprise Theme Blue Header -->
+      <div class="flex justify-between items-center px-5 py-3.5 bg-gradient-to-r from-[#0F3D91] to-[#1D4ED8] text-white border-b border-blue-900/30">
         <div>
-          <h2 class="text-lg font-extrabold text-slate-900 uppercase tracking-tight">Bulk Campaign Composer</h2>
-          <p class="text-xs text-slate-500 mt-1">Design and queue dynamic bulk messaging runs.</p>
+          <h2 class="text-sm font-bold tracking-wider uppercase text-white font-['Plus_Jakarta_Sans',sans-serif]">
+            <span *ngIf="!isEditing()">Bulk Campaign Composer</span>
+            <span *ngIf="isEditing() && editingCampaignStatus() === 'Draft'">Edit Draft Campaign</span>
+            <span *ngIf="isEditing() && editingCampaignStatus() === 'Scheduled'">Edit Scheduled Campaign</span>
+          </h2>
+          <p class="text-[11px] text-slate-300 mt-0.5 font-medium">
+            <span *ngIf="!isEditing()">Create and send enterprise email campaigns</span>
+            <span *ngIf="isEditing() && editingCampaignStatus() === 'Draft'">Modify details of your unpublished draft campaign</span>
+            <span *ngIf="isEditing() && editingCampaignStatus() === 'Scheduled'">Reschedule or update details of your scheduled campaign</span>
+          </p>
         </div>
-        <button (click)="closeComposer()" class="text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 p-1.5 rounded transition-colors focus:outline-none border border-slate-200">
-          <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        <button (click)="closeComposer()" class="text-slate-200 hover:text-white hover:bg-blue-800/30 p-1.5 rounded-[4px] transition-colors focus:outline-none cursor-pointer">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
 
-      <div class="p-6 overflow-y-auto flex-1 bg-slate-50 flex flex-col lg:flex-row gap-6">
+      <div class="p-5 overflow-y-auto flex-1 bg-slate-50/50 flex flex-col lg:flex-row lg:items-start gap-5">
         <!-- Form Area (Left) -->
-        <form [formGroup]="composerForm" class="flex-1 space-y-4 bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col justify-between">
+        <form [formGroup]="composerForm" class="flex-1 space-y-4 bg-white p-5 rounded-[6px] border border-slate-200 shadow-sm flex flex-col">
           <div class="space-y-4">
-            <!-- Campaign Name -->
-            <div>
-              <label for="compName" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Campaign Title</label>
-              <input id="compName" type="text" formControlName="name" placeholder="E.g., Event Followup May 2026"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 placeholder-slate-400 shadow-sm"
-                [class.border-red-500]="composerForm.get('name')?.invalid && composerForm.get('name')?.touched" />
-              <div *ngIf="composerForm.get('name')?.invalid && composerForm.get('name')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
-                Campaign title is required (Max 150 chars).
+            
+            <!-- Section 1: Campaign Details -->
+            <div class="border border-slate-200 rounded-[6px] p-4 bg-white space-y-3">
+              <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 pb-1.5 border-b border-slate-100 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Campaign Details
               </div>
-            </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                <!-- Campaign Name -->
+                <div>
+                  <label for="compName" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Campaign Name</label>
+                  <input id="compName" type="text" formControlName="name" placeholder="E.g., Event Followup May 2026"
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] placeholder-slate-400 shadow-sm transition-all"
+                    [class.border-red-500]="composerForm.get('name')?.invalid && composerForm.get('name')?.touched" />
+                  <div *ngIf="composerForm.get('name')?.invalid && composerForm.get('name')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
+                    Name is required.
+                  </div>
+                </div>
 
-            <!-- Templates Selector -->
-            <div>
-              <label for="templateIdSelect" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Load Template (Optional)</label>
-              <div class="relative">
-                <select id="templateIdSelect" formControlName="templateId" (change)="onComposerTemplateChange($event)"
-                  class="appearance-none w-full bg-white border border-slate-300 text-slate-800 py-2.5 pl-3 pr-8 rounded-md text-[13px] font-medium outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm">
-                  <option [value]="null">Select template layouts...</option>
-                  <option *ngFor="let temp of templates()" [value]="temp.id">
-                    {{ temp.name }} ({{ temp.id! <= 5 ? 'System' : 'Custom' }})
-                  </option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
-                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <!-- Subject -->
+                <div>
+                  <label for="compSub" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Subject</label>
+                  <input id="compSub" type="text" formControlName="subject" placeholder="Enter engaging email subject..."
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] placeholder-slate-400 shadow-sm transition-all"
+                    [class.border-red-500]="composerForm.get('subject')?.invalid && composerForm.get('subject')?.touched" />
+                  <div *ngIf="composerForm.get('subject')?.invalid && composerForm.get('subject')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
+                    Subject is required.
+                  </div>
+                </div>
+
+                <!-- Sender Name -->
+                <div>
+                  <label for="compSender" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Sender Name</label>
+                  <input id="compSender" type="text" formControlName="senderName" placeholder="E.g., Company Admin"
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] placeholder-slate-400 shadow-sm transition-all"
+                    [class.border-red-500]="composerForm.get('senderName')?.invalid && composerForm.get('senderName')?.touched" />
+                  <div *ngIf="composerForm.get('senderName')?.invalid && composerForm.get('senderName')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
+                    Sender name is required.
+                  </div>
+                </div>
+
+                <!-- Reply Email -->
+                <div>
+                  <label for="compReply" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Reply Email</label>
+                  <input id="compReply" type="text" formControlName="replyEmail" placeholder="E.g., info@company.com"
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] placeholder-slate-400 shadow-sm transition-all"
+                    [class.border-red-500]="composerForm.get('replyEmail')?.invalid && composerForm.get('replyEmail')?.touched" />
+                  <div *ngIf="composerForm.get('replyEmail')?.invalid && composerForm.get('replyEmail')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
+                    Valid email is required.
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Email Subject -->
-            <div>
-              <label for="compSub" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Email Subject Line</label>
-              <input id="compSub" type="text" formControlName="subject" placeholder="Enter engaging email subject..."
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 placeholder-slate-400 shadow-sm"
-                [class.border-red-500]="composerForm.get('subject')?.invalid && composerForm.get('subject')?.touched" />
-              <div *ngIf="composerForm.get('subject')?.invalid && composerForm.get('subject')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
-                Subject is required (Max 200 chars).
+            <!-- Section 2: Email Content -->
+            <div class="border border-slate-200 rounded-[6px] p-4 bg-white space-y-3">
+              <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 pb-1.5 border-b border-slate-100 flex items-center justify-between">
+                <span class="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l8-5.333a2 2 0 012.22 0l8 5.333A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                  </svg>
+                  Email Content
+                </span>
+                
+                <!-- Template Selection -->
+                <div class="flex items-center gap-2">
+                  <label for="templateIdSelect" class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Template Layout:</label>
+                  <div class="relative">
+                    <select id="templateIdSelect" formControlName="templateId" (change)="onComposerTemplateChange($event)"
+                      class="appearance-none bg-white border border-slate-300 text-slate-700 py-1 pl-2 pr-6 rounded-[4px] text-[11px] font-semibold outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                      <option [value]="null">No Template</option>
+                      <option *ngFor="let temp of templates()" [value]="temp.id">
+                        {{ temp.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Placeholders Action Toolbar -->
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[9px] font-bold text-slate-450 uppercase tracking-wide mr-1">
+                  Insert Placeholder:
+                </span>
+                <button type="button" (click)="insertPlaceholder('{{name}}')" class="px-2 py-0.5 border border-slate-300 hover:bg-slate-50 text-[10px] text-slate-700 font-semibold rounded-[4px] cursor-pointer focus:outline-none transition-all shadow-sm">
+                  {{ '{{name}}' }}
+                </button>
+                <button type="button" (click)="insertPlaceholder('{{company}}')" class="px-2 py-0.5 border border-slate-300 hover:bg-slate-50 text-[10px] text-slate-700 font-semibold rounded-[4px] cursor-pointer focus:outline-none transition-all shadow-sm">
+                  {{ '{{company}}' }}
+                </button>
+                <button type="button" (click)="insertPlaceholder('{{department}}')" class="px-2 py-0.5 border border-slate-300 hover:bg-slate-50 text-[10px] text-slate-700 font-semibold rounded-[4px] cursor-pointer focus:outline-none transition-all shadow-sm">
+                  {{ '{{department}}' }}
+                </button>
+              </div>
+
+              <!-- Textarea editor -->
+              <div class="border border-slate-300 rounded-[4px] overflow-hidden focus-within:ring-1 focus-within:ring-[#0f172a] focus-within:border-[#0f172a] transition-all shadow-sm">
+                <textarea #bodyTextarea id="compBody" formControlName="body" rows="8" placeholder="Compose personalized message body here..."
+                  class="w-full px-3 py-2 bg-white border-0 text-xs font-semibold text-slate-800 outline-none placeholder-slate-400 leading-relaxed resize-y min-h-[150px]"></textarea>
+              </div>
+              <div class="flex justify-between items-center mt-1">
+                <span class="text-[9px] text-slate-400 font-medium">💡 Variables will be filled with real profile data automatically.</span>
+                <div *ngIf="composerForm.get('body')?.invalid && composerForm.get('body')?.touched" class="text-red-500 text-[10px] font-semibold">
+                  Body is required.
+                </div>
               </div>
             </div>
 
-            <!-- Dynamic Placeholders Action Toolbar -->
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Email Body Message</span>
-                <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5">
-                  <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide mr-1">Insert Placeholder:</span>
-                  <button type="button" (click)="insertPlaceholder('{{name}}')" class="px-1.5 py-0.5 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-[10px] text-slate-800 font-bold rounded shadow-sm cursor-pointer focus:outline-none transition-colors">
-                    name
-                  </button>
-                  <button type="button" (click)="insertPlaceholder('{{company}}')" class="px-1.5 py-0.5 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-[10px] text-slate-800 font-bold rounded shadow-sm cursor-pointer focus:outline-none transition-colors">
-                    company
-                  </button>
-                  <button type="button" (click)="insertPlaceholder('{{department}}')" class="px-1.5 py-0.5 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-[10px] text-slate-800 font-bold rounded shadow-sm cursor-pointer focus:outline-none transition-colors">
-                    department
-                  </button>
+            <!-- Section 3: Schedule Email (NEW) -->
+            <div class="border border-slate-200 rounded-[6px] p-4 bg-white space-y-3">
+              <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 pb-1.5 border-b border-slate-100 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Schedule Email
+              </div>
+              
+              <div class="flex flex-col gap-3">
+                <!-- Modes radio -->
+                <div class="flex items-center gap-4 text-xs font-semibold text-slate-700">
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="radio" formControlName="sendMode" value="now" class="accent-[#0f172a] h-3.5 w-3.5 cursor-pointer" />
+                    <span>Send Immediately</span>
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="radio" formControlName="sendMode" value="later" class="accent-[#0f172a] h-3.5 w-3.5 cursor-pointer" />
+                    <span>Schedule for Later</span>
+                  </label>
+                </div>
+
+                <!-- Fields grid (active when later mode is selected) -->
+                <div *ngIf="composerForm.get('sendMode')?.value === 'later'" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 animate-in fade-in duration-200">
+                  <!-- Date -->
+                  <div>
+                    <label for="schDate" class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Send Date</label>
+                    <input id="schDate" type="date" formControlName="scheduleDate"
+                      class="w-full px-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm" />
+                  </div>
+                  <!-- Time -->
+                  <div>
+                    <label for="schTime" class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Send Time</label>
+                    <input id="schTime" type="time" formControlName="scheduleTime"
+                      class="w-full px-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm" />
+                  </div>
+                  <!-- Timezone -->
+                  <div>
+                    <label for="schTz" class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Timezone</label>
+                    <select id="schTz" formControlName="scheduleTimezone"
+                      class="w-full px-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                      <option value="IST">IST (UTC+5:30)</option>
+                      <option value="UTC">UTC (GMT+0)</option>
+                      <option value="EST">EST (UTC-5)</option>
+                      <option value="PST">PST (UTC-8)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Display Scheduled Summary -->
+                <div *ngIf="composerForm.get('sendMode')?.value === 'later' && composerForm.get('scheduleDate')?.value && composerForm.get('scheduleTime')?.value" 
+                  class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-[4px] text-xs font-semibold text-slate-700 mt-1 animate-in slide-in-from-top-1 duration-150">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>Scheduled for: <strong class="text-[#0f172a]">{{ getScheduledSummary() }}</strong></span>
                 </div>
               </div>
-              <textarea #bodyTextarea formControlName="body" rows="9" placeholder="Compose personalized message body here..."
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 placeholder-slate-400 shadow-sm leading-relaxed"
-                [class.border-red-500]="composerForm.get('body')?.invalid && composerForm.get('body')?.touched"></textarea>
-              <div *ngIf="composerForm.get('body')?.invalid && composerForm.get('body')?.touched" class="text-red-500 text-[10px] mt-1 font-semibold">
-                Message body is required.
-              </div>
             </div>
+
           </div>
         </form>
 
         <!-- Recipients Selection Sidebar (Right) -->
-        <div class="w-full lg:w-[350px] bg-white p-5 rounded-md border border-slate-200 shadow-sm flex flex-col max-h-[90vh] lg:max-h-none overflow-y-auto">
+        <div class="w-full lg:w-[360px] bg-white p-4 rounded-[6px] border border-slate-200 shadow-sm flex flex-col max-h-[85vh] lg:max-h-none overflow-y-auto space-y-4">
           
-          <!-- Section Title -->
-          <div class="border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
-            <div>
-              <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Recipients</h3>
-              <p class="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wide">Filter & select target segment</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-slate-900 bg-slate-100 border border-slate-300 px-2 py-0.5 rounded-sm">
+          <!-- Selected Summary Details -->
+          <div>
+            <div class="border-b border-slate-200 pb-2 mb-3 flex items-center justify-between">
+              <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Recipients List</span>
+              <span class="text-[10px] font-extrabold text-[#0f172a] bg-slate-100 border border-slate-300 px-2 py-0.5 rounded-[4px]">
                 {{ selectedRecipients().length }} Selected
               </span>
             </div>
+
+            <!-- Active Filters Summary Box -->
+            <div class="bg-slate-50 border border-slate-200 rounded-[4px] p-2.5 text-[11px] font-semibold text-slate-600 flex flex-col gap-1.5 shadow-sm">
+              <div class="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Active Segment Filters</div>
+              <div class="truncate flex items-center gap-1">
+                <span class="text-slate-400">Range:</span>
+                <span>{{ (recipientFromDate() | date:'shortDate') || 'Any' }} - {{ (recipientToDate() | date:'shortDate') || 'Any' }}</span>
+              </div>
+              <div class="truncate flex items-center gap-1" *ngIf="recipientDepartment()">
+                <span class="text-slate-400">Dept:</span>
+                <span>{{ recipientDepartment() }}</span>
+              </div>
+              <div class="truncate flex items-center gap-1" *ngIf="recipientProduct()">
+                <span class="text-slate-400">Product:</span>
+                <span>{{ recipientProduct() }}</span>
+              </div>
+              <div class="truncate flex items-center gap-1" *ngIf="recipientCategory()">
+                <span class="text-slate-400">Category:</span>
+                <span>{{ recipientCategory() }}</span>
+              </div>
+              <div class="truncate flex items-center gap-1" *ngIf="recipientVenue()">
+                <span class="text-slate-400">Venue ID:</span>
+                <span>{{ recipientVenue() }}</span>
+              </div>
+              <div class="text-[9px] text-slate-450 italic font-medium" *ngIf="!recipientDepartment() && !recipientProduct() && !recipientCategory() && !recipientVenue() && !recipientFromDate() && !recipientToDate()">
+                No segment filters applied (All Visitors)
+              </div>
+            </div>
           </div>
 
-          <!-- FILTERS SECTION -->
-          <div class="space-y-3 mb-4">
-            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Filter Visitors</h4>
+          <!-- Group Filters Pane -->
+          <div class="border border-slate-200 rounded-[6px] p-3.5 bg-slate-50/50 space-y-3">
+            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filter Segment
+            </h4>
             
-            <!-- Date Filters Row -->
+            <!-- Dates -->
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">From Date</label>
+                <label class="block text-[8px] font-bold uppercase text-slate-450 mb-0.5">From Date</label>
                 <input type="date" [value]="recipientFromDate()" (change)="onRecipientFromDateChange($event)"
-                  class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer" />
+                  class="w-full px-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] shadow-sm cursor-pointer" />
               </div>
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">To Date</label>
+                <label class="block text-[8px] font-bold uppercase text-slate-455 mb-0.5">To Date</label>
                 <input type="date" [value]="recipientToDate()" (change)="onRecipientToDateChange($event)"
-                  class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer" />
+                  class="w-full px-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] shadow-sm cursor-pointer" />
               </div>
             </div>
 
-            <!-- Optional filters -->
+            <!-- Department & Category -->
             <div class="grid grid-cols-2 gap-2">
-              <!-- Department Filter -->
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Department</label>
-                <select [value]="recipientDepartment()" (change)="onRecipientDepartmentChange($event)"
-                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
-                  <option value="">All</option>
-                  <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
-                </select>
+                <label class="block text-[8px] font-bold uppercase text-slate-450 mb-0.5">Dept</label>
+                <div class="relative">
+                  <select [value]="recipientDepartment()" (change)="onRecipientDepartmentChange($event)"
+                    class="w-full appearance-none pl-2 pr-6 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                    <option value="">All</option>
+                    <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                    <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
+                </div>
               </div>
-              
-              <!-- Lead Category Filter -->
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Category</label>
-                <select [value]="recipientCategory()" (change)="onRecipientCategoryChange($event)"
-                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
-                  <option value="">All</option>
-                  <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
-                </select>
+                <label class="block text-[8px] font-bold uppercase text-slate-450 mb-0.5">Category</label>
+                <div class="relative">
+                  <select [value]="recipientCategory()" (change)="onRecipientCategoryChange($event)"
+                    class="w-full appearance-none pl-2 pr-6 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                    <option value="">All</option>
+                    <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                    <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
+                </div>
               </div>
             </div>
 
+            <!-- Product & Venue -->
             <div class="grid grid-cols-2 gap-2">
-              <!-- Product Filter -->
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Product</label>
-                <select [value]="recipientProduct()" (change)="onRecipientProductChange($event)"
-                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
-                  <option value="">All</option>
-                  <option *ngFor="let prod of activeProducts()" [value]="prod">{{ prod }}</option>
-                </select>
+                <label class="block text-[8px] font-bold uppercase text-slate-455 mb-0.5">Product</label>
+                <div class="relative">
+                  <select [value]="recipientProduct()" (change)="onRecipientProductChange($event)"
+                    class="w-full appearance-none pl-2 pr-6 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                    <option value="">All</option>
+                    <option *ngFor="let prod of activeProducts()" [value]="prod">{{ prod }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                    <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
+                </div>
               </div>
-              
-              <!-- Venue Filter -->
               <div>
-                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Venue</label>
-                <select [value]="recipientVenue()" (change)="onRecipientVenueChange($event)"
-                  class="w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 shadow-sm cursor-pointer appearance-none">
-                  <option value="">All</option>
-                  <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue }}</option>
-                </select>
+                <label class="block text-[8px] font-bold uppercase text-slate-455 mb-0.5">Venue</label>
+                <div class="relative">
+                  <select [value]="recipientVenue()" (change)="onRecipientVenueChange($event)"
+                    class="w-full appearance-none pl-2 pr-6 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm">
+                    <option value="">All</option>
+                    <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue }}</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                    <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  </div>
+                </div>
               </div>
             </div>
 
             <!-- Clear filters button -->
             <div class="flex justify-between items-center pt-1" *ngIf="recipientFromDate() || recipientToDate() || recipientDepartment() || recipientProduct() || recipientCategory() || recipientVenue()">
-              <span class="text-[10px] text-slate-500 font-semibold">Filters are active</span>
-              <button type="button" (click)="clearRecipientFilters()" class="text-[10px] font-bold text-red-600 hover:underline">
+              <span class="text-[9px] text-[#0f172a] font-bold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#0f172a] animate-pulse"></span>
+                Filters active
+              </span>
+              <button type="button" (click)="clearRecipientFilters()" class="text-[9px] font-extrabold text-red-650 hover:underline">
                 Clear Filters
               </button>
             </div>
           </div>
 
-          <!-- DYNAMIC RECIPIENT COUNT & BULK ACTION -->
-          <div class="bg-slate-50 border border-slate-200 rounded p-3 mb-4 flex flex-col gap-2">
-            <div class="flex justify-between items-center text-xs">
+          <!-- Matching Count Stat -->
+          <div class="bg-slate-50 border border-slate-200 rounded-[6px] p-3 text-xs flex flex-col gap-2">
+            <div class="flex justify-between items-center">
               <span class="text-slate-500 font-semibold">Matching Visitors:</span>
-              <span class="font-extrabold text-slate-955">
+              <span class="font-extrabold text-slate-900">
                 <span *ngIf="recipientsLoading()" class="inline-block animate-pulse">...</span>
                 <span *ngIf="!recipientsLoading()">{{ totalMatchingRecipients() }}</span>
               </span>
             </div>
-            
-            <div class="flex gap-2 mt-1">
+            <div class="flex gap-2">
               <button type="button" (click)="selectAllMatching()" [disabled]="recipientsLoading() || totalMatchingRecipients() === 0"
-                class="flex-1 text-center py-1 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white rounded text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm">
+                class="flex-1 py-1 bg-[#0f172a] hover:bg-black disabled:opacity-50 text-white rounded-[4px] text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer">
                 Select All
               </button>
               <button type="button" (click)="clearAllRecipients()" [disabled]="selectedRecipients().length === 0"
-                class="flex-1 text-center py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50 text-slate-700 rounded text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm">
-                Deselect All
+                class="flex-1 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-50 text-slate-700 rounded-[4px] text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer">
+                Clear Selection
               </button>
             </div>
           </div>
 
-          <!-- DROPDOWN MULTISELECT CONTAINER -->
-          <div class="relative recipient-dropdown-container mb-4">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Select Recipients</label>
+          <!-- Recipients Multi-selector dropdown -->
+          <div class="relative recipient-dropdown-container">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Select Recipients</label>
             
-            <!-- Trigger button -->
             <button type="button" (click)="toggleRecipientDropdown($event)"
-              class="w-full bg-white border border-slate-300 text-slate-800 py-2 px-3 rounded-md text-[13px] font-semibold outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer shadow-sm text-left flex justify-between items-center">
+              class="w-full bg-white border border-slate-300 hover:border-slate-400 text-slate-800 py-1.5 px-2.5 rounded-[4px] text-xs font-semibold outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] transition-all cursor-pointer shadow-sm text-left flex justify-between items-center">
               <span class="truncate">
                 {{ selectedRecipients().length > 0 ? selectedRecipients().length + ' selected' : 'Choose recipients...' }}
               </span>
-              <svg class="h-4.5 w-4.5 text-slate-400 transition-transform duration-200" [class.rotate-180]="recipientDropdownOpen()"
+              <svg class="h-3.5 w-3.5 text-slate-450 transition-transform duration-200" [class.rotate-180]="recipientDropdownOpen()"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
             </button>
 
             <!-- Dropdown panel -->
             <div *ngIf="recipientDropdownOpen()"
-              class="absolute z-30 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-lg flex flex-col max-h-[300px] animate-in fade-in duration-100">
+              class="absolute z-30 mt-1 w-full bg-white border border-slate-200 rounded-[4px] shadow-lg flex flex-col max-h-[250px] overflow-hidden animate-in fade-in duration-100">
               
-              <!-- Search inside dropdown -->
+              <!-- Search -->
               <div class="p-2 border-b border-slate-100 bg-slate-50">
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                    <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                       <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
                   </div>
-                  <input type="text" placeholder="Search matching names..." [value]="recipientDropdownSearch()" (input)="onRecipientDropdownSearch($event)"
-                    class="w-full pl-8 pr-2 py-1.5 bg-white border border-slate-200 rounded text-xs font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400 shadow-sm" />
+                  <input type="text" placeholder="Search..." [value]="recipientDropdownSearch()" (input)="onRecipientDropdownSearch($event)"
+                    class="w-full pl-7 pr-2 py-1 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-900 outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] placeholder-slate-400" />
                 </div>
               </div>
 
-              <!-- Scrollable list of visitors -->
-              <div class="flex-1 overflow-y-auto max-h-[220px] divide-y divide-slate-100">
-                <!-- Loading State -->
-                <div *ngIf="recipientsLoading()" class="flex justify-center items-center py-8">
-                  <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-900"></div>
+              <!-- List -->
+              <div class="flex-1 overflow-y-auto divide-y divide-slate-150">
+                <div *ngIf="recipientsLoading()" class="flex justify-center items-center py-6">
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0f172a]"></div>
                 </div>
-
-                <!-- Empty State -->
-                <div *ngIf="!recipientsLoading() && displayedRecipients().length === 0" class="text-center py-8 text-xs text-slate-400">
-                  No matching visitors found
+                <div *ngIf="!recipientsLoading() && displayedRecipients().length === 0" class="text-center py-6 text-[11px] text-slate-400">
+                  No visitors found
                 </div>
-
-                <!-- Recipient rows -->
                 <ng-container *ngIf="!recipientsLoading() && displayedRecipients().length > 0">
                   <div *ngFor="let item of displayedRecipients()" (click)="toggleRecipient(item)"
                     [class.bg-slate-50]="isRecipientSelected(item)"
-                    class="flex items-center gap-3 p-2.5 hover:bg-slate-50 cursor-pointer text-xs transition-colors">
+                    class="flex items-center gap-2 p-2 hover:bg-slate-50 cursor-pointer text-[11px] transition-colors">
                     
-                    <div class="relative flex items-center justify-center w-4 h-4 border rounded border-slate-300 shrink-0"
-                      [class.bg-slate-900]="isRecipientSelected(item)"
-                      [class.border-slate-900]="isRecipientSelected(item)">
-                      <svg *ngIf="isRecipientSelected(item)" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-
+                    <input type="checkbox" [checked]="isRecipientSelected(item)" (click)="$event.stopPropagation(); toggleRecipient(item)" class="accent-[#0f172a] h-3.5 w-3.5 cursor-pointer shrink-0" />
+                    
                     <div class="truncate flex-1">
-                      <p class="font-bold text-slate-900 truncate">
-                        {{ item.full_name }}
-                      </p>
-                      <p class="text-[10px] text-slate-500 truncate">
-                        {{ item.company_name || 'No Company' }} • {{ item.email }}
-                      </p>
+                      <p class="font-bold text-slate-800 truncate">{{ item.full_name }}</p>
+                      <p class="text-[9px] text-slate-500 truncate mt-0.5">{{ item.company_name || 'No Company' }} • {{ item.email }}</p>
                     </div>
                   </div>
                 </ng-container>
@@ -582,20 +903,20 @@
             </div>
           </div>
 
-          <!-- SELECTED CHIPS LIST -->
-          <div class="flex-1 flex flex-col min-h-[150px]">
-            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Selected List</h4>
-            <div class="flex-1 border border-dashed border-slate-200 rounded p-2.5 overflow-y-auto max-h-[300px] bg-slate-50/20">
-              <div *ngIf="selectedRecipients().length === 0" class="text-center py-10 text-[11px] text-slate-400 font-medium">
-                No recipients selected. Use the filters and dropdown to add target contacts.
+          <!-- Selected chips -->
+          <div class="flex-1 flex flex-col min-h-[140px]">
+            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Selected Recipients</h4>
+            <div class="flex-1 border border-slate-200 rounded-[6px] p-2.5 overflow-y-auto max-h-[220px] bg-slate-50/20">
+              <div *ngIf="selectedRecipients().length === 0" class="text-center py-8 text-[11px] text-slate-400 font-medium">
+                No recipients selected.
               </div>
               <div class="flex flex-wrap gap-1.5" *ngIf="selectedRecipients().length > 0">
                 <div *ngFor="let item of selectedRecipients()"
-                  class="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors shrink-0">
-                  <span class="truncate max-w-[150px]" [title]="item.full_name + ' (' + item.email + ')'">
+                  class="flex items-center gap-1.5 bg-white border border-slate-300 text-slate-700 pl-1.5 pr-2 py-0.5 rounded-[4px] text-[11px] font-semibold shadow-sm shrink-0">
+                  <span class="truncate max-w-[120px]" [title]="item.full_name + ' (' + item.email + ')'">
                     {{ item.full_name }}
                   </span>
-                  <button type="button" (click)="toggleRecipient(item)" class="text-slate-400 hover:text-red-600 transition-colors focus:outline-none ml-0.5">
+                  <button type="button" (click)="toggleRecipient(item)" class="text-slate-400 hover:text-red-600 transition-colors focus:outline-none cursor-pointer">
                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -608,23 +929,49 @@
         </div>
       </div>
 
-      <div class="px-6 py-4 bg-white border-t border-slate-200 flex justify-between items-center">
-        <div class="text-xs text-slate-500 font-semibold" *ngIf="selectedRecipients().length > 0">
-          Target Audience: <span class="font-bold text-slate-900">{{ selectedRecipients().length }} selected visitor(s).</span>
+      <!-- Enterprise Footer Actions -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+        <div class="text-[11px] text-slate-500 font-semibold">
+          <span *ngIf="selectedRecipients().length > 0">
+            Target: <strong class="text-slate-800 font-bold">{{ selectedRecipients().length }} contacts</strong> selected
+          </span>
+          <span *ngIf="selectedRecipients().length === 0" class="text-red-600 font-bold">
+            * At least one recipient is required.
+          </span>
         </div>
-        <div class="text-xs text-red-500 font-bold" *ngIf="selectedRecipients().length === 0">
-          * At least one recipient is required.
-        </div>
-        <div class="flex items-center gap-3">
+        
+        <div class="flex items-center gap-2">
+          <!-- Cancel Button -->
           <button (click)="closeComposer()" [disabled]="isSubmitting()"
-            class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 text-[13px] font-bold rounded shadow-sm focus:outline-none transition-colors disabled:opacity-50">
+            class="bg-white border border-slate-350 text-slate-700 hover:bg-slate-50 font-bold text-[11px] uppercase tracking-wider py-2 px-3.5 rounded-[6px] transition-colors disabled:opacity-50 cursor-pointer">
             Cancel
           </button>
-          <button (click)="sendCampaign()" [disabled]="isSubmitting() || selectedRecipients().length === 0"
-            class="px-5 py-2 text-[13px] font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-sm transition-all focus:ring-1 focus:ring-offset-1 focus:ring-slate-900 disabled:opacity-60 disabled:cursor-not-allowed">
-            <span *ngIf="!isSubmitting()">Trigger Broadcast</span>
-            <span *ngIf="isSubmitting()" class="flex items-center gap-1.5">
-              <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          
+          <!-- Save Draft Button -->
+          <button (click)="saveDraft()" [disabled]="isSubmitting()"
+            class="bg-white border border-blue-300 text-blue-700 hover:bg-blue-50 font-bold text-[11px] uppercase tracking-wider py-2 px-3.5 rounded-[6px] transition-all disabled:opacity-50 cursor-pointer shadow-sm">
+            Save Draft
+          </button>
+          
+          <!-- Schedule Campaign Button (visible when sendMode is 'later') -->
+          <button *ngIf="composerForm.get('sendMode')?.value === 'later'" (click)="sendCampaign()" [disabled]="isSubmitting() || selectedRecipients().length === 0"
+            class="bg-gradient-to-r from-[#4F46E5] to-[#6366F1] text-white hover:from-[#3730A3] hover:to-[#4F46E5] font-bold text-[11px] uppercase tracking-wider py-2 px-4 rounded-[6px] transition-all disabled:opacity-50 cursor-pointer shadow-md border-0">
+            <span *ngIf="!isSubmitting()">Schedule Campaign</span>
+            <span *ngIf="isSubmitting()" class="flex items-center gap-1">
+              <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Scheduling...
+            </span>
+          </button>
+          
+          <!-- Send Now Button (visible when sendMode is 'now') -->
+          <button *ngIf="composerForm.get('sendMode')?.value === 'now'" (click)="sendCampaign()" [disabled]="isSubmitting() || selectedRecipients().length === 0"
+            class="bg-gradient-to-r from-[#0F3D91] to-[#2563EB] text-white hover:from-[#0A2F73] hover:to-[#1D4ED8] font-bold text-[11px] uppercase tracking-wider py-2 px-4 rounded-[6px] transition-all disabled:opacity-50 cursor-pointer shadow-md border-0">
+            <span *ngIf="!isSubmitting()">Send Now</span>
+            <span *ngIf="isSubmitting()" class="flex items-center gap-1">
+              <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -633,6 +980,7 @@
           </button>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -694,21 +1042,9 @@
               <span class="font-extrabold text-green-700">{{ selectedCampaign()?.sent_count }}</span>
             </div>
 
-            <div class="flex items-center justify-between text-xs border-b border-slate-100 pb-2">
-              <span class="text-slate-500 font-medium">Opened Events</span>
-              <span class="font-extrabold text-indigo-700">{{ selectedCampaign()?.open_count }}</span>
-            </div>
-
-            <div class="flex items-center justify-between text-xs border-b border-slate-100 pb-2">
+            <div class="flex items-center justify-between text-xs">
               <span class="text-slate-500 font-medium">Failed Deliveries</span>
               <span class="font-extrabold text-red-600">{{ selectedCampaign()?.failed_count }}</span>
-            </div>
-
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-slate-500 font-medium">Recipient Open Yield</span>
-              <span class="font-extrabold text-slate-900">
-                {{ selectedCampaign()!.sent_count > 0 ? Math.round((selectedCampaign()!.open_count / selectedCampaign()!.sent_count) * 100) : 0 }}%
-              </span>
             </div>
           </div>
         </div>
@@ -726,7 +1062,6 @@
                   <th scope="col" class="px-6 py-3">Email Address</th>
                   <th scope="col" class="px-6 py-3">Delivery Status</th>
                   <th scope="col" class="px-6 py-3">Dispatched Time</th>
-                  <th scope="col" class="px-6 py-3">Opened Time</th>
                   <th scope="col" class="px-6 py-3">SMTP Connection Log</th>
                 </tr>
               </thead>
@@ -737,14 +1072,12 @@
                   <td class="px-6 py-3">
                     <span [ngClass]="{
                       'bg-green-100 text-green-800 border-green-200': rec.status === 'Delivered',
-                      'bg-indigo-100 text-indigo-800 border-indigo-200': rec.status === 'Opened',
                       'bg-red-100 text-red-800 border-red-200': rec.status === 'Failed'
                     }" class="px-1.5 py-0.5 text-[9px] font-bold rounded-sm border uppercase tracking-wide">
                       {{ rec.status }}
                     </span>
                   </td>
                   <td class="px-6 py-3 text-slate-500">{{ rec.sent_at | date:'short' }}</td>
-                  <td class="px-6 py-3 text-slate-500">{{ rec.opened_at ? (rec.opened_at | date:'short') : '-' }}</td>
                   <td class="px-6 py-3 text-slate-500 font-medium max-w-[200px] truncate" [title]="rec.error_message || ''">
                     {{ rec.error_message || '-' }}
                   </td>
@@ -865,6 +1198,332 @@
           <span *ngIf="isSubmitting()">Deleting...</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Reschedule Modal -->
+  <div *ngIf="rescheduleModalOpen()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="bg-white rounded-[6px] shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-205 border border-slate-300">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center px-5 py-3.5 bg-[#0f172a] text-white border-b border-slate-700">
+        <div>
+          <h2 class="text-sm font-bold tracking-wider uppercase text-white font-['Plus_Jakarta_Sans',sans-serif]">Reschedule Campaign</h2>
+          <p class="text-[11px] text-slate-300 mt-0.5 font-medium">Update schedule timing for this campaign</p>
+        </div>
+        <button (click)="closeRescheduleModal()" class="text-slate-400 hover:text-white hover:bg-slate-800 p-1.5 rounded-[4px] transition-colors focus:outline-none cursor-pointer">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 bg-slate-50/50 space-y-4">
+        <p class="text-xs text-slate-500 font-medium">
+          Campaign: <strong class="text-slate-900">{{ rescheduleCampaign()?.name }}</strong>
+        </p>
+
+        <div class="grid grid-cols-1 gap-4">
+          <!-- Date -->
+          <div>
+            <label for="resDate" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Send Date</label>
+            <input id="resDate" type="date" [ngModel]="rescheduleDate()" (ngModelChange)="rescheduleDate.set($event)"
+              class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm transition-all" />
+          </div>
+
+          <!-- Time -->
+          <div>
+            <label for="resTime" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Send Time</label>
+            <input id="resTime" type="time" [ngModel]="rescheduleTime()" (ngModelChange)="rescheduleTime.set($event)"
+              class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm transition-all" />
+          </div>
+
+          <!-- Timezone -->
+          <div>
+            <label for="resTz" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Timezone</label>
+            <select id="resTz" [ngModel]="rescheduleTimezone()" (ngModelChange)="rescheduleTimezone.set($event)"
+              class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-[4px] text-xs font-semibold text-slate-800 outline-none focus:border-[#0f172a] focus:ring-1 focus:ring-[#0f172a] cursor-pointer shadow-sm transition-all">
+              <option value="IST">IST (UTC+5:30)</option>
+              <option value="UTC">UTC (GMT+0)</option>
+              <option value="EST">EST (UTC-5)</option>
+              <option value="PST">PST (UTC-8)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Schedule Summary Card -->
+        <div *ngIf="rescheduleDate() && rescheduleTime()" 
+          class="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-[4px] text-xs font-semibold text-slate-700 shadow-sm animate-in fade-in duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>New Scheduled Time: <strong class="text-[#0f172a]">{{ formatDateSummary(rescheduleDate(), rescheduleTime(), rescheduleTimezone()) }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+        <button (click)="closeRescheduleModal()" [disabled]="isSubmitting()"
+          class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-[11px] uppercase tracking-wider py-2 px-3.5 rounded-[6px] transition-colors disabled:opacity-50 cursor-pointer">
+          Cancel
+        </button>
+        <button (click)="saveReschedule()" [disabled]="isSubmitting() || !rescheduleDate() || !rescheduleTime()"
+          class="bg-[#0f172a] border-[#0f172a] text-white hover:bg-black font-bold text-[11px] uppercase tracking-wider py-2 px-4 rounded-[6px] transition-colors disabled:opacity-50 cursor-pointer">
+          <span *ngIf="!isSubmitting()">Save Schedule</span>
+          <span *ngIf="isSubmitting()" class="flex items-center gap-1">
+            <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Confirm Action Dialog -->
+  <div *ngIf="confirmModalOpen()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity animate-in fade-in duration-300">
+    <div class="bg-white rounded-[6px] shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-300">
+      
+      <!-- Header -->
+      <div class="px-5 py-4 border-b border-slate-200 flex items-center gap-3">
+        <!-- Delete Warning Icon -->
+        <div *ngIf="confirmAction() === 'delete'" class="p-2 bg-red-50 border border-red-200 text-red-650 rounded-full shrink-0">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+        <!-- Trigger/Send/Resume Icon -->
+        <div *ngIf="confirmAction() === 'send_now' || confirmAction() === 'trigger_schedule' || confirmAction() === 'resume'" class="p-2 bg-green-50 border border-green-200 text-green-700 rounded-full shrink-0">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <!-- Pause Icon -->
+        <div *ngIf="confirmAction() === 'pause'" class="p-2 bg-yellow-50 border border-yellow-250 text-yellow-800 rounded-full shrink-0">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        
+        <div>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900">
+            <span *ngIf="confirmAction() === 'delete'">Delete Campaign</span>
+            <span *ngIf="confirmAction() === 'send_now'">Send Campaign Now</span>
+            <span *ngIf="confirmAction() === 'trigger_schedule'">Trigger Scheduled Campaign</span>
+            <span *ngIf="confirmAction() === 'pause'">Pause Campaign Schedule</span>
+            <span *ngIf="confirmAction() === 'resume'">Resume Campaign Schedule</span>
+          </h2>
+          <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Confirm Action</p>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5 bg-white space-y-2">
+        <p class="text-xs font-semibold text-slate-700">
+          Are you sure you want to proceed with this action for campaign:
+          <strong class="text-slate-950 font-extrabold">"{{ confirmCampaign()?.name }}"</strong>?
+        </p>
+
+        <!-- Warnings and info logs -->
+        <div *ngIf="confirmAction() === 'delete'" class="p-2.5 bg-red-50 border border-red-150 rounded-[4px] text-[11px] text-red-800 font-medium">
+          <strong>Warning:</strong> Deleting this campaign will permanently remove it from the system. If it is currently sending, it may disrupt delivery. This action is irreversible.
+        </div>
+        <div *ngIf="confirmAction() === 'send_now'" class="p-2.5 bg-green-50 border border-green-150 rounded-[4px] text-[11px] text-green-800 font-medium">
+          <strong>Notice:</strong> This campaign will be dispatched immediately to all <strong>{{ getRecipientsCount(confirmCampaign()!) }} selected recipient(s)</strong>.
+        </div>
+        <div *ngIf="confirmAction() === 'trigger_schedule'" class="p-2.5 bg-green-50 border border-green-150 rounded-[4px] text-[11px] text-green-800 font-medium">
+          <strong>Notice:</strong> This scheduled campaign will bypass its timer and trigger immediate background sending.
+        </div>
+        <div *ngIf="confirmAction() === 'pause'" class="p-2.5 bg-yellow-50 border border-yellow-150 rounded-[4px] text-[11px] text-yellow-800 font-medium">
+          <strong>Notice:</strong> This will temporarily cancel the scheduled execution. The status will update to <strong>Cancelled</strong>, and you can resume or reschedule it later.
+        </div>
+        <div *ngIf="confirmAction() === 'resume'" class="p-2.5 bg-slate-50 border border-slate-200 rounded-[4px] text-[11px] text-slate-700 font-medium">
+          <strong>Notice:</strong> This will re-active the scheduled campaign trigger time.
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+        <button (click)="closeConfirmModal()" [disabled]="isSubmitting()"
+          class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-[11px] uppercase tracking-wider py-2 px-3.5 rounded-[6px] transition-colors disabled:opacity-50 cursor-pointer">
+          Cancel
+        </button>
+        <button (click)="executeConfirmAction()" [disabled]="isSubmitting()"
+          [ngClass]="{
+            'bg-red-655 hover:bg-red-700 text-white': confirmAction() === 'delete',
+            'bg-green-700 hover:bg-green-800 text-white': confirmAction() === 'send_now' || confirmAction() === 'trigger_schedule' || confirmAction() === 'resume',
+            'bg-yellow-600 hover:bg-yellow-700 text-white': confirmAction() === 'pause'
+          }"
+          class="font-bold text-[11px] uppercase tracking-wider py-2 px-4 rounded-[6px] transition-colors disabled:opacity-50 cursor-pointer">
+          <span *ngIf="!isSubmitting()">Confirm Action</span>
+          <span *ngIf="isSubmitting()" class="flex items-center gap-1">
+            <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Processing...
+          </span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div *ngIf="previewModalOpen()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <div class="bg-white rounded-[6px] shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 border border-slate-300">
+      
+      <!-- Enterprise Theme Blue Header -->
+      <div class="flex justify-between items-center px-5 py-3.5 bg-gradient-to-r from-[#0F3D91] to-[#1D4ED8] text-white border-b border-blue-900/30">
+        <div>
+          <h2 class="text-sm font-bold tracking-wider uppercase text-white font-['Plus_Jakarta_Sans',sans-serif]">Campaign Preview</h2>
+          <p class="text-[11px] text-slate-300 mt-0.5 font-medium">Verify your email look and target recipients list</p>
+        </div>
+        
+        <!-- Desktop / Mobile Toggle -->
+        <div class="flex items-center gap-1.5 bg-blue-950/40 p-1 rounded-[4px] border border-blue-900/30 animate-in fade-in duration-200">
+          <button type="button" (click)="previewDevice.set('desktop')" 
+            [class.bg-[#0F3D91]]="previewDevice() === 'desktop'"
+            [class.text-white]="previewDevice() === 'desktop'"
+            [class.text-slate-300]="previewDevice() !== 'desktop'"
+            class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-[3px] transition-all cursor-pointer">
+            Desktop
+          </button>
+          <button type="button" (click)="previewDevice.set('mobile')"
+            [class.bg-[#0F3D91]]="previewDevice() === 'mobile'"
+            [class.text-white]="previewDevice() === 'mobile'"
+            [class.text-slate-300]="previewDevice() !== 'mobile'"
+            class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-[3px] transition-all cursor-pointer">
+            Mobile
+          </button>
+        </div>
+
+        <button (click)="closeCampaignPreview()" class="text-slate-200 hover:text-white hover:bg-blue-800/30 p-1.5 rounded-[4px] transition-colors focus:outline-none cursor-pointer">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto flex-1 bg-slate-50 flex flex-col lg:flex-row lg:items-start gap-5">
+        
+        <!-- Preview Panel (Left / Center) -->
+        <div class="flex-1 flex justify-center items-center p-4 bg-slate-100 rounded-[6px] border border-slate-200 min-h-[400px]">
+          
+          <!-- Desktop Client Mockup -->
+          <div *ngIf="previewDevice() === 'desktop'" class="w-full bg-white rounded-[4px] border border-slate-300 shadow-md overflow-hidden flex flex-col animate-in fade-in duration-200">
+            <!-- Header bar of email client -->
+            <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex flex-col gap-1 text-[11px] font-semibold text-slate-600">
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-400 w-12 text-right">From:</span>
+                <span class="text-slate-800 font-bold">Enterprise Admin &lt;admin@enterprise.com&gt;</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-400 w-12 text-right">To:</span>
+                <span class="text-slate-600 font-medium">[Recipients list: {{ previewRecipientsList().length }} contact(s)]</span>
+              </div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-slate-400 w-12 text-right">Subject:</span>
+                <span class="text-slate-900 font-bold text-[12px]">{{ previewCampaign()?.subject }}</span>
+              </div>
+            </div>
+            <!-- Email Body Content -->
+            <div class="p-6 overflow-y-auto max-h-[350px] min-h-[250px] text-slate-800 text-xs leading-relaxed whitespace-pre-wrap font-medium">
+{{ previewCampaign()?.body }}
+            </div>
+          </div>
+
+          <!-- Mobile Phone Mockup -->
+          <div *ngIf="previewDevice() === 'mobile'" class="w-[300px] h-[550px] bg-slate-950 rounded-[32px] border-4 border-slate-800 shadow-2xl p-3 flex flex-col relative overflow-hidden animate-in zoom-in-95 duration-200 shrink-0">
+            <!-- Speaker Slit & Camera Notch -->
+            <div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-950 rounded-full flex items-center justify-center gap-2 z-20">
+              <div class="w-10 h-1 bg-slate-800 rounded-full"></div>
+              <div class="w-2.5 h-2.5 bg-slate-900 rounded-full"></div>
+            </div>
+            
+            <!-- Mobile Screen Area -->
+            <div class="flex-1 bg-white rounded-[20px] overflow-hidden flex flex-col border border-slate-900 mt-4">
+              <!-- Mobile App Header / Mail Header -->
+              <div class="bg-slate-900 text-white px-3.5 pt-3.5 pb-2 text-[10px] font-semibold border-b border-slate-800 flex flex-col gap-0.5">
+                <div class="flex items-center justify-between text-[8px] text-slate-400 pb-1 border-b border-slate-800/80 mb-1.5">
+                  <span>9:41 AM</span>
+                  <div class="flex items-center gap-1">
+                    <span>LTE</span>
+                    <span class="w-3.5 h-2 border border-slate-400 rounded-sm"></span>
+                  </div>
+                </div>
+                <div class="truncate">
+                  <span class="text-slate-400">Subject:</span> {{ previewCampaign()?.subject }}
+                </div>
+                <div class="text-[9px] text-slate-400 mt-0.5 truncate">
+                  <span class="text-slate-400">From:</span> Enterprise Admin
+                </div>
+              </div>
+              
+              <!-- Mobile Email Body -->
+              <div class="p-4 flex-1 overflow-y-auto text-[11px] leading-relaxed text-slate-800 whitespace-pre-wrap font-medium">
+{{ previewCampaign()?.body }}
+              </div>
+            </div>
+
+            <!-- Home indicator line -->
+            <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-slate-700 rounded-full"></div>
+          </div>
+
+        </div>
+
+        <!-- Target Recipients Directory Sidebar (Right) -->
+        <div class="w-full lg:w-[320px] bg-white p-4 rounded-[6px] border border-slate-200 shadow-sm flex flex-col max-h-[85vh] lg:max-h-[500px]">
+          <div class="border-b border-slate-200 pb-2 mb-3 flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Recipients List</span>
+            <span class="text-[10px] font-extrabold text-[#0f172a] bg-slate-100 border border-slate-300 px-2 py-0.5 rounded-[4px]">
+              {{ previewRecipientsList().length }} Selected
+            </span>
+          </div>
+
+          <!-- Schedule status details inside preview -->
+          <div class="mb-3 p-2.5 bg-slate-50 border border-slate-200 rounded-[4px] text-[11px] font-semibold text-slate-650 flex flex-col gap-1 shadow-sm">
+            <div class="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Campaign Settings</div>
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">Status:</span>
+              <span class="font-extrabold text-slate-900 uppercase text-[10px]">{{ previewCampaign()?.status || 'Draft' }}</span>
+            </div>
+            <div class="flex items-center gap-1" *ngIf="previewCampaign()?.scheduled_at">
+              <span class="text-slate-400">Scheduled:</span>
+              <span class="font-bold text-[#0f172a]">{{ formatTimestampToSummary(previewCampaign()?.scheduled_at, previewCampaign()?.timezone) }}</span>
+            </div>
+            <div class="flex items-center gap-1" *ngIf="!previewCampaign()?.scheduled_at">
+              <span class="text-slate-400">Mode:</span>
+              <span>Send Immediately</span>
+            </div>
+          </div>
+
+          <!-- Recipients scrollable list -->
+          <div class="flex-1 overflow-y-auto divide-y divide-slate-100 border border-slate-150 rounded-[4px] bg-slate-50/20">
+            <div *ngIf="previewRecipientsList().length === 0" class="text-center py-10 text-[10px] text-slate-400 font-medium">
+              No recipient records mapped
+            </div>
+            <div *ngFor="let item of previewRecipientsList()" class="p-2 text-[10px]">
+              <div class="font-bold text-slate-800 truncate">{{ item.full_name }}</div>
+              <div class="text-slate-500 truncate mt-0.5">{{ item.email }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <button (click)="closeCampaignPreview()"
+          class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-[11px] uppercase tracking-wider py-2 px-4 rounded-[6px] transition-colors cursor-pointer shadow-sm">
+          Close Preview
+        </button>
+      </div>
+
     </div>
   </div>
 

@@ -13,6 +13,12 @@ router.post('/templates', authenticateToken, campaignsController.createTemplate)
 router.put('/templates/:id', authenticateToken, campaignsController.updateTemplate);
 router.delete('/templates/:id', authenticateToken, campaignsController.deleteTemplate);
 router.post('/send', authenticateToken, campaignsController.sendCampaign);
+router.post('/', authenticateToken, campaignsController.createCampaign);
+router.put('/:id', authenticateToken, campaignsController.updateCampaign);
+router.post('/:id/trigger', authenticateToken, campaignsController.triggerCampaign);
+router.post('/:id/pause', authenticateToken, campaignsController.pauseCampaign);
+router.post('/:id/resume', authenticateToken, campaignsController.resumeCampaign);
+router.delete('/:id', authenticateToken, campaignsController.deleteCampaign);
 router.get('/visitor-history/:visitorId', authenticateToken, campaignsController.getVisitorRecipientHistory);
 
 module.exports = router;

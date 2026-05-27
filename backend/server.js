@@ -73,7 +73,10 @@ if (fs.existsSync(frontendDistPath)) {
 
 app.use(errorMiddleware);
 
+const { startScheduler } = require('./services/scheduler.service');
+
 testConnection();
+startScheduler();
 
 app.listen(port, () => {
   console.log(`API server running at port ${port}`);

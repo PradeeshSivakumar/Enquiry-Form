@@ -43,19 +43,24 @@ select:-webkit-autofill {
 }
 
 @keyframes float-device {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-6px);
   }
 }
 
 @keyframes waveform {
-  0%, 100% {
+
+  0%,
+  100% {
     height: 30%;
   }
+
   50% {
     height: 100%;
   }
@@ -189,4 +194,274 @@ select:-webkit-autofill {
   .data-table-card {
     padding: 0.75rem;
   }
+}
+
+/* ==========================================================================
+   UNIFIED PROFESSIONAL ERP DARK-BLUE ENTERPRISE THEME OVERRIDES
+   ========================================================================== */
+
+:root {
+  --primary-dark-blue: #123C7A;
+  --hover-dark-blue: #0F3267;
+  --active-blue: #1D4ED8;
+  --light-blue-accent: #2563EB;
+  --soft-background: #F8FAFC;
+  --page-background: #F5F7FB;
+  --border-color: #DCE3F1;
+  --primary-text: #1E293B;
+  --secondary-text: #64748B;
+  --muted-text: #94A3B8;
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --danger: #DC2626;
+  --white: #FFFFFF;
+}
+
+/* Global Body Text and Background Overrides */
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1E293B !important;
+  background-color: #F5F7FB !important;
+}
+
+/* Global Table Redesign */
+thead,
+.data-table thead,
+thead.bg-slate-900,
+thead.bg-slate-950,
+thead.bg-\[\#0f172a\],
+tr.bg-slate-900,
+tr.bg-slate-950,
+tr.bg-\[\#0f172a\],
+th.bg-slate-900,
+th.bg-slate-950,
+th.bg-\[\#0f172a\],
+th {
+  background: #123C7A !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+
+table tbody tr:hover,
+.data-table tbody tr:hover,
+tr.hover\:bg-slate-50:hover {
+  background: #F8FAFC !important;
+}
+
+table td,
+table th,
+.data-table td,
+td {
+  border-bottom-color: #E2E8F0 !important;
+}
+
+/* Global Primary Buttons (solid dark blue, no gradient, no glow) */
+button.bg-slate-900,
+button.bg-gray-900,
+button.bg-slate-950,
+button.bg-gray-950,
+button.bg-slate-900\/80,
+button.bg-\[\#0f172a\],
+button.bg-black,
+button.hover\:bg-slate-800:hover,
+button.hover\:bg-black:hover,
+button.bg-gradient-to-r:not(.bg-red-600),
+a.bg-slate-900,
+a.bg-gray-900,
+a.bg-slate-950,
+a.bg-\[\#0f172a\],
+.btn-primary-gradient {
+  background: #123C7A !important;
+  color: #ffffff !important;
+  transition: background 0.2s ease, transform 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+  border: none !important;
+}
+
+button.bg-slate-900:hover:not(:disabled),
+button.bg-gray-900:hover:not(:disabled),
+button.bg-slate-950:hover:not(:disabled),
+button.bg-gray-950:hover:not(:disabled),
+button.bg-slate-900\/80:hover:not(:disabled),
+button.bg-\[\#0f172a\]:hover:not(:disabled),
+button.bg-black:hover:not(:disabled),
+button.bg-gradient-to-r:hover:not(.bg-red-600),
+a.bg-slate-900:hover,
+a.bg-gray-900:hover,
+a.bg-slate-950:hover,
+a.bg-\[\#0f172a\]:hover {
+  background: #0F3267 !important;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.06) !important;
+  transform: none !important;
+}
+
+button.bg-slate-900:active:not(:disabled),
+button.bg-gray-900:active:not(:disabled),
+button.bg-\[\#0f172a\]:active:not(:disabled) {
+  transform: none !important;
+}
+
+/* Secondary / White Buttons with Dark Blue Borders */
+button.bg-white.border-slate-300,
+button.bg-white.border-gray-300,
+button.bg-white.border-slate-200,
+button.border-slate-350,
+.btn-secondary {
+  border: 1px solid #123C7A !important;
+  color: #123C7A !important;
+  background-color: #ffffff !important;
+  transition: all 0.2s ease !important;
+}
+
+button.bg-white.border-slate-300:hover:not(:disabled),
+button.bg-white.border-gray-300:hover:not(:disabled),
+button.bg-white.border-slate-200:hover:not(:disabled),
+button.border-slate-350:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled) {
+  background-color: #F8FAFC !important;
+  border-color: #0F3267 !important;
+  color: #0F3267 !important;
+  box-shadow: none !important;
+}
+
+/* Danger / Delete Action Buttons (soft red background) */
+button.bg-red-655,
+button.bg-red-650,
+button.bg-red-600,
+button.bg-red-700,
+button.hover\:bg-red-700:hover,
+.btn-danger {
+  background: #DC2626 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.04) !important;
+  transition: all 0.2s ease !important;
+}
+
+button.bg-red-655:hover:not(:disabled),
+button.bg-red-650:hover:not(:disabled),
+button.bg-red-600:hover:not(:disabled),
+button.bg-red-700:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
+  background: #B91C1C !important;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.06) !important;
+  transform: none !important;
+}
+
+/* Cards & Containers border and shadow */
+.card,
+.data-table-card,
+div.bg-white.border.border-slate-200,
+div.bg-white.border.border-gray-200,
+div.border.border-slate-200.bg-white,
+div.border.border-gray-200.bg-white,
+div.bg-white.rounded-md.border {
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  border-color: #DCE3F1 !important;
+}
+
+/* Inputs, Selects, & Textareas (White background, solid border, box-shadow focus) */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #ffffff !important;
+  border-color: #DCE3F1 !important;
+  color: #1E293B !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #123C7A !important;
+  box-shadow: 0 0 0 2px rgba(18, 60, 122, 0.05) !important;
+  outline: none !important;
+  background-color: #ffffff !important;
+}
+
+/* Checkbox Accent styling */
+input[type="checkbox"] {
+  accent-color: #1D4ED8 !important;
+}
+
+/* Base Border color utility overrides for standard components */
+.border-slate-100,
+.border-gray-100 {
+  border-color: #F8FAFC !important;
+}
+
+.border-slate-200,
+.border-gray-250,
+.border-gray-200 {
+  border-color: #DCE3F1 !important;
+}
+
+.border-slate-300,
+.border-gray-300 {
+  border-color: #CBD5E1 !important;
+}
+
+/* Arbitrary class maps for dynamic states */
+.border-\[\#0f172a\] {
+  border-color: #123C7A !important;
+}
+
+.text-\[\#0f172a\] {
+  color: #123C7A !important;
+}
+
+.text-\[\#0f3d91\] {
+  color: #123C7A !important;
+}
+
+.border-\[\#d6e4ff\] {
+  border-color: #DCE3F1 !important;
+}
+
+.bg-\[\#f5f8ff\] {
+  background-color: #F5F7FB !important;
+}
+
+.hover\:bg-\[\#eff6ff\]:hover {
+  background-color: #F8FAFC !important;
+}
+
+.hover\:border-\[\#60a5fa\]\/40:hover {
+  border-color: #DCE3F1 !important;
+}
+
+.text-\[\#0F3D91\] {
+  color: #123C7A !important;
+}
+
+.bg-\[\#EFF6FF\] {
+  background-color: #F8FAFC !important;
+}
+
+.focus\:ring-\[\#0f172a\]:focus {
+  box-shadow: 0 0 0 2px rgba(18, 60, 122, 0.05) !important;
+}
+
+.focus\:border-\[\#0f172a\]:focus {
+  border-color: #123C7A !important;
+}
+
+/* Success Toast Notifications mapping */
+div.fixed.bottom-6.right-6.bg-slate-900.border-slate-800,
+div.fixed.bottom-6.right-6.bg-\[\#0f172a\].border-gray-800 {
+  background: #16A34A !important;
+  border-color: #15803d !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 30px rgba(22, 163, 74, 0.1) !important;
+}
+
+/* Modal overlays backdrops re-themed to clean minimal backdrop with soft blue tint */
+div.fixed.inset-0.bg-slate-900\/40,
+div.fixed.inset-0.bg-black\/40,
+div.fixed.inset-0.bg-slate-900\/90,
+div.bg-slate-900\/40,
+div.bg-black\/40 {
+  background-color: rgba(15, 23, 42, 0.25) !important;
+  backdrop-filter: blur(2px) !important;
 }

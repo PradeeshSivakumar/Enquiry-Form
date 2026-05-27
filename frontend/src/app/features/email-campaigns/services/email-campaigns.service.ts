@@ -21,6 +21,13 @@ export interface Campaign {
   failed_count: number;
   open_count: number;
   created_at: string;
+  status?: string;
+  scheduled_at?: string;
+  timezone?: string;
+  recipient_ids?: string;
+  creator_name?: string;
+  trigger_type?: string;
+  next_execution?: string;
 }
 
 export interface CampaignRecipient {
@@ -44,6 +51,11 @@ export interface CampaignDashboard {
   totalFailed: number;
   openRate: number;
   recentCampaigns: Campaign[];
+  totalDrafts?: number;
+  totalScheduled?: number;
+  totalFailedCampaigns?: number;
+  pendingTriggers?: number;
+  sentToday?: number;
 }
 
 export interface VisitorHistoryResponse {
@@ -67,14 +79,20 @@ export class EmailCampaignsService {
     limit = 10,
     offset = 0,
     sortKey = 'created_at',
-    sortDirection = 'DESC'
+    sortDirection = 'DESC',
+    status = ''
   ): Observable<{ campaigns: Campaign[]; total: number }> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('search', search)
       .set('limit', limit.toString())
       .set('offset', offset.toString())
       .set('sortKey', sortKey)
       .set('sortDirection', sortDirection);
+    
+    if (status) {
+      params = params.set('status', status);
+    }
+    
     return this.http.get<{ campaigns: Campaign[]; total: number }>(this.apiUrl, { params });
   }
 
@@ -109,6 +127,54 @@ export class EmailCampaignsService {
       `${this.apiUrl}/send`,
       data
     );
+  }
+
+  createCampaign(data: {
+    name: string;
+    subject: string;
+    body: string;
+    templateId?: number | null;
+    visitorIds?: number[];
+    status?: string;
+    scheduleDate?: string;
+    scheduleTime?: string;
+    timezone?: string;
+  }): Observable<any> {
+    return this.http.post<any>(this.apiUrl, data);
+  }
+
+  updateCampaign(id: number, data: {
+    name: string;
+    subject: string;
+    body: string;
+    templateId?: number | null;
+    visitorIds?: number[];
+    status?: string;
+    scheduleDate?: string;
+    scheduleTime?: string;
+    timezone?: string;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data);
+  }
+
+  triggerCampaign(id: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/trigger`, {});
+  }
+
+  pauseCampaign(id: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/pause`, {});
+  }
+
+  resumeCampaign(id: number, data: {
+    scheduleDate: string;
+    scheduleTime: string;
+    timezone: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/resume`, data);
+  }
+
+  deleteCampaign(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
   getVisitorHistory(visitorId: number): Observable<VisitorHistoryResponse> {

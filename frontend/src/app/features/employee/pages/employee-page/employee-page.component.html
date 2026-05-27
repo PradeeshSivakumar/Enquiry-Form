@@ -52,104 +52,102 @@
     </div>
   </div>
 
-  <!-- Table Container -->
-  <div class="relative z-10 bg-white border border-gray-300 rounded-[6px] shadow-sm flex flex-col">
-    <div class="px-4 py-3 border-b border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row justify-between sm:justify-end gap-3 relative z-20">
-      <div class="relative w-full sm:w-[180px] group">
-        <select [value]="statusFilter()" (change)="onStatusFilterChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
-          <option value="1">Active</option>
-          <option value="0">Inactive</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </div>
-      </div>
-      <div class="relative w-full sm:w-[140px] group">
-        <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
-          <option value="5" [selected]="pageSize() === 5">5 rows</option>
-          <option value="10" [selected]="pageSize() === 10">10 rows</option>
-          <option value="25" [selected]="pageSize() === 25">25 rows</option>
-        </select>
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-          <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </div>
+  <!-- Toolbar -->
+  <div class="flex justify-end items-center gap-3 mb-4 relative z-20">
+    <div class="relative w-full sm:w-[180px] group">
+      <select [value]="statusFilter()" (change)="onStatusFilterChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+      </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+        <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
       </div>
     </div>
-
-    <!-- Loading State -->
-    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
+    <div class="relative w-full sm:w-[140px] group">
+      <select (change)="onPageSizeChange($event)" class="w-full appearance-none bg-white border border-gray-300 text-gray-700 py-1.5 pl-3 pr-8 rounded-[6px] text-sm font-medium outline-none focus:ring-1 focus:ring-[#0f172a] focus:border-[#0f172a] cursor-pointer shadow-sm">
+        <option value="5" [selected]="pageSize() === 5">5 rows</option>
+        <option value="10" [selected]="pageSize() === 10">10 rows</option>
+        <option value="25" [selected]="pageSize() === 25">25 rows</option>
+      </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
+        <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </div>
     </div>
-
-    <!-- Error State -->
-    <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 m-4 rounded-[6px] border border-red-200 flex items-center shadow-sm">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-      <span class="text-sm font-medium">{{ error() }}</span>
-    </div>
-
-    <!-- Data Table -->
-    <div *ngIf="!loading() && !error() && filteredEmployees().length > 0" class="overflow-x-auto min-h-[350px]">
-      <table class="min-w-full text-left text-sm border-collapse">
-        <thead class="bg-[#0f172a] text-white sticky top-0 z-10">
-          <tr>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12 text-center">#</th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Name</th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Email</th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Mobile Number</th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Role</th>
-            <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Status</th>
-            <th *ngIf="canEdit || canDelete" scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
-          <tr *ngFor="let emp of paginatedEmployees(); let i = index" class="hover:bg-[#f8fafc] transition-colors">
-            <td class="px-4 py-2.5 text-gray-500 font-medium text-center">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
-            <td class="px-4 py-2.5 font-semibold text-gray-900">{{ emp.name }}</td>
-            <td class="px-4 py-2.5 text-gray-700">{{ emp.email }}</td>
-            <td class="px-4 py-2.5 text-gray-700">{{ emp.mobile_number }}</td>
-            <td class="px-4 py-2.5">
-              <span class="bg-gray-100 border border-gray-200 text-[#0f172a] font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded">{{ emp.role }}</span>
-            </td>
-            <td class="px-4 py-2.5">
-              <span class="font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded border" [ngClass]="getStatusLabel(emp.status) === 'Inactive' ? 'bg-gray-100 border-gray-200 text-gray-600' : 'bg-green-50 border-green-200 text-green-700'">
-                {{ getStatusLabel(emp.status) }}
-              </span>
-            </td>
-            <td *ngIf="canEdit || canDelete" class="px-4 py-2.5 text-right">
-              <div class="flex items-center justify-end gap-1.5">
-                <button *ngIf="canEdit" (click)="openEditModal(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                </button>
-                <button *ngIf="canDelete" (click)="openDeleteConfirmation(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination -->
-    <app-pagination
-      *ngIf="filteredEmployees().length > 0"
-      [totalItems]="filteredEmployees().length"
-      [pageSize]="pageSize()"
-      [currentPage]="currentPage()"
-      (pageChange)="currentPage.set($event)"
-      (pageSizeChange)="pageSize.set($event); currentPage.set(1)">
-    </app-pagination>
   </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border border-gray-200 rounded-[6px] mb-4">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 mb-4 rounded-[6px] border border-red-200 flex items-center shadow-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <span class="text-sm font-medium">{{ error() }}</span>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!loading() && !error() && filteredEmployees().length > 0" class="bg-white border border-gray-300 rounded-[6px] shadow-sm overflow-x-auto min-h-[350px]">
+    <table class="min-w-full text-left text-sm border-collapse">
+      <thead class="bg-[#0f172a] text-white">
+        <tr>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0 w-12 text-center">#</th>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Name</th>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Email</th>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Mobile Number</th>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Role</th>
+          <th scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider border-r border-white/20 last:border-r-0">Status</th>
+          <th *ngIf="canEdit || canDelete" scope="col" class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
+        <tr *ngFor="let emp of paginatedEmployees(); let i = index" class="hover:bg-[#f8fafc] transition-colors">
+          <td class="px-4 py-2.5 text-gray-500 font-medium text-center">{{ (currentPage() - 1) * pageSize() + i + 1 }}</td>
+          <td class="px-4 py-2.5 font-semibold text-gray-900">{{ emp.name }}</td>
+          <td class="px-4 py-2.5 text-gray-700">{{ emp.email }}</td>
+          <td class="px-4 py-2.5 text-gray-700">{{ emp.mobile_number }}</td>
+          <td class="px-4 py-2.5">
+            <span class="bg-gray-100 border border-gray-200 text-[#0f172a] font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded">{{ emp.role }}</span>
+          </td>
+          <td class="px-4 py-2.5">
+            <span class="font-semibold px-2 py-0.5 text-[10px] uppercase tracking-wider rounded border" [ngClass]="getStatusLabel(emp.status) === 'Inactive' ? 'bg-gray-100 border-gray-200 text-gray-600' : 'bg-green-50 border-green-200 text-green-700'">
+              {{ getStatusLabel(emp.status) }}
+            </span>
+          </td>
+          <td *ngIf="canEdit || canDelete" class="px-4 py-2.5 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              <button *ngIf="canEdit" (click)="openEditModal(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none" title="Edit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+              <button *ngIf="canDelete" (click)="openDeleteConfirmation(emp)" class="p-1.5 border border-gray-300 rounded text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors focus:outline-none" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="filteredEmployees().length > 0"
+    [totalItems]="filteredEmployees().length"
+    [pageSize]="pageSize()"
+    [currentPage]="currentPage()"
+    (pageChange)="currentPage.set($event)"
+    (pageSizeChange)="pageSize.set($event); currentPage.set(1)">
+  </app-pagination>
 </section>
 
 <!-- Add/Edit Employee Modal -->
