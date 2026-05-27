@@ -1142,12 +1142,13 @@ export class EmailCampaignsPageComponent implements OnInit {
       this.showToast('Access denied: You do not have permission to export campaign reports.', 'error');
       return;
     }
-    const headers = ['Recipient Name', 'Email Address', 'Delivery Status', 'Sent Date', 'SMTP Error Message'];
+    const headers = ['Recipient Name', 'Email Address', 'Delivery Status', 'Sent Date', 'Opened Date', 'SMTP Error Message'];
     const rows = campaign.recipients.map(r => {
       const name = r.visitor_name || 'N/A';
       const sent = new Date(r.sent_at).toLocaleString();
+      const opened = r.opened_at ? new Date(r.opened_at).toLocaleString() : '-';
       const error = r.error_message || '-';
-      return `"${name}","${r.email}","${r.status}","${sent}","${error}"`;
+      return `"${name}","${r.email}","${r.status}","${sent}","${opened}","${error}"`;
     });
 
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');

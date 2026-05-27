@@ -18,7 +18,7 @@
 
 .dashboard-header h1 {
   margin: 0;
-  color: #1E293B;
+  color: #081028;
   font-size: clamp(28px, 4vw, 42px);
   font-weight: 800;
   letter-spacing: 0;
@@ -32,7 +32,7 @@
 
 .eyebrow {
   margin: 0 0 8px !important;
-  color: #123C7A !important;
+  color: #081028 !important;
   font-size: 12px !important;
   font-weight: 800;
   letter-spacing: 0;
@@ -45,19 +45,20 @@
   gap: 9px;
   min-height: 42px;
   padding: 0 16px;
-  border: 1px solid #DCE3F1;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   background: #ffffff;
-  color: #123C7A;
+  color: #081028;
   font-weight: 800;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 30px rgba(8, 16, 40, 0.08);
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .refresh-button:hover:not(:disabled) {
-  border-color: #0F3267;
-  background-color: #F8FAFC;
+  transform: translateY(-1px);
+  border-color: #081028;
+  box-shadow: 0 16px 34px rgba(8, 16, 40, 0.12);
 }
 
 .refresh-button:disabled {
@@ -68,7 +69,7 @@
 .refresh-icon {
   width: 22px;
   height: 22px;
-  color: #123C7A;
+  color: #081028;
   fill: currentColor;
 }
 
@@ -108,9 +109,9 @@
 .stat-card,
 .panel {
   background: #ffffff;
-  border: 1px solid #DCE3F1;
+  border: 1px solid #e5e7eb;
   border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 12px 34px rgba(8, 16, 40, 0.08);
 }
 
 .stat-card {
@@ -123,8 +124,9 @@
 }
 
 .stat-card:hover {
-  border-color: #DCE3F1;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transform: translateY(-3px);
+  border-color: rgba(8, 16, 40, 0.28);
+  box-shadow: 0 18px 44px rgba(8, 16, 40, 0.12);
 }
 
 .stat-card p {
@@ -136,7 +138,7 @@
 }
 
 .stat-card strong {
-  color: #1E293B;
+  color: #081028;
   font-size: 34px;
   font-weight: 850;
   line-height: 1;
@@ -149,8 +151,8 @@
   flex: 0 0 auto;
   place-items: center;
   border-radius: 16px;
-  background: #F8FAFC;
-  color: #123C7A;
+  background: #f3f4f6;
+  color: #081028;
 }
 
 .stat-icon svg {
@@ -194,7 +196,7 @@
 
 .panel-header h2 {
   margin: 0;
-  color: #1E293B;
+  color: #081028;
   font-size: 19px;
   font-weight: 850;
   letter-spacing: 0;
@@ -226,7 +228,11 @@
   position: absolute;
   inset: 18px;
   border-radius: 16px;
-  background-color: #F8FAFC;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent),
+    repeating-linear-gradient(to bottom, #f3f4f6 0 1px, transparent 1px 58px);
+  background-size: 180px 100%, 100% 100%;
+  animation: shimmer 1.2s infinite;
 }
 
 .table-panel {
@@ -249,7 +255,7 @@ table {
 th,
 td {
   padding: 15px 14px;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e5e7eb;
   text-align: left;
   vertical-align: top;
 }
@@ -258,8 +264,8 @@ th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #123C7A;
-  color: #ffffff;
+  background: #ffffff;
+  color: #6b7280;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0;
@@ -267,12 +273,12 @@ th {
 }
 
 td {
-  color: #1E293B;
+  color: #374151;
   font-size: 14px;
 }
 
 td strong {
-  color: #1E293B;
+  color: #081028;
   font-weight: 850;
 }
 
@@ -281,7 +287,7 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: #F8FAFC;
+  background: #f9fafb;
 }
 
 .products-cell {
@@ -323,15 +329,16 @@ tbody tr:hover {
   align-items: center;
   gap: 16px;
   padding: 14px;
-  border: 1px solid #DCE3F1;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   background: #ffffff;
   transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .venue-row-item:hover {
-  border-color: #DCE3F1;
-  background: #F8FAFC;
+  transform: translateX(3px);
+  border-color: rgba(8, 16, 40, 0.28);
+  background: #fbfcff;
 }
 
 .venue-meta {
@@ -341,7 +348,7 @@ tbody tr:hover {
 }
 
 .venue-meta strong {
-  color: #1E293B;
+  color: #081028;
   font-size: 15px;
 }
 
@@ -357,20 +364,20 @@ tbody tr:hover {
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
-  background: #DCE3F1;
+  background: #f3f4f6;
 }
 
 .venue-meter span {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #123C7A;
+  background: linear-gradient(90deg, #081028, #2563eb);
   transition: width 600ms ease;
 }
 
 .venue-count {
   justify-self: end;
-  color: #1E293B;
+  color: #081028;
   font-size: 18px;
 }
 
@@ -386,7 +393,7 @@ tbody tr:hover {
 }
 
 .empty-state strong {
-  color: #1E293B;
+  color: #081028;
   font-size: 18px;
 }
 
@@ -399,7 +406,9 @@ tbody tr:hover {
 .skeleton {
   display: block;
   border-radius: 999px;
-  background-color: #F8FAFC;
+  background: linear-gradient(90deg, #f3f4f6, #ffffff, #f3f4f6);
+  background-size: 220px 100%;
+  animation: shimmer 1.2s infinite;
 }
 
 .skeleton-card {

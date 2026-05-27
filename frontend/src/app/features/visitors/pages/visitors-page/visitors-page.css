@@ -35,7 +35,7 @@
   }
 
   :host ::ng-deep thead {
-    background: #123C7A !important;
+    background: #0f172a !important;
     color: white !important;
   }
 

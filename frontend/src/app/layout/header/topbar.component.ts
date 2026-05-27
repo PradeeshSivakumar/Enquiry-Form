@@ -9,97 +9,89 @@ import { AuthService } from '../../core/auth/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <header class="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#DCE3F1] shadow-[0_1px_4px_rgba(15,23,42,0.04)] transition-all duration-300">
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] transition-all duration-300">
       <div class="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[72px]">
         <div class="flex items-center gap-4">
-          <button (click)="layout.toggleSidebar()" class="p-2 rounded-xl hover:bg-[#F8FAFC] text-gray-600 transition-colors duration-200">
+          <button (click)="layout.toggleSidebar()" class="p-2 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
- 
+
           <div class="flex items-center gap-2">
-            <h2 class="text-[16px] sm:text-[18px] font-extrabold text-[#1E293B] tracking-tight font-['Plus_Jakarta_Sans',sans-serif]">Niraltek Enquiry Form</h2>
+            <h2 class="text-[16px] sm:text-[18px] font-extrabold text-slate-800 tracking-tight font-['Plus_Jakarta_Sans',sans-serif]">Niraltek Enquiry Form</h2>
           </div>
         </div>
 
-        <div class="flex items-center gap-3" *ngIf="authService.currentUser() as user">
-          <!-- Profile Dropdown Container -->
-          <div #profileContainer class="relative flex items-center">
-            <button
-              type="button"
-              (click)="toggleProfileMenu()"
-              class="flex items-center gap-3 rounded-full border border-[#DCE3F1] bg-white p-1.5 pr-4 shadow-sm transition hover:border-[#123C7A] hover:bg-[#F8FAFC] hover:ring-2 hover:ring-[#123C7A]/5"
-              aria-haspopup="menu"
-              [attr.aria-expanded]="isProfileMenuOpen()">
-              <img [src]="'https://ui-avatars.com/api/?name=' + user.name.split(' ').join('+') + '&background=123C7A&color=fff'" alt="User" class="h-8 w-8 rounded-full object-cover shadow-inner" />
-              <div class="hidden md:flex flex-col items-start justify-center">
-                <span class="text-[13px] font-bold text-gray-900 leading-tight">{{ user.name }}</span>
-                <span class="text-[11px] font-semibold text-gray-500 leading-tight uppercase tracking-wide">{{ user.role }}</span>
-              </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 text-gray-400 transition-transform md:block" [class.rotate-180]="isProfileMenuOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            <div
-              *ngIf="isProfileMenuOpen()"
-              class="absolute right-0 top-[calc(100%+10px)] z-[90] w-64 overflow-hidden rounded-2xl border border-[#DCE3F1] bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)]"
-              role="menu">
-              <div class="border-b border-[#DCE3F1] px-4 py-3 bg-[#F8FAFC]">
-                <div class="text-sm font-extrabold text-[#123C7A]">{{ user.name }}</div>
-                <div class="mt-0.5 text-xs font-bold uppercase tracking-wide text-gray-500">{{ user.role }}</div>
-              </div>
-              <button
-                type="button"
-                (click)="openPasswordModal()"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-gray-800 transition hover:bg-[#F8FAFC] hover:text-[#123C7A]"
-                role="menuitem">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#123C7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586l6.257-6.257A6 6 0 1121 9z" />
-                </svg>
-                Change Password
-              </button>
-
-              <button
-                type="button"
-                (click)="openLogoutConfirm()"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-[#DC2626] transition hover:bg-red-50/50 border-t border-[#DCE3F1]"
-                role="menuitem">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#DC2626]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Logout Session
-              </button>
-            </div>
-          </div>
-
-          <!-- Divider -->
-          <div class="h-5 w-[1px] bg-[#DCE3F1] hidden sm:block"></div>
-
-          <!-- Separate Outlined Red Logout Button (Right-most Corner) -->
+        <div #profileContainer class="relative flex items-center gap-2 sm:gap-4" *ngIf="authService.currentUser() as user">
           <button
             type="button"
-            (click)="openLogoutConfirm()"
-            class="group flex items-center rounded-xl border border-[#DC2626] bg-white h-[38px] px-3.5 shadow-sm transition-all duration-200 hover:bg-red-50/50 hover:shadow-md cursor-pointer focus:outline-none shrink-0"
-            title="Log Out">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#DC2626] transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            (click)="toggleProfileMenu()"
+            class="flex items-center gap-3 rounded-full border border-gray-200 bg-white p-1.5 pr-4 shadow-sm transition hover:border-gray-300 hover:bg-gray-50"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="isProfileMenuOpen()">
+            <img [src]="'https://ui-avatars.com/api/?name=' + user.name.split(' ').join('+') + '&background=111111&color=fff'" alt="User" class="h-8 w-8 rounded-full object-cover shadow-inner" />
+            <div class="hidden md:flex flex-col items-start justify-center">
+              <span class="text-[13px] font-bold text-gray-900 leading-tight">{{ user.name }}</span>
+              <span class="text-[11px] font-semibold text-gray-500 leading-tight uppercase tracking-wide">{{ user.role }}</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 text-gray-400 transition-transform md:block" [class.rotate-180]="isProfileMenuOpen()" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            (click)="showLogoutConfirm.set(true)"
+            title="Logout"
+            class="hidden sm:flex items-center justify-center rounded-lg bg-red-600 p-2 text-white shadow-sm transition hover:bg-red-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
+
+          <div
+            *ngIf="isProfileMenuOpen()"
+            class="absolute right-0 top-[calc(100%+10px)] z-[90] w-64 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_18px_60px_-20px_rgba(0,0,0,0.35)]"
+            role="menu">
+            <div class="border-b border-gray-100 px-4 py-3">
+              <div class="text-sm font-extrabold text-gray-900">{{ user.name }}</div>
+              <div class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ user.role }}</div>
+            </div>
+            <button
+              type="button"
+              (click)="openPasswordModal()"
+              class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-gray-800 transition hover:bg-gray-50"
+              role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586l6.257-6.257A6 6 0 1121 9z" />
+              </svg>
+              Change Password
+            </button>
+            <button
+              type="button"
+              (click)="showLogoutConfirm.set(true)"
+              class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50 sm:hidden"
+              role="menuitem">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
+          </div>
         </div>
       </div>
+
     </header>
 
-    <!-- Change Password Modal -->
-    <div *ngIf="isPasswordModalOpen()" class="fixed inset-0 z-[100] flex min-h-screen items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]">
-      <div class="w-full max-w-md overflow-hidden rounded-[20px] border border-[#DCE3F1] bg-white shadow-[0_2px_8px_rgba(15,23,42,0.04)]">
-        <div class="flex items-center justify-between border-b border-[#DCE3F1] px-6 py-5">
+    <div *ngIf="isPasswordModalOpen()" class="fixed inset-0 z-[100] flex min-h-screen items-center justify-center bg-black/40 p-4 backdrop-blur-[6px]">
+      <div class="w-full max-w-md overflow-hidden rounded-[20px] border border-white/20 bg-white shadow-[0_24px_80px_-15px_rgba(0,0,0,0.4)]">
+        <div class="flex items-center justify-between border-b border-gray-100 px-6 py-5">
           <div>
             <h2 class="text-lg font-extrabold tracking-tight text-gray-900">Change Password</h2>
             <p class="mt-0.5 text-xs font-medium text-gray-500">Update your own login password</p>
           </div>
-          <button type="button" (click)="closePasswordModal()" class="rounded-full border border-[#DCE3F1] bg-[#F8FAFC] p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900">
+          <button type="button" (click)="closePasswordModal()" class="rounded-full border border-gray-200/60 bg-gray-50 p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -107,28 +99,28 @@ import { AuthService } from '../../core/auth/auth.service';
         </div>
 
         <form [formGroup]="passwordForm" (ngSubmit)="submitPasswordChange()" class="flex flex-col">
-          <div class="space-y-4 bg-[#F8FAFC]/50 p-6">
+          <div class="space-y-4 bg-gray-50/50 p-6">
             <div *ngIf="passwordError()" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold text-red-700">
               {{ passwordError() }}
             </div>
             <div>
               <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-gray-500">Current Password</label>
-              <input type="password" formControlName="currentPassword" class="w-full rounded-lg border border-[#DCE3F1] bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-[#123C7A] focus:ring-2 focus:ring-[#123C7A]/5" [class.border-red-400]="passwordFieldInvalid('currentPassword')" />
+              <input type="password" formControlName="currentPassword" class="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-gray-900" [class.border-red-400]="passwordFieldInvalid('currentPassword')" />
             </div>
             <div>
               <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-gray-500">New Password</label>
-              <input type="password" formControlName="newPassword" class="w-full rounded-lg border border-[#DCE3F1] bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-[#123C7A] focus:ring-2 focus:ring-[#123C7A]/5" [class.border-red-400]="passwordFieldInvalid('newPassword')" />
-              <span *ngIf="passwordFieldInvalid('newPassword')" class="mt-1 block text-[10px] font-bold text-red-550">Minimum 8 characters</span>
+              <input type="password" formControlName="newPassword" class="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-gray-900" [class.border-red-400]="passwordFieldInvalid('newPassword')" />
+              <span *ngIf="passwordFieldInvalid('newPassword')" class="mt-1 block text-[10px] font-bold text-red-500">Minimum 8 characters</span>
             </div>
             <div>
               <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-gray-500">Confirm Password</label>
-              <input type="password" formControlName="confirmPassword" class="w-full rounded-lg border border-[#DCE3F1] bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-[#123C7A] focus:ring-2 focus:ring-[#123C7A]/5" [class.border-red-400]="passwordFieldInvalid('confirmPassword') || passwordForm.hasError('passwordMismatch')" />
-              <span *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.touched" class="mt-1 block text-[10px] font-bold text-red-555">Passwords do not match</span>
+              <input type="password" formControlName="confirmPassword" class="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-gray-900" [class.border-red-400]="passwordFieldInvalid('confirmPassword') || passwordForm.hasError('passwordMismatch')" />
+              <span *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.touched" class="mt-1 block text-[10px] font-bold text-red-500">Passwords do not match</span>
             </div>
           </div>
-          <div class="flex justify-end gap-3 border-t border-[#DCE3F1] bg-white px-6 py-4">
-            <button type="button" (click)="closePasswordModal()" class="rounded-lg border border-[#DCE3F1] bg-white px-5 py-2.5 text-sm font-bold text-gray-600 transition-all hover:bg-[#F8FAFC] hover:text-gray-900">Cancel</button>
-            <button type="submit" [disabled]="isChangingPassword()" class="rounded-lg bg-[#123C7A] hover:bg-[#0F3267] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all disabled:opacity-50">
+          <div class="flex justify-end gap-3 border-t border-gray-100 bg-white px-6 py-4">
+            <button type="button" (click)="closePasswordModal()" class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-bold text-gray-600 transition-all hover:bg-gray-50 hover:text-gray-900">Cancel</button>
+            <button type="submit" [disabled]="isChangingPassword()" class="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-black disabled:opacity-50">
               {{ isChangingPassword() ? 'Updating...' : 'Update Password' }}
             </button>
           </div>
@@ -136,14 +128,13 @@ import { AuthService } from '../../core/auth/auth.service';
       </div>
     </div>
 
-    <!-- Logout Confirmation Modal -->
-    <div *ngIf="isLogoutModalOpen()" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 transition-opacity">
-      <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl border border-gray-100 transform transition-all scale-100">
-        <h3 class="text-lg font-bold text-gray-900">Confirm Logout</h3>
-        <p class="text-[14px] text-gray-500 mt-2">Are you sure you want to log out of your session?</p>
+    <div *ngIf="showLogoutConfirm()" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+      <div class="bg-white rounded-lg p-6 w-full max-w-sm shadow-xl border border-gray-200">
+        <h3 class="text-base font-bold text-gray-900">Confirm Logout</h3>
+        <p class="text-[13px] text-gray-500 mt-2">Are you sure you want to log out of your session?</p>
         <div class="flex gap-3 mt-6">
-          <button (click)="closeLogoutModal()" class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-[13px] font-semibold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-          <button (click)="executeLogout()" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg text-[13px] font-semibold shadow-sm hover:bg-red-700 hover:shadow transition-all">Logout</button>
+          <button (click)="showLogoutConfirm.set(false)" class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-[13px] font-semibold hover:bg-gray-50">Cancel</button>
+          <button (click)="executeLogout()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-[13px] font-semibold hover:bg-red-700">Logout</button>
         </div>
       </div>
     </div>
@@ -154,14 +145,14 @@ export class TopbarComponent {
   layout = inject(LayoutService);
   authService = inject(AuthService);
   private fb = inject(FormBuilder);
-
+  
   @ViewChild('profileContainer') profileContainer?: ElementRef;
 
   isPasswordModalOpen = signal(false);
   isProfileMenuOpen = signal(false);
   isChangingPassword = signal(false);
+  showLogoutConfirm = signal(false);
   passwordError = signal<string | null>(null);
-  isLogoutModalOpen = signal(false);
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -228,17 +219,12 @@ export class TopbarComponent {
     });
   }
 
-  openLogoutConfirm(): void {
-    this.isProfileMenuOpen.set(false);
-    this.isLogoutModalOpen.set(true);
-  }
-
-  closeLogoutModal(): void {
-    this.isLogoutModalOpen.set(false);
+  logout(): void {
+    this.showLogoutConfirm.set(true);
   }
 
   executeLogout(): void {
     this.authService.logout();
-    this.isLogoutModalOpen.set(false);
+    this.showLogoutConfirm.set(false);
   }
 }
