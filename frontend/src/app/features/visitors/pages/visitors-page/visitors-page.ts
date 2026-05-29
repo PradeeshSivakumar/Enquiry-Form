@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as XLSX from 'xlsx';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { Visitor, VisitorsService } from '../../services/visitors.service';
@@ -83,6 +84,17 @@ export class VisitorsPage implements OnInit {
   // Add mode
   isAddModalOpen = signal<boolean>(false);
   isSubmitting = signal<boolean>(false);
+  
+  // Excel Bulk Import mode
+  isImportModalOpen = signal<boolean>(false);
+  importing = signal<boolean>(false);
+  dragOver = signal<boolean>(false);
+  parsedRows = signal<any[]>([]);
+  validationSummary = signal<{ total: number; valid: number; invalid: number; duplicates: number }>({ total: 0, valid: 0, invalid: 0, duplicates: 0 });
+  importMode = signal<'all' | 'valid_only'>('valid_only');
+  skipDuplicates = signal<boolean>(true);
+  importResults = signal<any | null>(null);
+  previewTab = signal<'all' | 'valid' | 'invalid'>('all');
   addVisitorForm!: FormGroup;
   selectedInterests = signal<string[]>([]);
   selectedFile = signal<File | null>(null);
@@ -194,8 +206,8 @@ export class VisitorsPage implements OnInit {
   // Pagination
   pageSize = signal<number>(5);
   currentPage = signal<number>(1);
-  sortKey = signal<string>('name');
-  sortDirection = signal<'asc' | 'desc'>('asc');
+  sortKey = signal<string>('created');
+  sortDirection = signal<'asc' | 'desc'>('desc');
 
   filteredVisitors = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -471,6 +483,338 @@ readonly leadCategoryStats = computed(() => {
   closeAddModal() {
     this.isAddModalOpen.set(false);
     document.body.style.overflow = 'auto';
+  }
+
+  openImportModal() {
+    this.isImportModalOpen.set(true);
+    this.parsedRows.set([]);
+    this.validationSummary.set({ total: 0, valid: 0, invalid: 0, duplicates: 0 });
+    this.importResults.set(null);
+    this.importing.set(false);
+    this.previewTab.set('all');
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeImportModal() {
+    this.isImportModalOpen.set(false);
+    document.body.style.overflow = 'auto';
+  }
+
+  onExcelDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(true);
+  }
+
+  onExcelDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(false);
+  }
+
+  onExcelDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(false);
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.handleImportFile(files[0]);
+    }
+  }
+
+  onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.handleImportFile(input.files[0]);
+    }
+  }
+
+  handleImportFile(file: File) {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext !== 'xlsx' && ext !== 'xls' && ext !== 'csv') {
+      this.showToast('Unsupported file type. Please upload .xlsx, .xls, or .csv', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rawData = XLSX.utils.sheet_to_json<any>(worksheet, { defval: '' });
+
+        if (rawData.length === 0) {
+          this.showToast('The uploaded sheet is empty.', 'error');
+          return;
+        }
+
+        this.validateParsedData(rawData);
+      } catch (err) {
+        console.error('Failed to parse sheet', err);
+        this.showToast('Failed to parse file. Ensure it is a valid spreadsheet.', 'error');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  validateParsedData(rawData: any[], isPreNormalized = false) {
+    let rows: any[];
+    if (isPreNormalized) {
+      rows = rawData.map(row => ({
+        ...row,
+        isValid: true,
+        errors: [] as string[],
+        isDuplicate: false,
+        duplicateType: '' as 'db' | 'sheet' | ''
+      }));
+    } else {
+      rows = rawData.map((rawRow, index) => {
+        const row: any = {};
+        for (const key of Object.keys(rawRow)) {
+          const k = key.trim().toLowerCase().replace(/[\s_]/g, '');
+          row[k] = rawRow[key];
+        }
+
+        const item: any = {
+          title: row.title || 'Mr',
+          full_name: String(row.fullname || row.name || '').trim(),
+          company_name: String(row.companyname || row.company || '').trim(),
+          job_title: String(row.jobtitle || row.designation || '').trim(),
+          email: String(row.email || '').trim(),
+          mobile: String(row.mobile || row.phone || '').trim(),
+          alternate_mobile: String(row.alternatemobile || '').trim(),
+          office_number: String(row.officenumber || '').trim(),
+          department: String(row.department || '').trim(),
+          interests: String(row.interests || '').trim(),
+          venue_id: String(row.venueid || row.venue || '').trim(),
+          referred_by: String(row.referredby || '').trim(),
+          remarks: String(row.remarks || '').trim(),
+          details: String(row.details || '').trim(),
+          lead_category: String(row.leadcategory || row.category || '').trim(),
+          isValid: true,
+          errors: [] as string[],
+          isDuplicate: false,
+          duplicateType: '' as 'db' | 'sheet' | ''
+        };
+
+        return item;
+      });
+    }
+
+    const activeVenues = this.venues().map(v => v.venue_id?.toLowerCase());
+    const activeDepts = this.departments().map(d => d.toLowerCase());
+    const activeCategories = this.leadCategories().map(c => c.toLowerCase());
+    
+    const existingEmails = new Set(this.visitors().map(v => v.email?.toLowerCase().trim()));
+    const existingMobiles = new Set(this.visitors().map(v => v.mobile?.trim()));
+
+    const sheetEmails = new Set<string>();
+    const sheetMobiles = new Set<string>();
+
+    let validCount = 0;
+    let invalidCount = 0;
+    let duplicateCount = 0;
+
+    rows.forEach((row, i) => {
+      // Required fields check
+      if (!row.full_name) {
+        row.isValid = false;
+        row.errors.push('Full Name is required.');
+      }
+      if (!row.email) {
+        row.isValid = false;
+        row.errors.push('Email is required.');
+      } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(row.email)) {
+        row.isValid = false;
+        row.errors.push('Invalid Email format.');
+      }
+      if (!row.mobile) {
+        row.isValid = false;
+        row.errors.push('Mobile Number is required.');
+      } else if (!/^\d{10}$/.test(row.mobile)) {
+        row.isValid = false;
+        row.errors.push('Mobile must be exactly 10 digits.');
+      }
+
+      // Venue ID exists check
+      if (!row.venue_id) {
+        row.isValid = false;
+        row.errors.push('Venue ID is required.');
+      } else if (!activeVenues.includes(row.venue_id.toLowerCase())) {
+        row.isValid = false;
+        row.errors.push(`Venue ID "${row.venue_id}" is not in active venues.`);
+      }
+
+      // Optional department check
+      if (row.department && !activeDepts.includes(row.department.toLowerCase())) {
+        row.isValid = false;
+        row.errors.push(`Department "${row.department}" does not exist.`);
+      }
+
+      // Optional category check
+      if (row.lead_category && !activeCategories.includes(row.lead_category.toLowerCase())) {
+        row.isValid = false;
+        row.errors.push(`Lead Category "${row.lead_category}" does not exist.`);
+      }
+
+      // Duplicate detection in sheet
+      if (row.email && sheetEmails.has(row.email.toLowerCase())) {
+        row.isDuplicate = true;
+        row.duplicateType = 'sheet';
+        row.errors.push('Duplicate Email within spreadsheet.');
+      }
+      if (row.mobile && sheetMobiles.has(row.mobile)) {
+        row.isDuplicate = true;
+        row.duplicateType = 'sheet';
+        row.errors.push('Duplicate Mobile within spreadsheet.');
+      }
+
+      if (row.email) sheetEmails.add(row.email.toLowerCase());
+      if (row.mobile) sheetMobiles.add(row.mobile);
+
+      // Duplicate detection in database
+      if (!row.isDuplicate) {
+        if (row.email && existingEmails.has(row.email.toLowerCase())) {
+          row.isDuplicate = true;
+          row.duplicateType = 'db';
+          row.errors.push('Email already exists in database.');
+        }
+        if (row.mobile && existingMobiles.has(row.mobile)) {
+          row.isDuplicate = true;
+          row.duplicateType = 'db';
+          row.errors.push('Mobile already exists in database.');
+        }
+      }
+
+      if (!row.isValid) {
+        invalidCount++;
+      } else if (row.isDuplicate) {
+        duplicateCount++;
+      } else {
+        validCount++;
+      }
+    });
+
+    this.parsedRows.set(rows);
+    this.validationSummary.set({
+      total: rows.length,
+      valid: validCount,
+      invalid: invalidCount,
+      duplicates: duplicateCount
+    });
+  }
+
+  onFieldEdited(rowIndex: number, field: string, value: any) {
+    const currentRows = [...this.parsedRows()];
+    currentRows[rowIndex] = {
+      ...currentRows[rowIndex],
+      [field]: value
+    };
+    
+    // Run validation on the modified rows
+    this.validateParsedData(currentRows, true);
+  }
+
+  downloadSampleTemplate() {
+    const headers = [
+      'title',
+      'full_name',
+      'company_name',
+      'job_title',
+      'email',
+      'mobile',
+      'alternate_mobile',
+      'office_number',
+      'department',
+      'interests',
+      'venue_id',
+      'referred_by',
+      'remarks',
+      'details',
+      'lead_category'
+    ];
+    
+    const sampleData = [
+      {
+        title: 'Mr',
+        full_name: 'John Doe',
+        company_name: 'Niraltek Solutions',
+        job_title: 'Executive',
+        email: 'john.doe@example.com',
+        mobile: '9876543210',
+        alternate_mobile: '9876543211',
+        office_number: '0441234567',
+        department: this.departments()[0] || 'Sales',
+        interests: this.productInterests[0] || 'ERP',
+        venue_id: this.venues()[0]?.venue_id || 'VEN001',
+        referred_by: 'Staff',
+        remarks: 'Sample remark text',
+        details: 'Sample details text',
+        lead_category: this.leadCategories()[0] || 'Hot'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Visitors Master');
+    
+    const maxLen = headers.map(h => h.length);
+    worksheet['!cols'] = maxLen.map(len => ({ wch: len + 5 }));
+
+    XLSX.writeFile(workbook, 'niraltek_visitors_import_template.xlsx');
+  }
+
+  confirmBulkImport() {
+    const allRows = this.parsedRows();
+    if (allRows.length === 0) return;
+
+    this.importing.set(true);
+
+    let toImport = allRows.filter(row => row.isValid);
+
+    if (this.skipDuplicates()) {
+      toImport = toImport.filter(row => !row.isDuplicate);
+    }
+
+    if (toImport.length === 0) {
+      this.showToast('No valid rows to import after applying filters.', 'error');
+      this.importing.set(false);
+      return;
+    }
+
+    const payload = toImport.map(row => ({
+      title: row.title,
+      fullName: row.full_name,
+      companyName: row.company_name,
+      jobTitle: row.job_title,
+      email: row.email,
+      mobile: row.mobile,
+      alternateMobile: row.alternate_mobile,
+      officeNumber: row.office_number,
+      department: row.department,
+      interests: row.interests ? row.interests.split(',').map((s: string) => s.trim()).filter(Boolean) : [],
+      venueId: row.venue_id,
+      referred_by: row.referred_by,
+      remarks: row.remarks,
+      details: row.details,
+      leadCategory: row.lead_category
+    }));
+
+    this.visitorsService.bulkImport(payload, { skipDuplicates: this.skipDuplicates() }).subscribe({
+      next: (res) => {
+        this.importResults.set(res);
+        this.importing.set(false);
+        this.showToast(`Import completed: ${res.imported} visitors imported.`, 'success');
+        this.loadVisitorsList();
+      },
+      error: (err) => {
+        console.error('Bulk import failed', err);
+        this.showToast(err.error?.message || 'Bulk import failed. Please check backend connection.', 'error');
+        this.importing.set(false);
+      }
+    });
   }
 
   toggleInterest(interest: string) {
@@ -1442,7 +1786,8 @@ readonly leadCategoryStats = computed(() => {
           referred_by: response.payload.referred_by,
           remarks: response.payload.remarks,
           created_at: response.payload.createdAt,
-          lead_category: response.payload.leadCategory
+          lead_category: response.payload.leadCategory,
+          venue_id: response.payload.venueId || response.payload.venue_id
         };
         this.visitors.update(vs => [newVisitor, ...vs]);
         this.showToast('Visitor added successfully', 'success');
@@ -1569,9 +1914,8 @@ readonly leadCategoryStats = computed(() => {
   isImageViewerOpen = signal<boolean>(false);
   zoomLevel = signal<number>(1);
 
-  ngOnInit() {
-    this.initForm();
-    this.loadProductInterests();
+  loadVisitorsList() {
+    this.loading.set(true);
     this.visitorsService.getVisitors().subscribe({
       next: (data) => {
         const initializedData = data.map(v => ({
@@ -1589,6 +1933,12 @@ readonly leadCategoryStats = computed(() => {
         this.loading.set(false);
       }
     });
+  }
+
+  ngOnInit() {
+    this.initForm();
+    this.loadProductInterests();
+    this.loadVisitorsList();
 
     this.venueService.getVenues().subscribe({
       next: (data: Venue[]) => this.venues.set(this.uniqueVenues(data)),
@@ -2120,6 +2470,8 @@ readonly leadCategoryStats = computed(() => {
         return visitor.department || '';
       case 'voice':
         return visitor.voice_note_url ? 1 : 0;
+      case 'created':
+        return visitor.created_at ? new Date(visitor.created_at).getTime() : 0;
       default:
         return '';
     }

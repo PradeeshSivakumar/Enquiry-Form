@@ -75,7 +75,7 @@ export class EmailCampaignsPageComponent implements OnInit {
   // Pagination & Search Shared State
   searchQuery = signal<string>('');
   currentPage = signal<number>(1);
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
   sortKey = signal<string>('created_at');
   sortDirection = signal<'ASC' | 'DESC'>('DESC');
 

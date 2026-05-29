@@ -6,6 +6,7 @@ const upload = require('../middleware/upload.middleware');
 const router = express.Router();
 
 router.post('/visiting-card', upload.single('visitingCard'), enquiryController.uploadVisitingCard);
+router.post('/bulk', authenticateToken, enquiryController.bulkImportEnquiries);
 router.post(
   '/',
   upload.fields([

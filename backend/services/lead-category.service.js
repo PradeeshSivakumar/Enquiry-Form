@@ -52,7 +52,7 @@ async function createLeadCategory(leadCategory) {
   const [result] = await pool.execute(
     `INSERT INTO lead_categories (lead_category_id, name, description)
      VALUES (?, ?, ?)`,
-    [leadCategoryId, leadCategory.name, leadCategory.description]
+    [leadCategoryId, leadCategory.name, leadCategory.description || '']
   );
 
   console.log('Service: Insert result:', result);
@@ -91,7 +91,7 @@ async function updateLeadCategory(id, leadCategory) {
     `UPDATE lead_categories
      SET name = ?, description = ?
      WHERE id = ? AND is_deleted = 0`,
-    [leadCategory.name, leadCategory.description, id]
+    [leadCategory.name, leadCategory.description || '', id]
   );
 
   return { message: 'Lead category updated successfully.' };

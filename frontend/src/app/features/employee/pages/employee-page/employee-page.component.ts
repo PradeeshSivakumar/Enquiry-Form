@@ -32,7 +32,7 @@ export class EmployeePageComponent implements OnInit {
   searchQuery = signal<string>('');
   statusFilter = signal<string>('1');
   
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
   currentPage = signal<number>(1);
   sortKey = signal<string>('name');
   sortDirection = signal<'asc' | 'desc'>('asc');

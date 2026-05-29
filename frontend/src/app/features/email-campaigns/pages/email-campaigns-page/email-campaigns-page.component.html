@@ -237,10 +237,7 @@
 
     <!-- Campaigns Datatable -->
     <div class="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden">
-      <!-- Loading Indicator -->
-      <div *ngIf="campaignsLoading() || scheduledLoading() || draftsLoading()" class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
-      </div>
+
 
       <!-- No Campaigns State -->
       <div *ngIf="!(campaignsLoading() || scheduledLoading() || draftsLoading()) && 
@@ -445,10 +442,7 @@
       </button>
     </div>
 
-    <!-- Templates Grid -->
-    <div *ngIf="templatesLoading()" class="flex justify-center items-center py-20 bg-white border border-slate-200 rounded-md">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
-    </div>
+
 
     <div *ngIf="!templatesLoading() && templates().length === 0" class="text-center py-20 bg-white border border-slate-200 rounded-md">
       No templates found. Click "New Template" to create one.

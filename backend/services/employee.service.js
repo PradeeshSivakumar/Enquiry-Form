@@ -18,7 +18,7 @@ async function createEmployee(employee) {
     const hashedPassword = await hashPassword(employee.password);
     const [result] = await pool.execute(
       `INSERT INTO employees (name, email, password, mobile_number, role, status, \`delete\`) VALUES (?, ?, ?, ?, ?, ?, 1)`,
-      [employee.name, employee.email, hashedPassword, employee.mobile_number, employee.role, status]
+      [employee.name || '', employee.email || '', hashedPassword || '', employee.mobile_number || '', employee.role || '', status]
     );
 
     return { id: result.insertId, message: 'Employee added successfully.' };
@@ -36,7 +36,7 @@ async function updateEmployee(id, employee) {
     const status = Number(employee.status) === 0 ? 0 : 1;
     await pool.execute(
       `UPDATE employees SET name = ?, email = ?, mobile_number = ?, role = ?, status = ? WHERE id = ?`,
-      [employee.name, employee.email, employee.mobile_number, employee.role, status, id]
+      [employee.name || '', employee.email || '', employee.mobile_number || '', employee.role || '', status, id]
     );
     return { message: 'Employee updated successfully.' };
   } catch (error) {

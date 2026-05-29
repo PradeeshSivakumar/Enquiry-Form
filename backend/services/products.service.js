@@ -48,7 +48,7 @@ async function createProduct(product) {
   const [result] = await pool.execute(
     `INSERT INTO product_master (product_id, name, category, description)
      VALUES (?, ?, ?, ?)`,
-    [productId, product.name, product.category, product.description]
+    [productId, product.name, product.category || '', product.description || '']
   );
 
   return {
@@ -85,7 +85,7 @@ async function updateProduct(id, product) {
     `UPDATE product_master
      SET name = ?, category = ?, description = ?
      WHERE id = ? AND is_deleted = 0`,
-    [product.name, product.category, product.description, id]
+    [product.name, product.category || '', product.description || '', id]
   );
 
   return { message: 'Product updated successfully.' };

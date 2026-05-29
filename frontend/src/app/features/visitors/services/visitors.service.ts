@@ -123,4 +123,8 @@ export class VisitorsService {
   deleteVisitor(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  bulkImport(enquiries: any[], options: { skipDuplicates: boolean }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/bulk`, { enquiries, options });
+  }
 }

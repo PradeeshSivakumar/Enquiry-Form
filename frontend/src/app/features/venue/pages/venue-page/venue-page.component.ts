@@ -27,7 +27,7 @@ export class VenuePageComponent implements OnInit {
 
   searchQuery = signal<string>('');
 
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
   currentPage = signal<number>(1);
   sortKey = signal<string>('venue');
   sortDirection = signal<'asc' | 'desc'>('asc');

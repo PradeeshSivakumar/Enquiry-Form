@@ -58,6 +58,14 @@
           class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder-slate-400 shadow-sm" />
       </div>
 
+      <button *ngIf="canAdd" (click)="openImportModal()"
+        class="w-full sm:w-auto flex justify-center items-center gap-2 px-4 py-2 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        Import Excel
+      </button>
+
       <button *ngIf="canAdd" (click)="openAddModal()"
         class="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-[13px] font-semibold transition-all shadow-sm whitespace-nowrap">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,9 +169,7 @@
       </div>
     </div>
 
-    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border-x border-b border-slate-200 rounded-b-md">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
-    </div>
+
 
     <div *ngIf="error()"
       class="bg-red-50 text-red-800 p-4 rounded-b-md border-x border-b border-red-200 flex items-center shadow-sm">
@@ -584,11 +590,25 @@
                 Department
               </label>
 
-              <input
-                type="text"
-                [(ngModel)]="editFormData().department"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm"
-              />
+              <div class="relative">
+                <select
+                  [(ngModel)]="editFormData().department"
+                  class="w-full px-3 py-2 pr-8 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
+                  <option [ngValue]="null">Select Department</option>
+                  <option *ngIf="editFormData().department && !departments().includes(editFormData().department!)" [value]="editFormData().department">
+                    {{ editFormData().department }} (Historical)
+                  </option>
+                  <option *ngFor="let dep of departments()" [value]="dep">
+                    {{ dep }}
+                  </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">
+                  <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -611,15 +631,25 @@
                 Lead Category
               </label>
 
-              <select
-                [(ngModel)]="editFormData().lead_category"
-                class="w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
-
-                <option *ngFor="let cat of leadCategories()" [value]="cat">
-                  {{ cat }}
-                </option>
-
-              </select>
+              <div class="relative">
+                <select
+                  [(ngModel)]="editFormData().lead_category"
+                  class="w-full px-3 py-2 pr-8 bg-white border border-slate-300 rounded-md text-[13px] font-medium text-slate-900 outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-all shadow-sm cursor-pointer appearance-none">
+                  <option [ngValue]="null">Select Category</option>
+                  <option *ngIf="editFormData().lead_category && !leadCategories().includes(editFormData().lead_category!)" [value]="editFormData().lead_category">
+                    {{ editFormData().lead_category }} (Historical)
+                  </option>
+                  <option *ngFor="let cat of leadCategories()" [value]="cat">
+                    {{ cat }}
+                  </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">
+                  <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -1824,6 +1854,325 @@
           </svg>
           {{ isSubmitting() ? 'Saving...' : 'Save Visitor' }}
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Excel Bulk Import Modal -->
+  <div *ngIf="isImportModalOpen()"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[200] p-4 sm:p-6 transition-opacity animate-in fade-in duration-300">
+    <div
+      class="bg-white rounded-md shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300 border border-slate-200">
+
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-white">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 tracking-tight">Bulk Import Visitors</h2>
+          <p class="text-xs text-slate-500 font-medium mt-0.5">Upload an Excel or CSV file to import multiple records at once</p>
+        </div>
+        <button (click)="closeImportModal()"
+          class="text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 p-1.5 rounded transition-colors focus:outline-none border border-slate-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+        
+        <!-- Step 1: File Upload (if no data parsed yet) -->
+        <div *ngIf="parsedRows().length === 0 && !importResults()" class="space-y-6">
+          <div
+            (dragover)="onExcelDragOver($event)"
+            (dragleave)="onExcelDragLeave($event)"
+            (drop)="onExcelDrop($event)"
+            [ngClass]="dragOver() ? 'border-slate-900 bg-slate-50' : 'border-slate-300 bg-white'"
+            class="border-2 border-dashed rounded-lg p-10 text-center transition-all duration-200 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-slate-400 relative">
+            
+            <input type="file" id="importFile" (change)="onImportFileSelected($event)" accept=".xlsx,.xls,.csv" class="hidden" />
+            
+            <label for="importFile" class="absolute inset-0 w-full h-full cursor-pointer z-10"></label>
+            
+            <div class="w-12 h-12 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-center shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Drag & drop your file here, or click to browse</p>
+              <p class="text-xs text-slate-500 mt-1">Supports Microsoft Excel (.xlsx, .xls) and CSV files</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between bg-white p-4 rounded-md border border-slate-200 shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 bg-blue-50 border border-blue-100 rounded-md flex items-center justify-center text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-slate-800">Need a starting template?</p>
+                <p class="text-[11px] text-slate-500">Download our pre-formatted spreadsheet template with active venue, department, and category definitions.</p>
+              </div>
+            </div>
+            <button type="button" (click)="downloadSampleTemplate()"
+              class="flex items-center gap-1.5 px-4 py-2 border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 rounded-md text-xs font-semibold transition-all shadow-sm">
+              Download Template
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Show Preview & Diagnostics (if data is parsed) -->
+        <div *ngIf="parsedRows().length > 0 && !importResults()" class="space-y-6">
+          
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Rows</p>
+              <p class="text-2xl font-extrabold text-slate-800 mt-1">{{ validationSummary().total }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm border-l-4 border-l-green-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-green-600">Valid Rows</p>
+              <p class="text-2xl font-extrabold text-green-600 mt-1">{{ validationSummary().valid }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm border-l-4 border-l-red-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-red-600">Invalid Rows</p>
+              <p class="text-2xl font-extrabold text-red-600 mt-1">{{ validationSummary().invalid }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 shadow-sm border-l-4 border-l-amber-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-amber-600">Duplicates Detected</p>
+              <p class="text-2xl font-extrabold text-amber-600 mt-1">{{ validationSummary().duplicates }}</p>
+            </div>
+          </div>
+
+          <!-- Configuration Controls -->
+          <div class="bg-white p-4 rounded-md border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" id="skipDupCheck" [checked]="skipDuplicates()" (change)="skipDuplicates.set($any($event.target).checked)"
+                class="w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900 cursor-pointer" />
+              <label for="skipDupCheck" class="text-xs font-semibold text-slate-700 cursor-pointer">
+                Skip duplicate records (based on email & mobile matching)
+              </label>
+            </div>
+            
+            <div class="flex items-center gap-1.5 p-0.5 bg-slate-50 border border-slate-300 rounded-md shadow-sm">
+              <button type="button" (click)="previewTab.set('all')" [class.bg-white]="previewTab() === 'all'" [class.shadow-sm]="previewTab() === 'all'"
+                class="px-3 py-1 rounded text-xs font-semibold transition-all">All Rows</button>
+              <button type="button" (click)="previewTab.set('valid')" [class.bg-white]="previewTab() === 'valid'" [class.shadow-sm]="previewTab() === 'valid'"
+                class="px-3 py-1 rounded text-xs font-semibold transition-all text-green-700">Valid Only</button>
+              <button type="button" (click)="previewTab.set('invalid')" [class.bg-white]="previewTab() === 'invalid'" [class.shadow-sm]="previewTab() === 'invalid'"
+                class="px-3 py-1 rounded text-xs font-semibold transition-all text-red-700">Errors & Duplicates</button>
+            </div>
+          </div>
+
+          <!-- Preview Table Container -->
+          <div class="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm animate-in fade-in duration-300">
+            <div class="overflow-x-auto max-h-[300px]">
+              <table class="min-w-full text-left text-xs whitespace-nowrap data-table">
+                <thead class="bg-slate-900 text-white sticky top-0 z-10 border-b border-slate-800">
+                  <tr class="border-b border-slate-700">
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Row</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Status</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Diagnostics / Errors</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Full Name</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Email</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Mobile</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Venue ID</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Department</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Lead Category</th>
+                    <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider">Company</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <ng-container *ngFor="let row of parsedRows(); let idx = index">
+                    <tr *ngIf="previewTab() === 'all' || (previewTab() === 'valid' && row.isValid && !row.isDuplicate) || (previewTab() === 'invalid' && (!row.isValid || row.isDuplicate))"
+                      [ngClass]="{
+                        'bg-red-50/40': !row.isValid,
+                        'bg-amber-50/40': row.isValid && row.isDuplicate,
+                        'bg-white hover:bg-slate-50': row.isValid && !row.isDuplicate
+                      }">
+                      <td class="px-4 py-2.5 font-bold text-slate-500">{{ idx + 1 }}</td>
+                      <td class="px-4 py-2.5">
+                        <span *ngIf="!row.isValid" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-red-100 text-red-800">Invalid</span>
+                        <span *ngIf="row.isValid && row.isDuplicate" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800">Duplicate</span>
+                        <span *ngIf="row.isValid && !row.isDuplicate" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-green-100 text-green-800">Valid</span>
+                      </td>
+                      <td class="px-4 py-2.5 max-w-[250px] overflow-hidden text-ellipsis whitespace-normal">
+                        <div *ngIf="row.errors.length > 0" class="text-red-700 font-semibold flex flex-col gap-0.5">
+                          <span *ngFor="let err of row.errors">• {{ err }}</span>
+                        </div>
+                        <span *ngIf="row.errors.length === 0" class="text-slate-400">—</span>
+                      </td>
+                      <td class="px-4 py-2">
+                        <input type="text" [value]="row.full_name" (input)="onFieldEdited(idx, 'full_name', $any($event.target).value)"
+                          class="px-2 py-1 bg-white border border-slate-200 rounded text-xs font-semibold text-slate-800 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all w-[150px]"
+                          [ngClass]="{'border-red-300 bg-red-50/20': !row.full_name}" />
+                      </td>
+                      <td class="px-4 py-2">
+                        <input type="text" [value]="row.email" (input)="onFieldEdited(idx, 'email', $any($event.target).value)"
+                          class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all w-[180px]"
+                          [ngClass]="{'border-red-300 bg-red-50/20': !row.email || row.errors.join('').includes('Email')}" />
+                      </td>
+                      <td class="px-4 py-2">
+                        <input type="text" [value]="row.mobile" (input)="onFieldEdited(idx, 'mobile', $any($event.target).value)"
+                          class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-600 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all w-[110px]"
+                          [ngClass]="{'border-red-300 bg-red-50/20': !row.mobile || row.errors.join('').includes('Mobile')}" />
+                      </td>
+                      <td class="px-4 py-2">
+                        <div class="relative w-[130px]">
+                          <select [value]="row.venue_id" (change)="onFieldEdited(idx, 'venue_id', $any($event.target).value)"
+                            class="w-full appearance-none px-2 py-1 bg-white border rounded text-xs font-bold text-slate-800 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer pr-6"
+                            [ngClass]="!row.venue_id || row.errors.join('').includes('Venue') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'">
+                            <option value="">Select Venue</option>
+                            <option *ngFor="let v of venues()" [value]="v.venue_id">{{ v.venue_id }} ({{ v.venue }})</option>
+                          </select>
+                          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                            <svg class="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-2">
+                        <div class="relative w-[130px]">
+                          <select [value]="row.department" (change)="onFieldEdited(idx, 'department', $any($event.target).value)"
+                            class="w-full appearance-none px-2 py-1 bg-white border rounded text-xs text-slate-600 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer pr-6"
+                            [ngClass]="row.errors.join('').includes('Department') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'">
+                            <option value="">No Department</option>
+                            <option *ngFor="let dep of departments()" [value]="dep">{{ dep }}</option>
+                          </select>
+                          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                            <svg class="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-2">
+                        <div class="relative w-[110px]">
+                          <select [value]="row.lead_category" (change)="onFieldEdited(idx, 'lead_category', $any($event.target).value)"
+                            class="w-full appearance-none px-2 py-1 bg-white border rounded text-xs text-slate-600 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all cursor-pointer pr-6"
+                            [ngClass]="row.errors.join('').includes('Category') ? 'border-red-300 bg-red-50/20' : 'border-slate-200'">
+                            <option value="">No Category</option>
+                            <option *ngFor="let cat of leadCategories()" [value]="cat">{{ cat }}</option>
+                          </select>
+                          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-400">
+                            <svg class="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                              <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-4 py-2">
+                        <input type="text" [value]="row.company_name" (input)="onFieldEdited(idx, 'company_name', $any($event.target).value)"
+                          class="px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all w-[130px]" />
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Success Summary Results -->
+        <div *ngIf="importResults()" class="space-y-6 flex flex-col items-center py-10">
+          
+          <!-- Case 1: Fully Successful Import (No errors) -->
+          <div *ngIf="importResults()?.failed === 0 && importResults()?.imported > 0" class="w-16 h-16 bg-green-50 border border-green-200 rounded-full flex items-center justify-center text-green-600 mb-2 shadow-sm animate-[scaleIn_0.35s_cubic-bezier(0.34,1.56,0.64,1)]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+
+          <!-- Case 2: Completed with Warnings (Some rows imported, some failed/skipped) -->
+          <div *ngIf="importResults()?.failed > 0 && importResults()?.imported > 0" class="w-16 h-16 bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center text-amber-600 mb-2 shadow-sm animate-[scaleIn_0.35s_cubic-bezier(0.34,1.56,0.64,1)]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+
+          <!-- Case 3: Fully Failed Import (Zero rows imported) -->
+          <div *ngIf="importResults()?.imported === 0 && importResults()?.failed > 0" class="w-16 h-16 bg-red-50 border border-red-200 rounded-full flex items-center justify-center text-red-600 mb-2 shadow-sm animate-[scaleIn_0.35s_cubic-bezier(0.34,1.56,0.64,1)]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          
+          <div class="text-center">
+            <h3 class="text-xl font-bold text-slate-900">
+              <span *ngIf="importResults()?.failed === 0 && importResults()?.imported > 0">Bulk Import Successful</span>
+              <span *ngIf="importResults()?.failed > 0 && importResults()?.imported > 0">Import Completed with Warnings</span>
+              <span *ngIf="importResults()?.imported === 0 && importResults()?.failed > 0">Bulk Import Failed</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">
+              <span *ngIf="importResults()?.failed === 0 && importResults()?.imported > 0">Excel dataset successfully processed and all records imported.</span>
+              <span *ngIf="importResults()?.failed > 0 && importResults()?.imported > 0">Some records were imported, but others failed validation or were duplicates.</span>
+              <span *ngIf="importResults()?.imported === 0 && importResults()?.failed > 0">No records were imported due to validation errors. Please check the log below.</span>
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 w-full max-w-md mt-4">
+            <div class="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Uploaded</p>
+              <p class="text-2xl font-extrabold text-slate-800 mt-1">{{ importResults()?.total }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm border-t-4 border-t-green-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-green-600">Successfully Imported</p>
+              <p class="text-2xl font-extrabold text-green-600 mt-1">{{ importResults()?.imported }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm border-t-4 border-t-amber-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-amber-600">Duplicates Skipped</p>
+              <p class="text-2xl font-extrabold text-amber-600 mt-1">{{ importResults()?.skipped }}</p>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm border-t-4 border-t-red-500">
+              <p class="text-[10px] font-bold uppercase tracking-wider text-red-600">Failed Records</p>
+              <p class="text-2xl font-extrabold text-red-600 mt-1">{{ importResults()?.failed }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="importResults()?.errors?.length > 0" class="w-full max-w-md bg-red-50 border border-red-200 rounded-md p-4 mt-2">
+            <h4 class="text-[11px] font-bold text-red-800 uppercase tracking-wide mb-2">Import Errors</h4>
+            <div class="max-h-[120px] overflow-y-auto text-[11px] text-red-700 space-y-1 pr-1 font-mono">
+              <div *ngFor="let err of importResults().errors">• {{ err }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-between items-center z-10">
+        
+        <!-- Left buttons -->
+        <div>
+          <button *ngIf="parsedRows().length > 0 && !importResults()" type="button" (click)="parsedRows.set([])"
+            class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 border border-slate-300 bg-white hover:bg-slate-50 rounded-md shadow-sm transition-all">
+            Upload Different File
+          </button>
+        </div>
+        
+        <!-- Right buttons -->
+        <div class="flex gap-3">
+          <button (click)="closeImportModal()" [disabled]="importing()"
+            class="px-5 py-2 text-[13px] font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 rounded-md transition-all disabled:opacity-50 shadow-sm">
+            {{ importResults() ? 'Close' : 'Cancel' }}
+          </button>
+          
+          <button *ngIf="parsedRows().length > 0 && !importResults()" (click)="confirmBulkImport()"
+            [disabled]="importing() || validationSummary().valid === 0"
+            class="flex items-center gap-2 px-5 py-2 text-[13px] font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-sm transition-all focus:ring-1 focus:ring-offset-1 focus:ring-slate-900 disabled:opacity-60 disabled:cursor-not-allowed">
+            <svg *ngIf="importing()" class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ importing() ? 'Importing...' : 'Confirm Bulk Import (' + (skipDuplicates() ? validationSummary().valid : (validationSummary().valid + validationSummary().duplicates)) + ' rows)' }}
+          </button>
+        </div>
+
       </div>
     </div>
   </div>

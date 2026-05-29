@@ -164,6 +164,11 @@ async function updateEnquiry(req, res, next) {
       return res.status(400).json({ message: 'At least one product interest is required.' });
     }
 
+    const existingEnquiry = await enquiryService.getEnquiryById(req.params.id);
+    if (!existingEnquiry) {
+      return res.status(404).json({ message: 'Visitor not found.' });
+    }
+
     await validatePayload({
       fullName: enquiry.full_name || enquiry.fullName,
       email: enquiry.email,
@@ -171,7 +176,7 @@ async function updateEnquiry(req, res, next) {
       interests,
       department: enquiry.department,
       leadCategory: enquiry.lead_category || enquiry.leadCategory
-    });
+    }, existingEnquiry);
 
     res.json(await enquiryService.updateEnquiry(req.params.id, enquiry));
   } catch (error) {
@@ -207,7 +212,7 @@ function normalizePayload(body) {
   };
 }
 
-async function validatePayload(payload) {
+async function validatePayload(payload, existingEnquiry = null) {
   if (!payload.fullName) {
     throw new Error('Full name is required.');
   }
@@ -221,23 +226,30 @@ async function validatePayload(payload) {
     throw new Error('At least one product interest is required.');
   }
 
-if (payload.department) {
+  if (payload.department) {
+    const normalizedDepartment = payload.department?.toString().trim().toLowerCase();
+    const existingDepartment = existingEnquiry?.department?.toString().trim().toLowerCase();
 
-  const normalizedDepartment = payload.department
-    ?.toString()
-    .trim()
-    .toLowerCase();
-
-  const exists = await departmentService.existsByName(normalizedDepartment);
-
-  if (!exists) {
-    throw new Error('Invalid department.');
+    // Only validate if the department value has actually been changed
+    if (normalizedDepartment !== existingDepartment) {
+      const exists = await departmentService.existsByName(normalizedDepartment);
+      if (!exists) {
+        throw new Error('Invalid department.');
+      }
+    }
   }
 
-}
+  if (payload.leadCategory) {
+    const normalizedCategory = payload.leadCategory?.toString().trim().toLowerCase();
+    const existingCategory = existingEnquiry?.lead_category?.toString().trim().toLowerCase();
 
-  if (payload.leadCategory && !(await leadCategoryService.existsByName(payload.leadCategory))) {
-    throw new Error('Invalid lead category.');
+    // Only validate if the lead category has actually been changed
+    if (normalizedCategory !== existingCategory) {
+      const exists = await leadCategoryService.existsByName(payload.leadCategory);
+      if (!exists) {
+        throw new Error('Invalid lead category.');
+      }
+    }
   }
 }
 
@@ -263,6 +275,21 @@ function parseInterests(value) {
   }
 }
 
+async function bulkImportEnquiries(req, res, next) {
+  try {
+    const { enquiries, options } = req.body;
+
+    if (!Array.isArray(enquiries)) {
+      return res.status(400).json({ message: 'Enquiries array is required.' });
+    }
+
+    const result = await enquiryService.bulkImportEnquiries(enquiries, options || {});
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   uploadVisitingCard,
   createEnquiry,
@@ -278,5 +305,6 @@ module.exports = {
   updateVoiceNote2,
   removeVoiceNote2,
   updateEnquiry,
-  deleteEnquiry
+  deleteEnquiry,
+  bulkImportEnquiries
 };

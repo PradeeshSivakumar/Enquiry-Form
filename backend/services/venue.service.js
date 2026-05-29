@@ -52,6 +52,18 @@ async function assertVenueIsUnique(venue, excludeId = null) {
   }
 }
 
+function splitVenueParts(venueStr) {
+  if (!venueStr) return { venueName: '', city: '', year: '' };
+  const parts = venueStr.split('-');
+  if (parts.length >= 3) {
+    const year = (parts[parts.length - 1] || '').trim();
+    const city = (parts[parts.length - 2] || '').trim();
+    const venueName = parts.slice(0, parts.length - 2).join('-').trim();
+    return { venueName, city, year };
+  }
+  return { venueName: (venueStr || '').trim(), city: '', year: '' };
+}
+
 async function createVenue(venue) {
   await assertVenueIsUnique(venue.venue);
 
@@ -76,6 +88,13 @@ async function createVenue(venue) {
     values
   );
 
+  // Sync to venue_details table - ensure everything is saved empty if falsy
+  const { venueName, city, year } = splitVenueParts(venue.venue);
+  await pool.execute(
+    `INSERT INTO venue_details (venue_master_id, venue, city, year) VALUES (?, ?, ?, ?)`,
+    [result.insertId, venueName || '', city || '', year || '']
+  );
+
   return { id: result.insertId, venue_id: venueId, message: 'Venue added successfully.' };
 }
 
@@ -89,6 +108,21 @@ async function updateVenue(id, venue) {
     `UPDATE venue_master SET venue = ?${detailSet} WHERE id = ?`,
     [venue.venue, ...detailValues, id]
   );
+
+  // Sync to venue_details table - ensure everything is saved empty if falsy
+  const { venueName, city, year } = splitVenueParts(venue.venue);
+  const [rows] = await pool.execute('SELECT id FROM venue_details WHERE venue_master_id = ?', [id]);
+  if (rows.length > 0) {
+    await pool.execute(
+      'UPDATE venue_details SET venue = ?, city = ?, year = ? WHERE venue_master_id = ?',
+      [venueName || '', city || '', year || '', id]
+    );
+  } else {
+    await pool.execute(
+      'INSERT INTO venue_details (venue_master_id, venue, city, year) VALUES (?, ?, ?, ?)',
+      [id, venueName || '', city || '', year || '']
+    );
+  }
 
   return { message: 'Venue updated successfully.' };
 }

@@ -28,7 +28,7 @@ export class DepartmentsPageComponent implements OnInit {
   loading = signal<boolean>(true);
   error = signal<string | null>(null);
   searchQuery = signal<string>('');
-  pageSize = signal<number>(10);
+  pageSize = signal<number>(5);
   currentPage = signal<number>(1);
   sortKey = signal<string>('name');
   sortDirection = signal<'asc' | 'desc'>('asc');

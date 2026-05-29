@@ -6,11 +6,12 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { TopbarComponent } from './header/topbar.component';
 import { LayoutService } from './layout.service';
 import { PermissionService } from '../core/permissions/permission.service';
+import { LoaderComponent } from '../shared/loader/loader.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderStripComponent, SidebarComponent, TopbarComponent],
+  imports: [CommonModule, RouterOutlet, HeaderStripComponent, SidebarComponent, TopbarComponent, LoaderComponent],
   template: `
     <app-header-strip />
     <app-topbar />
@@ -24,7 +25,8 @@ import { PermissionService } from '../core/permissions/permission.service';
             [ngClass]="layout.isSidebarCollapsed() ? 'pl-[80px]' : 'pl-[280px]'">
         
         <!-- Router View -->
-        <div class="p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto flex-1">
+        <div class="p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto flex-1 relative min-h-[400px]">
+          <app-loader [absolute]="true"></app-loader>
           <router-outlet />
         </div>
         

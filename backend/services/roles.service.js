@@ -42,7 +42,7 @@ async function createRole(role) {
   try {
     const [result] = await pool.execute(
       `INSERT INTO roles (role_id, name, description) VALUES (?, ?, ?)`,
-      [roleId, role.name, role.description || null]
+      [roleId, role.name, role.description || '']
     );
 
     return {
@@ -86,7 +86,7 @@ async function updateRole(id, role) {
 
   await pool.execute(
     `UPDATE roles SET name = ?, description = ? WHERE id = ? AND is_deleted = 0`,
-    [role.name, role.description || null, id]
+    [role.name, role.description || '', id]
   );
 
   return { message: 'Role updated successfully.' };

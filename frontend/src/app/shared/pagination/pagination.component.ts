@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 })
 export class PaginationComponent implements OnChanges {
   @Input() totalItems = 0;
-  @Input() pageSize = 10;
+  @Input() pageSize = 5;
   @Input() currentPage = 1;
 
   @Output() pageChange = new EventEmitter<number>();
@@ -18,7 +18,7 @@ export class PaginationComponent implements OnChanges {
 
   totalPages = 1;
   pages: (number | string)[] = [];
-  previousPageSize = 10;
+  previousPageSize = 5;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['pageSize'] && this.pageSize < this.totalItems) {
@@ -88,7 +88,7 @@ export class PaginationComponent implements OnChanges {
   toggleShowAll(): void {
     if (this.pageSize >= this.totalItems) {
       // Toggle back to paginated view
-      const restoreSize = this.previousPageSize || 10;
+      const restoreSize = this.previousPageSize || 5;
       this.pageSizeChange.emit(restoreSize);
     } else {
       // Show all

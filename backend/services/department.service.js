@@ -52,7 +52,7 @@ async function createDepartment(department) {
   const [result] = await pool.execute(
     `INSERT INTO departments (department_id, name, description)
      VALUES (?, ?, ?)`,
-    [departmentId, department.name, department.description]
+    [departmentId, department.name, department.description || '']
   );
 
   console.log('Service: Insert result:', result);
@@ -91,7 +91,7 @@ async function updateDepartment(id, department) {
     `UPDATE departments
      SET name = ?, description = ?
      WHERE id = ? AND is_deleted = 0`,
-    [department.name, department.description, id]
+    [department.name, department.description || '', id]
   );
 
   return { message: 'Department updated successfully.' };

@@ -249,27 +249,27 @@ async function createEnquiry(payload, files = {}) {
     'lead_category'
   ];
   const values = [
-    payload.title,
-    payload.fullName,
-    payload.companyName,
-    payload.jobTitle,
-    payload.email,
-    payload.mobile,
-    ...(hasAlternateMobile ? [payload.alternateMobile] : []),
-    ...(hasOfficeNumber ? [payload.officeNumber] : []),
-    payload.department,
-    JSON.stringify(payload.interests),
-    visitingCardId,
-    visitingCardUrl,
-    ...(hasVisitingCard2 ? [visitingCardId2, visitingCardUrl2] : []),
-    voiceNoteId,
-    voiceNoteUrl,
-    ...(hasVoiceNote2 ? [voiceNoteId2, voiceNoteUrl2] : []),
-    payload.venueId,
-    payload.referred_by,
-    payload.remarks,
-    ...(hasDetails ? [payload.details] : []),
-    payload.leadCategory || null
+    payload.title || '',
+    payload.fullName || '',
+    payload.companyName || '',
+    payload.jobTitle || '',
+    payload.email || '',
+    payload.mobile || '',
+    ...(hasAlternateMobile ? [payload.alternateMobile || ''] : []),
+    ...(hasOfficeNumber ? [payload.officeNumber || ''] : []),
+    payload.department || '',
+    JSON.stringify(payload.interests || []),
+    visitingCardId || null,
+    visitingCardUrl || '',
+    ...(hasVisitingCard2 ? [visitingCardId2 || null, visitingCardUrl2 || ''] : []),
+    voiceNoteId || null,
+    voiceNoteUrl || '',
+    ...(hasVoiceNote2 ? [voiceNoteId2 || null, voiceNoteUrl2 || ''] : []),
+    payload.venueId || '',
+    payload.referred_by || '',
+    payload.remarks || '',
+    ...(hasDetails ? [payload.details || ''] : []),
+    payload.leadCategory || ''
   ];
   const placeholders = columns.map(column => column === 'interests' ? 'CAST(? AS JSON)' : '?').join(', ');
 
@@ -297,6 +297,8 @@ async function createEnquiry(payload, files = {}) {
       voiceNoteUrl,
       voiceNoteId2,
       voiceNoteUrl2,
+      venueId: payload.venueId,
+      venue_id: payload.venueId,
       createdAt: new Date().toISOString()
     }
   };
@@ -734,9 +736,9 @@ async function updateEnquiry(id, enquiry) {
   const officeNumberSet = hasOfficeNumber ? 'office_number = ?, ' : '';
   const alternateMobileSet = hasAlternateMobile ? 'alternate_mobile = ?, ' : '';
   const detailsSet = hasDetails ? 'details = ?, remarks = ?' : 'remarks = ?';
-  const officeNumberValue = hasOfficeNumber ? [enquiry.office_number || null] : [];
-  const alternateMobileValue = hasAlternateMobile ? [enquiry.alternate_mobile || null] : [];
-  const detailsValue = hasDetails ? [enquiry.details || null, enquiry.remarks || null] : [enquiry.remarks || null];
+  const officeNumberValue = hasOfficeNumber ? [enquiry.office_number || ''] : [];
+  const alternateMobileValue = hasAlternateMobile ? [enquiry.alternate_mobile || ''] : [];
+  const detailsValue = hasDetails ? [enquiry.details || '', enquiry.remarks || ''] : [enquiry.remarks || ''];
 
   await pool.execute(
     `UPDATE enquiries
@@ -755,22 +757,30 @@ async function updateEnquiry(id, enquiry) {
  WHERE id = ?`,
     [
       enquiry.full_name,
-      enquiry.company_name || null,
+      enquiry.company_name || '',
       enquiry.email,
       enquiry.mobile,
       ...alternateMobileValue,
       ...officeNumberValue,
-      enquiry.department || null,
-      JSON.stringify(enquiry.interests),
-      enquiry.lead_category || null,
-      enquiry.venue_id || null,
-      enquiry.referred_by || null,
+      enquiry.department || '',
+      JSON.stringify(enquiry.interests || []),
+      enquiry.lead_category || '',
+      enquiry.venue_id || '',
+      enquiry.referred_by || '',
       ...detailsValue,
       id
     ]
   );
 
   return { message: 'Visitor updated successfully.' };
+}
+
+async function getEnquiryById(id) {
+  const [rows] = await pool.execute(
+    `SELECT id, department, lead_category FROM enquiries WHERE id = ? AND status = 0`,
+    [id]
+  );
+  return rows[0] || null;
 }
 
 async function deleteEnquiry(id) {
@@ -798,6 +808,136 @@ async function sendThankYouMail(payload) {
   console.log('Mail sent successfully');
 }
 
+async function bulkImportEnquiries(enquiries, options = {}) {
+  const skipDuplicates = options.skipDuplicates !== false;
+  
+  const hasOfficeNumber = await hasOfficeNumberColumn();
+  const hasAlternateMobile = await hasAlternateMobileColumn();
+  const hasDetails = await hasDetailsColumn();
+
+  // Fetch existing records for duplicate check
+  const [existingRows] = await pool.execute('SELECT email, mobile FROM enquiries WHERE status = 0');
+  const existingEmails = new Set(existingRows.map(r => String(r.email || '').trim().toLowerCase()));
+  const existingMobiles = new Set(existingRows.map(r => String(r.mobile || '').trim()));
+
+  const results = {
+    total: enquiries.length,
+    imported: 0,
+    skipped: 0,
+    failed: 0,
+    errors: []
+  };
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    for (let i = 0; i < enquiries.length; i++) {
+      const row = enquiries[i];
+      const rowNum = i + 1;
+
+      // Basic backend presence checks
+      const fullName = row.full_name || row.fullName;
+      const email = String(row.email || '').trim();
+      const mobile = String(row.mobile || '').trim();
+
+      if (!fullName) {
+        results.failed++;
+        results.errors.push(`Row ${rowNum}: Full name is required.`);
+        continue;
+      }
+      if (!email) {
+        results.failed++;
+        results.errors.push(`Row ${rowNum}: Email is required.`);
+        continue;
+      }
+      if (!mobile) {
+        results.failed++;
+        results.errors.push(`Row ${rowNum}: Mobile is required.`);
+        continue;
+      }
+
+      // Check duplicates
+      const isEmailDup = existingEmails.has(email.toLowerCase());
+      const isMobileDup = existingMobiles.has(mobile);
+
+      if (isEmailDup || isMobileDup) {
+        if (skipDuplicates) {
+          results.skipped++;
+          continue;
+        }
+      }
+
+      // Parse interests
+      let interests = [];
+      if (row.interests) {
+        if (Array.isArray(row.interests)) {
+          interests = row.interests;
+        } else if (typeof row.interests === 'string') {
+          interests = row.interests.split(',').map(s => s.trim()).filter(Boolean);
+        }
+      }
+
+      const columns = [
+        'title',
+        'full_name',
+        'company_name',
+        'job_title',
+        'email',
+        'mobile',
+        ...(hasAlternateMobile ? ['alternate_mobile'] : []),
+        ...(hasOfficeNumber ? ['office_number'] : []),
+        'department',
+        'interests',
+        'venue_id',
+        'referred_by',
+        'remarks',
+        ...(hasDetails ? ['details'] : []),
+        'lead_category'
+      ];
+
+      const values = [
+        row.title || 'Mr',
+        fullName.trim(),
+        row.company_name || row.companyName || '',
+        row.job_title || row.jobTitle || '',
+        email,
+        mobile,
+        ...(hasAlternateMobile ? [row.alternate_mobile || row.alternateMobile || ''] : []),
+        ...(hasOfficeNumber ? [row.office_number || row.officeNumber || ''] : []),
+        row.department || '',
+        JSON.stringify(interests),
+        row.venue_id || row.venueId || '',
+        row.referred_by || row.referredBy || '',
+        row.remarks || '',
+        ...(hasDetails ? [row.details || ''] : []),
+        row.lead_category || row.leadCategory || ''
+      ];
+
+      const placeholders = columns.map(column => column === 'interests' ? 'CAST(? AS JSON)' : '?').join(', ');
+
+      await connection.execute(
+        `INSERT INTO enquiries (${columns.join(', ')}) VALUES (${placeholders})`,
+        values
+      );
+
+      // Track duplicate sets to avoid duplicates within same uploaded Excel
+      existingEmails.add(email.toLowerCase());
+      existingMobiles.add(mobile);
+      results.imported++;
+    }
+
+    await connection.commit();
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
+  }
+
+  return results;
+}
+
 module.exports = {
   uploadVisitingCard,
   createEnquiry,
@@ -813,5 +953,8 @@ module.exports = {
   updateVoiceNote2,
   removeVoiceNote2,
   updateEnquiry,
-  deleteEnquiry
+  deleteEnquiry,
+  getEnquiryById,
+  bulkImportEnquiries
 };
+

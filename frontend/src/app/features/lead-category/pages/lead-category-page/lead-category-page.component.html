@@ -60,10 +60,7 @@
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading()" class="flex justify-center items-center py-20 bg-white border border-gray-200 rounded-[6px]">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0f172a]"></div>
-    </div>
+
 
     <!-- Error State -->
     <div *ngIf="error()" class="bg-red-50 text-red-800 p-4 mb-4 rounded-[6px] border border-red-200 flex items-center">
@@ -166,7 +163,7 @@
         <button type="button" (click)="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-[6px] transition-colors focus:outline-none">
           Cancel
         </button>
-        <button type="submit" [disabled]="isSubmitting()" class="px-4 py-2 text-sm font-medium text-white bg-[#0f172a] hover:bg-black rounded-[6px] transition-colors disabled:opacity-50 focus:outline-none">
+        <button type="submit" [disabled]="isSubmitting() || form.invalid" class="px-4 py-2 text-sm font-medium text-white bg-[#0f172a] hover:bg-black rounded-[6px] transition-colors disabled:opacity-50 focus:outline-none">
           {{ isSubmitting() ? 'Saving...' : 'Save' }}
         </button>
       </div>
